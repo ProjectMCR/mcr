@@ -1,16 +1,17 @@
-# mcr
+# プロジェクト MCR
 
-A new Flutter project.
+# 実装基本方針
 
-## Getting Started
+## データベースについて
+アプリ内に表示されるデータは管理画面から追加・削除・編集ができるようにします。  
+ただしオノマトペとは？のページについては文言をアプリ内に埋め込んで大丈夫です。  
+そのほかのデータは基本的にFirestoreに保存されたものを読み込んで表示させます。
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## 画像動画について
+保存場所は未定ですが、どこかのクラウドストレージにおいて管理します。  
+Firestoreにはそのリンクを持たせます。
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+まずはFirebaseStrageを使用してしまっていいです。
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
