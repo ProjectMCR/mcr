@@ -61,31 +61,85 @@ class AnimalPage extends StatelessWidget {
             ListView(
               shrinkWrap: true,
               padding: const EdgeInsets.all(11.5),
-              children: [
-                Container(
-                  height: 120,
-                  width: 348,
-                  color: AnimalOnomatopoeiaColor.clearBlack,
-                  child: Row(
-                    children: [
-                      const SizedBox(width: 6),
-                      Image.asset(
-                        'assets/images/elephant/indian_elephant_attention.png',
-                        height: 108,
-                        width: 108,
-                      ),
-                      Column(
-                        children: const [
-                          Text('インドゾウ'),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
+              children: const [
+                _AnimalSoundTile(),
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AnimalSoundTile extends StatelessWidget {
+  const _AnimalSoundTile({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 120,
+      width: 348,
+      color: AnimalOnomatopoeiaColor.clearBlack,
+      child: Row(
+        children: [
+          const SizedBox(width: 6),
+          Image.asset(
+            'assets/images/elephant/indian_elephant_attention.png',
+            height: 108,
+            width: 108,
+          ),
+          const Spacer(),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'インドゾウ',
+                style: TextStyle(
+                  color: AnimalOnomatopoeiaColor.clearWhite,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+              const Text(
+                '注意！（ちゅうい）',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+              const Text(
+                'てきがいるぞ',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                onPressed: () {},
+                child: const Text(
+                  '音源',
+                  style: TextStyle(
+                    color: AnimalOnomatopoeiaColor.blue,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+        ],
       ),
     );
   }
