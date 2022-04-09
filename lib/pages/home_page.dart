@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../colors.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(247, 204, 24, 1),
+      backgroundColor: AnimalOnomatopoeiaColor.yellow,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 19),
@@ -22,11 +24,11 @@ class HomePage extends StatelessWidget {
               const Text(
                 'オノマトペ',
                 style: TextStyle(
-                  color: Color.fromRGBO(117, 118, 124, 1),
+                  color: AnimalOnomatopoeiaColor.gray1,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   decoration: TextDecoration.underline,
-                  decorationColor: Color.fromRGBO(29, 169, 222, 1),
+                  decorationColor: AnimalOnomatopoeiaColor.blue,
                   decorationThickness: 2,
                 ),
               ),
@@ -60,7 +62,7 @@ class HomePage extends StatelessWidget {
                   child: const Text(
                     'オノマトペとは',
                     style: TextStyle(
-                      color: Color.fromRGBO(117, 118, 124, 1),
+                      color: AnimalOnomatopoeiaColor.gray1,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -92,7 +94,7 @@ class _AnimalTile extends StatelessWidget {
         Container(
           height: 110,
           width: 150,
-          color: const Color.fromRGBO(29, 169, 222, 1),
+          color: AnimalOnomatopoeiaColor.blue,
         ),
         Material(
           type: MaterialType.button,
@@ -106,7 +108,7 @@ class _AnimalTile extends StatelessWidget {
                 child: Text(
                   animalName,
                   style: const TextStyle(
-                    color: Color.fromRGBO(117, 118, 124, 1),
+                    color: AnimalOnomatopoeiaColor.gray1,
                   ),
                 ),
               ),
