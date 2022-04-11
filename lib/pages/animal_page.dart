@@ -109,7 +109,7 @@ class AnimalPage extends StatelessWidget {
               indent: 155,
               endIndent: 155,
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
             const Text(
               'ぞうさんの気持ちわかるかな？',
               style: TextStyle(
@@ -117,7 +117,7 @@ class AnimalPage extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 20),
             Expanded(
               child: ListView.separated(
                 physics: const ClampingScrollPhysics(),
