@@ -61,8 +61,20 @@ class AnimalPage extends StatelessWidget {
             ListView(
               shrinkWrap: true,
               padding: const EdgeInsets.all(11.5),
-              children: const [
-                _AnimalSoundTile(),
+              children: [
+                _AnimalSoundTile(
+                  image: Image.asset(
+                    'assets/images/elephant/indian_elephant_attention.png',
+                    height: 108,
+                    width: 108,
+                  ),
+                  breed: 'インドゾウ',
+                  title: '注意！（ちゅうい）',
+                  subtitle: 'てきがいるぞ',
+                  onPressed: () {
+                    // TODO(shimizu-saffle): SoundPageへ画面遷移
+                  },
+                ),
               ],
             ),
           ],
@@ -75,7 +87,18 @@ class AnimalPage extends StatelessWidget {
 class _AnimalSoundTile extends StatelessWidget {
   const _AnimalSoundTile({
     Key? key,
+    required this.image,
+    required this.breed,
+    required this.title,
+    required this.subtitle,
+    required this.onPressed,
   }) : super(key: key);
+
+  final Image image;
+  final String breed;
+  final String title;
+  final String subtitle;
+  final void Function() onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -86,35 +109,31 @@ class _AnimalSoundTile extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: 6),
-          Image.asset(
-            'assets/images/elephant/indian_elephant_attention.png',
-            height: 108,
-            width: 108,
-          ),
+          image,
           const Spacer(),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'インドゾウ',
-                style: TextStyle(
+              Text(
+                breed,
+                style: const TextStyle(
                   color: AnimalOnomatopoeiaColor.clearWhite,
                   fontSize: 12,
                   fontWeight: FontWeight.w300,
                 ),
               ),
-              const Text(
-                '注意！（ちゅうい）',
-                style: TextStyle(
+              Text(
+                title,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                   fontWeight: FontWeight.w300,
                 ),
               ),
-              const Text(
-                'てきがいるぞ',
-                style: TextStyle(
+              Text(
+                subtitle,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                   fontWeight: FontWeight.w300,
@@ -126,7 +145,7 @@ class _AnimalSoundTile extends StatelessWidget {
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                onPressed: () {},
+                onPressed: onPressed,
                 child: const Text(
                   '音源',
                   style: TextStyle(
