@@ -69,56 +69,57 @@ class AnimalPage extends StatelessWidget {
             ),
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 208,
-                child: Placeholder(),
+        body: Column(
+          children: [
+            const SizedBox(
+              height: 208,
+              child: Placeholder(),
+            ),
+            const SizedBox(height: 14),
+            const Text(
+              'こんなふうにきこえたよ',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
               ),
-              const SizedBox(height: 14),
-              const Text(
-                'こんなふうにきこえたよ',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+            ),
+            const Text(
+              'この鳴き声オノマトペは聞いた人が\nきこえた感じを自由に言葉にしたものです',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AnimalOnomatopoeiaColor.gray1,
+                fontSize: 12,
+                fontWeight: FontWeight.w300,
               ),
-              const Text(
-                'この鳴き声オノマトペは聞いた人が\nきこえた感じを自由に言葉にしたものです',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AnimalOnomatopoeiaColor.gray1,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w300,
-                ),
+            ),
+            const SizedBox(height: 15),
+            const Text(
+              '動画：日立市かみね動物園園長先生撮影',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AnimalOnomatopoeiaColor.gray1,
+                fontSize: 12,
+                fontWeight: FontWeight.w300,
               ),
-              const SizedBox(height: 15),
-              const Text(
-                '動画：日立市かみね動物園園長先生撮影',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AnimalOnomatopoeiaColor.gray1,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w300,
-                ),
+            ),
+            const SizedBox(height: 15),
+            const Divider(
+              color: AnimalOnomatopoeiaColor.blue,
+              thickness: 2,
+              indent: 155,
+              endIndent: 155,
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              'ぞうさんの気持ちわかるかな？',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
               ),
-              const SizedBox(height: 15),
-              const Divider(
-                color: AnimalOnomatopoeiaColor.blue,
-                thickness: 2,
-                indent: 155,
-                endIndent: 155,
-              ),
-              const SizedBox(height: 30),
-              const Text(
-                'ぞうさんの気持ちわかるかな？',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              ListView.separated(
+            ),
+            const SizedBox(height: 5),
+            Expanded(
+              child: ListView.separated(
                 physics: const ClampingScrollPhysics(),
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(11.5),
@@ -143,8 +144,8 @@ class AnimalPage extends StatelessWidget {
                 separatorBuilder: (context, index) =>
                     const SizedBox(height: 20),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
