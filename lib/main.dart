@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'pages/animal_page.dart';
+import 'pages/sound_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,9 +11,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'どうぶつオノマトペ',
-      home: AnimalPage(),
+      home: SoundPage(),
     );
   }
 }
