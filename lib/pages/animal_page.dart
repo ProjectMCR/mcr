@@ -10,74 +10,82 @@ class AnimalPage extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         backgroundColor: AnimalOnomatopoeiaColor.yellow,
-        body: Column(
-          children: [
-            const SizedBox(
-              height: 208,
-              child: Placeholder(),
-            ),
-            const SizedBox(height: 14),
-            const Text(
-              'こんなふうにきこえたよ',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 208,
+                child: Placeholder(),
               ),
-            ),
-            const Text(
-              'この鳴き声オノマトペは聞いた人が\nきこえた感じを自由に言葉にしたものです',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AnimalOnomatopoeiaColor.gray1,
-                fontSize: 12,
-                fontWeight: FontWeight.w300,
-              ),
-            ),
-            const SizedBox(height: 15),
-            const Text(
-              '動画：日立市かみね動物園園長先生撮影',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AnimalOnomatopoeiaColor.gray1,
-                fontSize: 12,
-                fontWeight: FontWeight.w300,
-              ),
-            ),
-            const SizedBox(height: 15),
-            const Divider(
-              color: AnimalOnomatopoeiaColor.blue,
-              thickness: 2,
-              indent: 155,
-              endIndent: 155,
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'ぞうさんの気持ちわかるかな？',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            ListView(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(11.5),
-              children: [
-                _AnimalSoundTile(
-                  image: Image.asset(
-                    'assets/images/elephant/indian_elephant_attention.png',
-                    height: 108,
-                    width: 108,
-                  ),
-                  breed: 'インドゾウ',
-                  title: '注意！（ちゅうい）',
-                  subtitle: 'てきがいるぞ',
-                  onPressed: () {
-                    // TODO(shimizu-saffle): SoundPageへ画面遷移
-                  },
+              const SizedBox(height: 14),
+              const Text(
+                'こんなふうにきこえたよ',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
-            ),
-          ],
+              ),
+              const Text(
+                'この鳴き声オノマトペは聞いた人が\nきこえた感じを自由に言葉にしたものです',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AnimalOnomatopoeiaColor.gray1,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Text(
+                '動画：日立市かみね動物園園長先生撮影',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AnimalOnomatopoeiaColor.gray1,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Divider(
+                color: AnimalOnomatopoeiaColor.blue,
+                thickness: 2,
+                indent: 155,
+                endIndent: 155,
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'ぞうさんの気持ちわかるかな？',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              ListView.separated(
+                physics: const ClampingScrollPhysics(),
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(11.5),
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  return _AnimalSoundTile(
+                    image: Image.asset(
+                      'assets/images/elephant/indian_elephant_attention.png',
+                      height: 108,
+                      width: 108,
+                    ),
+                    breed: 'インドゾウ',
+                    title: '注意！（ちゅうい）',
+                    subtitle: 'てきがいるぞ',
+                    onPressed: () {
+                      // TODO(shimizu-saffle): SoundPageへ画面遷移
+                    },
+                  );
+                },
+                separatorBuilder: (context, index) => const Divider(
+                  color: Colors.white,
+                  thickness: 5,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -163,3 +171,12 @@ class _AnimalSoundTile extends StatelessWidget {
     );
   }
 }
+
+final data = [
+  {
+    'name': 'インドゾウ',
+  },
+  {},
+  {},
+  {},
+];
