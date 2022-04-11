@@ -51,6 +51,24 @@ class AnimalPage extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         backgroundColor: AnimalOnomatopoeiaColor.yellow,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(30.0),
+          child: AppBar(
+            backgroundColor: Colors.white,
+            leadingWidth: 50,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 18),
+              child: InkWell(
+                onTap: () {
+                  // TODO(shimizu-saffle): HomePageに戻る
+                },
+                child: Image.asset(
+                  'assets/images/home_icon.png',
+                ),
+              ),
+            ),
+          ),
+        ),
         body: SingleChildScrollView(
           child: Column(
             children: [
