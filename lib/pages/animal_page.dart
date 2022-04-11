@@ -1,12 +1,53 @@
 import 'package:flutter/material.dart';
 
 import '../colors.dart';
+import '../models/animal_sound.dart';
 
 class AnimalPage extends StatelessWidget {
-  const AnimalPage({Key? key}) : super(key: key);
+  AnimalPage({
+    Key? key,
+  }) : super(key: key);
+
+  final Map<String, dynamic> mockData1 = {
+    'imageUrl': 'assets/images/elephant/indian_elephant_attention.png',
+    'breed': 'インドゾウ',
+    'soundDescription': 'てきがいるぞ',
+    'soundType': '注意！（ちゅうい）',
+  };
+  final Map<String, dynamic> mockData2 = {
+    'imageUrl': 'assets/images/elephant/indian_elephant_intimidate.png',
+    'breed': 'インドゾウ',
+    'soundDescription': 'こっちにこないで',
+    'soundType': '威嚇（いかく）',
+  };
+  final Map<String, dynamic> mockData3 = {
+    'imageUrl': 'assets/images/elephant/african_elephant_anger.png',
+    'breed': 'アフリカゾウ',
+    'soundDescription': 'けんかしている',
+    'soundType': 'おこる',
+  };
+  final Map<String, dynamic> mockData4 = {
+    'imageUrl': 'assets/images/elephant/african_elephant_spoiled.png',
+    'breed': 'アフリカゾウ',
+    'soundDescription': 'おかあさんだいすき',
+    'soundType': 'あまえる',
+  };
+  final Map<String, dynamic> mockData5 = {
+    'imageUrl': 'assets/images/elephant/naumann_elephant.png',
+    'breed': 'ナウマンゾウ',
+    'soundDescription': 'もうなかない',
+    'soundType': '絶滅（ぜつめつ）',
+  };
 
   @override
   Widget build(BuildContext context) {
+    final mockDataList = [
+      mockData1,
+      mockData2,
+      mockData3,
+      mockData4,
+      mockData5,
+    ];
     return SafeArea(
       child: Scaffold(
         backgroundColor: AnimalOnomatopoeiaColor.yellow,
@@ -63,26 +104,26 @@ class AnimalPage extends StatelessWidget {
                 physics: const ClampingScrollPhysics(),
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(11.5),
-                itemCount: 2,
+                itemCount: mockDataList.length,
                 itemBuilder: (context, index) {
+                  final mockData = mockDataList[index];
+                  final AnimalSound animalSound = AnimalSound.fromMap(mockData);
                   return _AnimalSoundTile(
                     image: Image.asset(
-                      'assets/images/elephant/indian_elephant_attention.png',
+                      animalSound.imageUrl,
                       height: 108,
                       width: 108,
                     ),
-                    breed: 'インドゾウ',
-                    title: '注意！（ちゅうい）',
-                    subtitle: 'てきがいるぞ',
+                    breed: animalSound.breed,
+                    title: animalSound.soundType,
+                    subtitle: animalSound.soundDescription,
                     onPressed: () {
                       // TODO(shimizu-saffle): SoundPageへ画面遷移
                     },
                   );
                 },
-                separatorBuilder: (context, index) => const Divider(
-                  color: Colors.white,
-                  thickness: 5,
-                ),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 20),
               ),
             ],
           ),
@@ -171,12 +212,3 @@ class _AnimalSoundTile extends StatelessWidget {
     );
   }
 }
-
-final data = [
-  {
-    'name': 'インドゾウ',
-  },
-  {},
-  {},
-  {},
-];
