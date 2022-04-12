@@ -35,6 +35,7 @@ class _OnomatopoeiaDescriptionPageState
               children: [
                 CarouselSlider(
                   options: CarouselOptions(
+                    // TODO(shimizu-saffle): Pixel 3aと異なる画面サイズの端末でもデザイン通りにImageが表示されるか確認する
                     height: 240.9,
                     viewportFraction: 1.0,
                     onPageChanged: (index, reason) {
