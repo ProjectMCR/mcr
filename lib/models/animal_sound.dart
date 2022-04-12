@@ -1,3 +1,4 @@
+// 扱うデータはanimalsコレクションのサブコレクションanimalSoundsコレクションのドキュメント
 class AnimalSound {
   AnimalSound({
     required this.imageUrl,
