@@ -3,9 +3,18 @@ import 'package:flutter/material.dart';
 
 import '../colors.dart';
 
-class OnomatopoeiaDescriptionPage extends StatelessWidget {
-  OnomatopoeiaDescriptionPage({Key? key}) : super(key: key);
+class OnomatopoeiaDescriptionPage extends StatefulWidget {
+  const OnomatopoeiaDescriptionPage({Key? key}) : super(key: key);
 
+  @override
+  State<OnomatopoeiaDescriptionPage> createState() =>
+      _OnomatopoeiaDescriptionPageState();
+}
+
+class _OnomatopoeiaDescriptionPageState
+    extends State<OnomatopoeiaDescriptionPage> {
+  int _current = 0;
+  final CarouselController _controller = CarouselController();
   final List<Widget> carouselSliderItems = [
     const Placeholder(color: Colors.black),
     const Placeholder(color: Colors.tealAccent),
@@ -24,10 +33,34 @@ class OnomatopoeiaDescriptionPage extends StatelessWidget {
           children: [
             CarouselSlider(
               options: CarouselOptions(
-                height: 198.0,
-                viewportFraction: 1.0,
-              ),
+                  height: 198.0,
+                  viewportFraction: 1.0,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      _current = index;
+                    });
+                  }),
               items: carouselSliderItems,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [1, 2, 3, 4, 5, 6, 7].asMap().entries.map((entry) {
+                return GestureDetector(
+                  onTap: () => _controller.animateToPage(entry.key),
+                  child: Container(
+                    width: 12.0,
+                    height: 12.0,
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 4.0),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: (Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black)
+                            .withOpacity(_current == entry.key ? 0.9 : 0.4)),
+                  ),
+                );
+              }).toList(),
             ),
             const Spacer(flex: 1),
             const Text(
