@@ -19,9 +19,7 @@ class SoundPage extends StatelessWidget {
                 vertical: 4,
               ),
               child: InkWell(
-                onTap: () {
-                  // TODO(shimizu-saffle): HomePageに戻る
-                },
+                onTap: () => Navigator.of(context).pop(),
                 child: Image.asset(
                   'assets/images/back_icon.png',
                 ),

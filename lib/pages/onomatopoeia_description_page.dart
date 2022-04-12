@@ -69,9 +69,7 @@ class _OnomatopoeiaDescriptionPageState
                     height: 21,
                     width: 28,
                     child: InkWell(
-                      onTap: () {
-                        // TODO(shimizu-saffle): HomePageに戻る
-                      },
+                      onTap: () => Navigator.of(context).pop(),
                       child: Image.asset('assets/images/home_icon_white.png'),
                     ),
                   ),

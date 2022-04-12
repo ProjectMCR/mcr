@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mcr/pages/sound_page.dart';
 
 import '../colors.dart';
 import '../models/animal_sound.dart';
@@ -59,9 +60,7 @@ class AnimalPage extends StatelessWidget {
             leading: Padding(
               padding: const EdgeInsets.only(left: 18),
               child: InkWell(
-                onTap: () {
-                  // TODO(shimizu-saffle): HomePageに戻る
-                },
+                onTap: () => Navigator.of(context).pop(),
                 child: Image.asset(
                   'assets/images/home_icon.png',
                 ),
@@ -136,9 +135,11 @@ class AnimalPage extends StatelessWidget {
                     breed: animalSound.breed,
                     title: animalSound.soundType,
                     subtitle: animalSound.soundDescription,
-                    onPressed: () {
-                      // TODO(shimizu-saffle): SoundPageへ画面遷移
-                    },
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const SoundPage(),
+                      ),
+                    ),
                   );
                 },
                 separatorBuilder: (context, index) =>

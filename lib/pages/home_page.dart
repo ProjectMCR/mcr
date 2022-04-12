@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mcr/pages/animal_page.dart';
+import 'package:mcr/pages/onomatopoeia_description_page.dart';
 
 import '../colors.dart';
 
@@ -39,26 +41,40 @@ class HomePage extends StatelessWidget {
                 children: [
                   _AnimalTile(
                     animalName: 'らいおん',
-                    onTap: () {},
+                    onTap: () {
+                      // TODO(shimizu-saffle): 画面遷移
+                    },
                   ),
                   _AnimalTile(
                     animalName: 'ぞう',
-                    onTap: () {},
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => AnimalPage(),
+                      ),
+                    ),
                   ),
                   _AnimalTile(
                     animalName: 'ろば',
-                    onTap: () {},
+                    onTap: () {
+                      // TODO(shimizu-saffle): 画面遷移
+                    },
                   ),
                   _AnimalTile(
                     animalName: 'からす',
-                    onTap: () {},
+                    onTap: () {
+                      // TODO(shimizu-saffle): 画面遷移
+                    },
                   ),
                 ],
               ),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const OnomatopoeiaDescriptionPage(),
+                    ),
+                  ),
                   child: const Text(
                     'オノマトペとは',
                     style: TextStyle(

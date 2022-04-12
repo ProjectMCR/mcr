@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'pages/onomatopoeia_description_page.dart';
+import 'package:mcr/pages/home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'どうぶつオノマトペ',
-      home: OnomatopoeiaDescriptionPage(),
+      home: HomePage(),
     );
   }
 }
