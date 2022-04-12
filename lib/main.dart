@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'pages/sound_page.dart';
+import 'pages/onomatopoeia_description_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,9 +11,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'どうぶつオノマトペ',
-      home: SoundPage(),
+      home: OnomatopoeiaDescriptionPage(),
     );
   }
 }
