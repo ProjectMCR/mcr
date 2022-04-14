@@ -47,12 +47,15 @@ class _AnimalPageState extends State<AnimalPage> {
   late ChewieController _chewieController;
   late VideoPlayerController _videoPlayerController;
 
-  /// コピーした元のリンク
-  /// https://drive.google.com/file/d/1Yppowk62uJyV-u7UUqta3eIc802GrSNx/view?usp=sharing
-  static const id = '1Yppowk62uJyV-u7UUqta3eIc802GrSNx';
+  /// サンプルのベタ書きUrl（象の動画）
+  static const url =
+      'https://drive.google.com/file/d/1Yppowk62uJyV-u7UUqta3eIc802GrSNx/view?usp=sharing';
 
-  /// idからGoogleDriveのDirectDownloadリンクを生成する
-  Uri generateDirectDownloadUrl(String id) {
+  /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
+  Uri generateDirectDownloadUrl(String url) {
+    final splitUrl = url.split('/');
+    final id = splitUrl[5];
+    // 引数を共有リンクにして、共有リンクからidを抽出する処理を加える
     final baseUrl = Uri.parse('https://drive.google.com/uc');
     final resultUrl = baseUrl.replace(
       queryParameters: {
@@ -65,7 +68,7 @@ class _AnimalPageState extends State<AnimalPage> {
 
   Future<void> initialize() async {
     _videoPlayerController = VideoPlayerController.network(
-      generateDirectDownloadUrl(id).toString(),
+      generateDirectDownloadUrl(url).toString(),
     );
     await _videoPlayerController.initialize();
     _chewieController = ChewieController(
