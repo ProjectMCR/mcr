@@ -120,10 +120,13 @@ class _AnimalPageState extends State<AnimalPage> {
         body: Column(
           children: [
             SizedBox(
-              height: 200,
+              height: 193.5,
               width: MediaQuery.of(context).size.width,
               child: _videoPlayerController.value.isInitialized
-                  ? Chewie(controller: _chewieController)
+                  ? AspectRatio(
+                      aspectRatio: _videoPlayerController.value.aspectRatio,
+                      child: Chewie(controller: _chewieController),
+                    )
                   : const Center(
                       child: CircularProgressIndicator(),
                     ),
