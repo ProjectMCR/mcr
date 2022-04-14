@@ -1,3 +1,4 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:mcr/pages/sound_page.dart';
 import 'package:video_player/video_player.dart';
@@ -43,12 +44,12 @@ class _AnimalPageState extends State<AnimalPage> {
     'soundDescription': 'もうなかない',
     'soundType': '絶滅（ぜつめつ）',
   };
-
-  late VideoPlayerController _controller;
+  late ChewieController _chewieController;
+  late VideoPlayerController _videoPlayerController;
 
   /// コピーした元のリンク
-  /// https://drive.google.com/file/d/1k76gmWXK7YPKKjdrtZpf5HMkJSm9QxT6/view?usp=sharing
-  static const id = '1k76gmWXK7YPKKjdrtZpf5HMkJSm9QxT6';
+  /// https://drive.google.com/file/d/1Yppowk62uJyV-u7UUqta3eIc802GrSNx/view?usp=sharing
+  static const id = '1Yppowk62uJyV-u7UUqta3eIc802GrSNx';
 
   /// idからGoogleDriveのDirectDownloadリンクを生成する
   Uri generateDirectDownloadUrl(String id) {
@@ -63,10 +64,13 @@ class _AnimalPageState extends State<AnimalPage> {
   }
 
   Future<void> initialize() async {
-    _controller = VideoPlayerController.network(
+    _videoPlayerController = VideoPlayerController.network(
       generateDirectDownloadUrl(id).toString(),
     );
-    await _controller.initialize();
+    await _videoPlayerController.initialize();
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController,
+    );
     if (mounted) {
       setState(() {});
     }
@@ -81,7 +85,8 @@ class _AnimalPageState extends State<AnimalPage> {
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
+    _videoPlayerController.dispose();
+    _chewieController.dispose();
   }
 
   @override
@@ -116,12 +121,15 @@ class _AnimalPageState extends State<AnimalPage> {
           children: [
             SizedBox(
               height: 208,
-              child: _controller.value.isInitialized
+              width: MediaQuery.of(context).size.width,
+              child: _videoPlayerController.value.isInitialized
                   ? AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
+                      aspectRatio: _videoPlayerController.value.aspectRatio,
+                      child: Chewie(controller: _chewieController),
                     )
-                  : const SizedBox.shrink(),
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
             ),
             const SizedBox(height: 14),
             const Text(
@@ -199,15 +207,17 @@ class _AnimalPageState extends State<AnimalPage> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            if (_controller.value.isPlaying) {
-              await _controller.pause();
+            if (_videoPlayerController.value.isPlaying) {
+              await _videoPlayerController.pause();
             } else {
-              await _controller.play();
+              await _videoPlayerController.play();
             }
             setState(() {});
           },
           child: Icon(
-            _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+            _videoPlayerController.value.isPlaying
+                ? Icons.pause
+                : Icons.play_arrow,
           ),
         ),
       ),
