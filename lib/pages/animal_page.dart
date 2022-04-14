@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:mcr/pages/sound_page.dart';
+import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
 import '../models/animal_sound.dart';
 
-class AnimalPage extends StatelessWidget {
-  AnimalPage({
-    Key? key,
-  }) : super(key: key);
+class AnimalPage extends StatefulWidget {
+  const AnimalPage({Key? key}) : super(key: key);
 
+  @override
+  State<AnimalPage> createState() => _AnimalPageState();
+}
+
+class _AnimalPageState extends State<AnimalPage> {
   final Map<String, dynamic> mockData1 = {
     'imageUrl': 'assets/images/elephant/indian_elephant_attention.png',
     'breed': 'インドゾウ',
@@ -40,6 +44,46 @@ class AnimalPage extends StatelessWidget {
     'soundType': '絶滅（ぜつめつ）',
   };
 
+  late VideoPlayerController _controller;
+
+  /// コピーした元のリンク
+  /// https://drive.google.com/file/d/1k76gmWXK7YPKKjdrtZpf5HMkJSm9QxT6/view?usp=sharing
+  static const id = '1k76gmWXK7YPKKjdrtZpf5HMkJSm9QxT6';
+
+  /// idからGoogleDriveのDirectDownloadリンクを生成する
+  Uri generateDirectDownloadUrl(String id) {
+    final baseUrl = Uri.parse('https://drive.google.com/uc');
+    final resultUrl = baseUrl.replace(
+      queryParameters: {
+        'export': 'download',
+        'id': id,
+      },
+    );
+    return resultUrl;
+  }
+
+  Future<void> initialize() async {
+    _controller = VideoPlayerController.network(
+      generateDirectDownloadUrl(id).toString(),
+    );
+    await _controller.initialize();
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initialize();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final mockDataList = [
@@ -70,9 +114,14 @@ class AnimalPage extends StatelessWidget {
         ),
         body: Column(
           children: [
-            const SizedBox(
+            SizedBox(
               height: 208,
-              child: Placeholder(),
+              child: _controller.value.isInitialized
+                  ? AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    )
+                  : const SizedBox.shrink(),
             ),
             const SizedBox(height: 14),
             const Text(
@@ -147,6 +196,19 @@ class AnimalPage extends StatelessWidget {
               ),
             ),
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            if (_controller.value.isPlaying) {
+              await _controller.pause();
+            } else {
+              await _controller.play();
+            }
+            setState(() {});
+          },
+          child: Icon(
+            _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+          ),
         ),
       ),
     );
