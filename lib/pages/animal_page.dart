@@ -120,13 +120,10 @@ class _AnimalPageState extends State<AnimalPage> {
         body: Column(
           children: [
             SizedBox(
-              height: 208,
+              height: 200,
               width: MediaQuery.of(context).size.width,
               child: _videoPlayerController.value.isInitialized
-                  ? AspectRatio(
-                      aspectRatio: _videoPlayerController.value.aspectRatio,
-                      child: Chewie(controller: _chewieController),
-                    )
+                  ? Chewie(controller: _chewieController)
                   : const Center(
                       child: CircularProgressIndicator(),
                     ),
@@ -204,21 +201,6 @@ class _AnimalPageState extends State<AnimalPage> {
               ),
             ),
           ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            if (_videoPlayerController.value.isPlaying) {
-              await _videoPlayerController.pause();
-            } else {
-              await _videoPlayerController.play();
-            }
-            setState(() {});
-          },
-          child: Icon(
-            _videoPlayerController.value.isPlaying
-                ? Icons.pause
-                : Icons.play_arrow,
-          ),
         ),
       ),
     );
