@@ -1,14 +1,19 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:mcr/pages/sound_page.dart';
+import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
 import '../models/animal_sound.dart';
 
-class AnimalPage extends StatelessWidget {
-  AnimalPage({
-    Key? key,
-  }) : super(key: key);
+class AnimalPage extends StatefulWidget {
+  const AnimalPage({Key? key}) : super(key: key);
 
+  @override
+  State<AnimalPage> createState() => _AnimalPageState();
+}
+
+class _AnimalPageState extends State<AnimalPage> {
   final Map<String, dynamic> mockData1 = {
     'imageUrl': 'assets/images/elephant/indian_elephant_attention.png',
     'breed': 'インドゾウ',
@@ -39,6 +44,53 @@ class AnimalPage extends StatelessWidget {
     'soundDescription': 'もうなかない',
     'soundType': '絶滅（ぜつめつ）',
   };
+  late ChewieController _chewieController;
+  late VideoPlayerController _videoPlayerController;
+
+  /// サンプルのベタ書きUrl（象の動画）
+  static const url =
+      'https://drive.google.com/file/d/1Yppowk62uJyV-u7UUqta3eIc802GrSNx/view?usp=sharing';
+
+  /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
+  Uri generateDirectDownloadUrl(String url) {
+    final splitUrl = url.split('/');
+    final id = splitUrl[5];
+    // 引数を共有リンクにして、共有リンクからidを抽出する処理を加える
+    final baseUrl = Uri.parse('https://drive.google.com/uc');
+    final resultUrl = baseUrl.replace(
+      queryParameters: {
+        'export': 'download',
+        'id': id,
+      },
+    );
+    return resultUrl;
+  }
+
+  Future<void> initialize() async {
+    _videoPlayerController = VideoPlayerController.network(
+      generateDirectDownloadUrl(url).toString(),
+    );
+    await _videoPlayerController.initialize();
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController,
+    );
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initialize();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _videoPlayerController.dispose();
+    _chewieController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,9 +122,17 @@ class AnimalPage extends StatelessWidget {
         ),
         body: Column(
           children: [
-            const SizedBox(
-              height: 208,
-              child: Placeholder(),
+            SizedBox(
+              height: 193.5,
+              width: MediaQuery.of(context).size.width,
+              child: _videoPlayerController.value.isInitialized
+                  ? AspectRatio(
+                      aspectRatio: _videoPlayerController.value.aspectRatio,
+                      child: Chewie(controller: _chewieController),
+                    )
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
             ),
             const SizedBox(height: 14),
             const Text(
