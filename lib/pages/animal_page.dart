@@ -1,6 +1,8 @@
 import 'package:chewie/chewie.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mcr/models/animal.dart';
+import 'package:mcr/models/animal_sound.dart';
 import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
@@ -48,7 +50,7 @@ class _AnimalPageState extends State<AnimalPage> {
   //   'subtitle': 'もうなかない',
   //   'title': '絶滅（ぜつめつ）',
   // };
-
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   late ChewieController _chewieController;
   late VideoPlayerController _videoPlayerController;
 
@@ -82,6 +84,17 @@ class _AnimalPageState extends State<AnimalPage> {
     if (mounted) {
       setState(() {});
     }
+  }
+
+  Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
+    return _firebaseFirestore
+        .collection('animals')
+        .doc(selectedAnimal.animalRef.id)
+        .collection('animalSounds')
+        .withConverter(
+          fromFirestore: (snapshot, _) => AnimalSound.fromMap(snapshot.data()!),
+          toFirestore: (animalSound, _) => animalSound.toMap(),
+        );
   }
 
   @override
