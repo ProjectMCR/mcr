@@ -1,11 +1,13 @@
 import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/firestore.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/models/animal_sound.dart';
 import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
+import 'sound_page.dart';
 
 class AnimalPage extends StatefulWidget {
   const AnimalPage({
@@ -195,8 +197,32 @@ class _AnimalPageState extends State<AnimalPage> {
               ),
             ),
             const SizedBox(height: 20),
-            const Expanded(
-              child: Placeholder(),
+            Expanded(
+              child: FirestoreListView<AnimalSound>(
+                shrinkWrap: true,
+                query: animalSoundQuery(widget.selectedAnimal),
+                itemBuilder: (context, snapshot) {
+                  final animalSound = snapshot.data();
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                    child: _AnimalSoundTile(
+                      image: Image.asset(
+                        'assets/images/elephant/indian_elephant_attention.png',
+                        height: 108,
+                        width: 108,
+                      ),
+                      breed: animalSound.breed,
+                      title: animalSound.title,
+                      subtitle: animalSound.subtitle,
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const SoundPage(),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),
