@@ -71,7 +71,8 @@ class _HomePageState extends State<HomePage> {
                           animalName: animal.name,
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const AnimalPage(),
+                              builder: (context) =>
+                                  AnimalPage(selectedAnimal: animal),
                             ),
                           ),
                         );

@@ -1,11 +1,17 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:mcr/models/animal.dart';
 import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
 
 class AnimalPage extends StatefulWidget {
-  const AnimalPage({Key? key}) : super(key: key);
+  const AnimalPage({
+    Key? key,
+    required this.selectedAnimal,
+  }) : super(key: key);
+
+  final Animal selectedAnimal;
 
   @override
   State<AnimalPage> createState() => _AnimalPageState();
@@ -168,9 +174,9 @@ class _AnimalPageState extends State<AnimalPage> {
               endIndent: 155,
             ),
             const SizedBox(height: 20),
-            const Text(
-              'ぞうさんの気持ちわかるかな？',
-              style: TextStyle(
+            Text(
+              '${widget.selectedAnimal.name}さんの気持ちわかるかな？',
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
