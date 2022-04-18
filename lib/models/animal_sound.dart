@@ -1,35 +1,52 @@
 // 扱うデータはanimalsコレクションのサブコレクションanimalSoundsコレクションのドキュメント
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AnimalSound {
   AnimalSound({
+    required this.animalSoundRef,
     required this.imageUrl,
     required this.breed,
+    required this.title,
+    required this.subtitle,
+    required this.videoUrl,
     required this.soundDescription,
-    required this.soundType,
   });
 
   factory AnimalSound.fromMap(Map<String, dynamic> data) => AnimalSound(
+        animalSoundRef: data['animalSoundRef'],
         imageUrl: data['imageUrl'],
         breed: data['breed'],
+        title: data['title'],
+        subtitle: data['subtitle'],
+        videoUrl: data['videoUrl'],
         soundDescription: data['soundDescription'],
-        soundType: data['soundType'],
       );
 
   factory AnimalSound.initialData() => AnimalSound(
-        imageUrl: 'imageUrl',
-        breed: 'breed',
-        soundDescription: 'soundDescription',
-        soundType: 'soundType',
+        animalSoundRef: null,
+        imageUrl: '',
+        breed: '',
+        title: '',
+        subtitle: '',
+        videoUrl: '',
+        soundDescription: '',
       );
 
+  DocumentReference? animalSoundRef;
   String imageUrl;
   String breed;
+  String title;
+  String subtitle;
+  String videoUrl;
   String soundDescription;
-  String soundType;
 
   Map<String, dynamic> toMap() => {
+        'animalSoundRef': animalSoundRef,
         'imageUrl': imageUrl,
         'breed': breed,
+        'title': title,
+        'subtitle': subtitle,
+        'videoUrl': subtitle,
         'soundDescription': soundDescription,
-        'soundType': soundType,
       };
 }

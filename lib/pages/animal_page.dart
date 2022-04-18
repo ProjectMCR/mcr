@@ -1,10 +1,8 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:mcr/pages/sound_page.dart';
 import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
-import '../models/animal_sound.dart';
 
 class AnimalPage extends StatefulWidget {
   const AnimalPage({Key? key}) : super(key: key);
@@ -14,36 +12,37 @@ class AnimalPage extends StatefulWidget {
 }
 
 class _AnimalPageState extends State<AnimalPage> {
-  final Map<String, dynamic> mockData1 = {
-    'imageUrl': 'assets/images/elephant/indian_elephant_attention.png',
-    'breed': 'インドゾウ',
-    'soundDescription': 'てきがいるぞ',
-    'soundType': '注意！（ちゅうい）',
-  };
-  final Map<String, dynamic> mockData2 = {
-    'imageUrl': 'assets/images/elephant/indian_elephant_intimidate.png',
-    'breed': 'インドゾウ',
-    'soundDescription': 'こっちにこないで',
-    'soundType': '威嚇（いかく）',
-  };
-  final Map<String, dynamic> mockData3 = {
-    'imageUrl': 'assets/images/elephant/african_elephant_anger.png',
-    'breed': 'アフリカゾウ',
-    'soundDescription': 'けんかしている',
-    'soundType': 'おこる',
-  };
-  final Map<String, dynamic> mockData4 = {
-    'imageUrl': 'assets/images/elephant/african_elephant_spoiled.png',
-    'breed': 'アフリカゾウ',
-    'soundDescription': 'おかあさんだいすき',
-    'soundType': 'あまえる',
-  };
-  final Map<String, dynamic> mockData5 = {
-    'imageUrl': 'assets/images/elephant/naumann_elephant.png',
-    'breed': 'ナウマンゾウ',
-    'soundDescription': 'もうなかない',
-    'soundType': '絶滅（ぜつめつ）',
-  };
+  // final Map<String, dynamic> mockData1 = {
+  //   'imageUrl': 'assets/images/elephant/indian_elephant_attention.png',
+  //   'breed': 'インドゾウ',
+  //   'subtitle': 'てきがいるぞ',
+  //   'title': '注意！（ちゅうい）',
+  // };
+  // final Map<String, dynamic> mockData2 = {
+  //   'imageUrl': 'assets/images/elephant/indian_elephant_intimidate.png',
+  //   'breed': 'インドゾウ',
+  //   'subtitle': 'こっちにこないで',
+  //   'title': '威嚇（いかく）',
+  // };
+  // final Map<String, dynamic> mockData3 = {
+  //   'imageUrl': 'assets/images/elephant/african_elephant_anger.png',
+  //   'breed': 'アフリカゾウ',
+  //   'subtitle': 'けんかしている',
+  //   'title': 'おこる',
+  // };
+  // final Map<String, dynamic> mockData4 = {
+  //   'imageUrl': 'assets/images/elephant/african_elephant_spoiled.png',
+  //   'breed': 'アフリカゾウ',
+  //   'subtitle': 'おかあさんだいすき',
+  //   'title': 'あまえる',
+  // };
+  // final Map<String, dynamic> mockData5 = {
+  //   'imageUrl': 'assets/images/elephant/naumann_elephant.png',
+  //   'breed': 'ナウマンゾウ',
+  //   'subtitle': 'もうなかない',
+  //   'title': '絶滅（ぜつめつ）',
+  // };
+
   late ChewieController _chewieController;
   late VideoPlayerController _videoPlayerController;
 
@@ -94,13 +93,13 @@ class _AnimalPageState extends State<AnimalPage> {
 
   @override
   Widget build(BuildContext context) {
-    final mockDataList = [
-      mockData1,
-      mockData2,
-      mockData3,
-      mockData4,
-      mockData5,
-    ];
+    // final mockDataList = [
+    //   mockData1,
+    //   mockData2,
+    //   mockData3,
+    //   mockData4,
+    //   mockData5,
+    // ];
     return SafeArea(
       child: Scaffold(
         backgroundColor: AnimalOnomatopoeiaColor.yellow,
@@ -177,34 +176,8 @@ class _AnimalPageState extends State<AnimalPage> {
               ),
             ),
             const SizedBox(height: 20),
-            Expanded(
-              child: ListView.separated(
-                physics: const ClampingScrollPhysics(),
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(11.5),
-                itemCount: mockDataList.length,
-                itemBuilder: (context, index) {
-                  final mockData = mockDataList[index];
-                  final AnimalSound animalSound = AnimalSound.fromMap(mockData);
-                  return _AnimalSoundTile(
-                    image: Image.asset(
-                      animalSound.imageUrl,
-                      height: 108,
-                      width: 108,
-                    ),
-                    breed: animalSound.breed,
-                    title: animalSound.soundType,
-                    subtitle: animalSound.soundDescription,
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const SoundPage(),
-                      ),
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 20),
-              ),
+            const Expanded(
+              child: Placeholder(),
             ),
           ],
         ),
