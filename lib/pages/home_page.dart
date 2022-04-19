@@ -58,25 +58,28 @@ class _HomePageState extends State<HomePage> {
                   if (snapshot.isFetching) {
                     return const Center(child: CircularProgressIndicator());
                   } else {
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      itemCount: snapshot.docs.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                      ),
-                      itemBuilder: (context, index) {
-                        final animal = snapshot.docs[index].data();
-                        return _AnimalTile(
-                          animalName: animal.name,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AnimalPage(selectedAnimal: animal),
+                    return SizedBox(
+                      height: 365,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        itemCount: snapshot.docs.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                        ),
+                        itemBuilder: (context, index) {
+                          final animal = snapshot.docs[index].data();
+                          return _AnimalTile(
+                            animalName: animal.name + '$index',
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    AnimalPage(selectedAnimal: animal),
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     );
                   }
                 },
