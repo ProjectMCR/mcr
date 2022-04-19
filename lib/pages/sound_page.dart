@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:mcr/models/animal_sound.dart';
 
-class SoundPage extends StatelessWidget {
-  const SoundPage({Key? key}) : super(key: key);
+class SoundPage extends StatefulWidget {
+  const SoundPage({
+    Key? key,
+    required this.selectedAnimalSound,
+  }) : super(key: key);
 
+  final AnimalSound selectedAnimalSound;
+
+  @override
+  State<SoundPage> createState() => _SoundPageState();
+}
+
+class _SoundPageState extends State<SoundPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -29,35 +40,35 @@ class SoundPage extends StatelessWidget {
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Placeholder(),
-            SizedBox(height: 34),
+          children: [
+            const Placeholder(),
+            const SizedBox(height: 34),
             Padding(
-              padding: EdgeInsets.only(left: 32),
+              padding: const EdgeInsets.only(left: 32),
               child: Text(
-                'インドゾウ',
-                style: TextStyle(
+                widget.selectedAnimalSound.breed,
+                style: const TextStyle(
                   fontSize: 23,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Padding(
-              padding: EdgeInsets.only(left: 32),
+              padding: const EdgeInsets.only(left: 32),
               child: Text(
-                '「にげろ」',
-                style: TextStyle(
+                widget.selectedAnimalSound.subtitle,
+                style: const TextStyle(
                   fontSize: 23,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: Text(
-                'この鳴き声は、敵がいることを、仲間に\n知らせる警戒の声です。\nインドゾウは家族単位で群れを作ります。\n群れは5頭程度から、ときには\n60頭ほどにもなります。',
-                style: TextStyle(
+                widget.selectedAnimalSound.soundDescription,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w300,
                 ),
