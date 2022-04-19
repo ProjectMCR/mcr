@@ -1,5 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/firestore.dart';
+import 'package:mcr/models/header_image.dart';
 
 import '../colors.dart';
 
@@ -23,6 +26,30 @@ class _WhatIsOnomatopoeiaPageState extends State<WhatIsOnomatopoeiaPage> {
   final _dotsIndex = [0, 1, 2, 3, 4, 5, 6];
   int _currentImageIndex = 0;
 
+  Query<HeaderImage> headerImageQuery() {
+    return FirebaseFirestore.instance
+        .collection('headerImages')
+        .orderBy('createdAt')
+        .withConverter(
+          fromFirestore: (snapshot, _) => HeaderImage.fromMap(snapshot.data()!),
+          toFirestore: (headerImage, _) => headerImage.toMap(),
+        );
+  }
+
+  /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
+  Uri generateDirectDownloadUrl(String url) {
+    final splitUrl = url.split('/');
+    final id = splitUrl[5];
+    final baseUrl = Uri.parse('https://drive.google.com/uc');
+    final resultUrl = baseUrl.replace(
+      queryParameters: {
+        'export': 'download',
+        'id': id,
+      },
+    );
+    return resultUrl;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -31,18 +58,32 @@ class _WhatIsOnomatopoeiaPageState extends State<WhatIsOnomatopoeiaPage> {
           children: [
             Stack(
               children: [
-                CarouselSlider(
-                  options: CarouselOptions(
-                    // TODO(shimizu-saffle): Pixel 3aと異なる画面サイズの端末でもデザイン通りにImageが表示されるか確認する
-                    height: 240.9,
-                    viewportFraction: 1.0,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        _currentImageIndex = index;
-                      });
-                    },
-                  ),
-                  items: _carouselSliderItems,
+                FirestoreQueryBuilder<HeaderImage>(
+                  query: headerImageQuery(),
+                  builder: (context, snapshot, _) {
+                    if (snapshot.isFetching) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return CarouselSlider.builder(
+                      itemCount: snapshot.docs.length,
+                      itemBuilder: (context, index, _) {
+                        final headerImage = snapshot.docs[index].data();
+                        return Image.network(
+                          generateDirectDownloadUrl(headerImage.imageUrl)
+                              .toString(),
+                        );
+                      },
+                      options: CarouselOptions(
+                        height: 240.9,
+                        viewportFraction: 1.0,
+                        onPageChanged: (index, reason) {
+                          setState(() {
+                            _currentImageIndex = index;
+                          });
+                        },
+                      ),
+                    );
+                  },
                 ),
                 Positioned.fill(
                   child: Align(
