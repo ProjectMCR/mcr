@@ -121,12 +121,17 @@ class _SoundPageState extends State<SoundPage> {
               ),
             ),
             const SizedBox(height: 20),
-            Center(
-              child: Text(
-                widget.selectedAnimalSound.soundDescription,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w300,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 35),
+                child: SingleChildScrollView(
+                  child: Text(
+                    widget.selectedAnimalSound.soundDescription,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
                 ),
               ),
             )
