@@ -14,15 +14,6 @@ class WhatIsOnomatopoeiaPage extends StatefulWidget {
 }
 
 class _WhatIsOnomatopoeiaPageState extends State<WhatIsOnomatopoeiaPage> {
-  final List<Widget> _carouselSliderItems = [
-    Image.asset('assets/images/landscape1.png'),
-    const Placeholder(color: Colors.tealAccent),
-    const Placeholder(color: Colors.purple),
-    const Placeholder(color: Colors.green),
-    const Placeholder(color: Colors.pink),
-    const Placeholder(color: Colors.red),
-    const Placeholder(color: Colors.orangeAccent),
-  ];
   final _dotsIndex = [0, 1, 2, 3, 4, 5, 6];
   int _currentImageIndex = 0;
 
@@ -76,6 +67,9 @@ class _WhatIsOnomatopoeiaPageState extends State<WhatIsOnomatopoeiaPage> {
                       options: CarouselOptions(
                         height: 240.9,
                         viewportFraction: 1.0,
+                        scrollPhysics: snapshot.docs.length <= 1
+                            ? const NeverScrollableScrollPhysics()
+                            : const PageScrollPhysics(),
                         onPageChanged: (index, reason) {
                           setState(() {
                             _currentImageIndex = index;
