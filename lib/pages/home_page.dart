@@ -1,11 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:mcr/pages/animal_page.dart';
+import 'package:flutterfire_ui/firestore.dart';
 import 'package:mcr/pages/onomatopoeia_description_page.dart';
 
 import '../colors.dart';
+import '../models/animal.dart';
+import 'animal_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+
+  Query<Animal> animalQuery() {
+    return _firebaseFirestore.collection('animals').withConverter(
+          fromFirestore: (snapshot, _) => Animal.fromMap(snapshot.data()!),
+          toFirestore: (animal, _) => animal.toMap(),
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,37 +52,37 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              GridView.count(
-                shrinkWrap: true,
-                crossAxisCount: 2,
-                children: [
-                  _AnimalTile(
-                    animalName: 'らいおん',
-                    onTap: () {
-                      // TODO(shimizu-saffle): 画面遷移
-                    },
-                  ),
-                  _AnimalTile(
-                    animalName: 'ぞう',
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => AnimalPage(),
+              FirestoreQueryBuilder<Animal>(
+                query: animalQuery(),
+                builder: (context, snapshot, _) {
+                  if (snapshot.isFetching) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    return SizedBox(
+                      height: 365,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        itemCount: snapshot.docs.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                        ),
+                        itemBuilder: (context, index) {
+                          final animal = snapshot.docs[index].data();
+                          return _AnimalTile(
+                            animalName: animal.name + '$index',
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    AnimalPage(selectedAnimal: animal),
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                  ),
-                  _AnimalTile(
-                    animalName: 'ろば',
-                    onTap: () {
-                      // TODO(shimizu-saffle): 画面遷移
-                    },
-                  ),
-                  _AnimalTile(
-                    animalName: 'からす',
-                    onTap: () {
-                      // TODO(shimizu-saffle): 画面遷移
-                    },
-                  ),
-                ],
+                    );
+                  }
+                },
               ),
               Align(
                 alignment: Alignment.centerRight,

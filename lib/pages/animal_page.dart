@@ -1,61 +1,35 @@
 import 'package:chewie/chewie.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:mcr/pages/sound_page.dart';
+import 'package:flutterfire_ui/firestore.dart';
+import 'package:mcr/models/animal.dart';
+import 'package:mcr/models/animal_sound.dart';
 import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
-import '../models/animal_sound.dart';
+import 'sound_page.dart';
 
 class AnimalPage extends StatefulWidget {
-  const AnimalPage({Key? key}) : super(key: key);
+  const AnimalPage({
+    Key? key,
+    required this.selectedAnimal,
+  }) : super(key: key);
+
+  final Animal selectedAnimal;
 
   @override
   State<AnimalPage> createState() => _AnimalPageState();
 }
 
 class _AnimalPageState extends State<AnimalPage> {
-  final Map<String, dynamic> mockData1 = {
-    'imageUrl': 'assets/images/elephant/indian_elephant_attention.png',
-    'breed': 'インドゾウ',
-    'soundDescription': 'てきがいるぞ',
-    'soundType': '注意！（ちゅうい）',
-  };
-  final Map<String, dynamic> mockData2 = {
-    'imageUrl': 'assets/images/elephant/indian_elephant_intimidate.png',
-    'breed': 'インドゾウ',
-    'soundDescription': 'こっちにこないで',
-    'soundType': '威嚇（いかく）',
-  };
-  final Map<String, dynamic> mockData3 = {
-    'imageUrl': 'assets/images/elephant/african_elephant_anger.png',
-    'breed': 'アフリカゾウ',
-    'soundDescription': 'けんかしている',
-    'soundType': 'おこる',
-  };
-  final Map<String, dynamic> mockData4 = {
-    'imageUrl': 'assets/images/elephant/african_elephant_spoiled.png',
-    'breed': 'アフリカゾウ',
-    'soundDescription': 'おかあさんだいすき',
-    'soundType': 'あまえる',
-  };
-  final Map<String, dynamic> mockData5 = {
-    'imageUrl': 'assets/images/elephant/naumann_elephant.png',
-    'breed': 'ナウマンゾウ',
-    'soundDescription': 'もうなかない',
-    'soundType': '絶滅（ぜつめつ）',
-  };
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   late ChewieController _chewieController;
   late VideoPlayerController _videoPlayerController;
-
-  /// サンプルのベタ書きUrl（象の動画）
-  static const url =
-      'https://drive.google.com/file/d/1Yppowk62uJyV-u7UUqta3eIc802GrSNx/view?usp=sharing';
 
   /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
   Uri generateDirectDownloadUrl(String url) {
     final splitUrl = url.split('/');
     final id = splitUrl[5];
-    // 引数を共有リンクにして、共有リンクからidを抽出する処理を加える
     final baseUrl = Uri.parse('https://drive.google.com/uc');
     final resultUrl = baseUrl.replace(
       queryParameters: {
@@ -66,9 +40,10 @@ class _AnimalPageState extends State<AnimalPage> {
     return resultUrl;
   }
 
-  Future<void> initialize() async {
+  Future<void> initializeVideoPlayerController() async {
     _videoPlayerController = VideoPlayerController.network(
-      generateDirectDownloadUrl(url).toString(),
+      generateDirectDownloadUrl(widget.selectedAnimal.onomatopoeiaMovieUrl)
+          .toString(),
     );
     await _videoPlayerController.initialize();
     _chewieController = ChewieController(
@@ -79,10 +54,21 @@ class _AnimalPageState extends State<AnimalPage> {
     }
   }
 
+  Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
+    return _firebaseFirestore
+        .collection('animals')
+        .doc(selectedAnimal.animalRef.id)
+        .collection('animalSounds')
+        .withConverter(
+          fromFirestore: (snapshot, _) => AnimalSound.fromMap(snapshot.data()!),
+          toFirestore: (animalSound, _) => animalSound.toMap(),
+        );
+  }
+
   @override
   void initState() {
     super.initState();
-    initialize();
+    initializeVideoPlayerController();
   }
 
   @override
@@ -94,13 +80,6 @@ class _AnimalPageState extends State<AnimalPage> {
 
   @override
   Widget build(BuildContext context) {
-    final mockDataList = [
-      mockData1,
-      mockData2,
-      mockData3,
-      mockData4,
-      mockData5,
-    ];
     return SafeArea(
       child: Scaffold(
         backgroundColor: AnimalOnomatopoeiaColor.yellow,
@@ -169,41 +148,41 @@ class _AnimalPageState extends State<AnimalPage> {
               endIndent: 155,
             ),
             const SizedBox(height: 20),
-            const Text(
-              'ぞうさんの気持ちわかるかな？',
-              style: TextStyle(
+            Text(
+              '${widget.selectedAnimal.name}さんの気持ちわかるかな？',
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: ListView.separated(
-                physics: const ClampingScrollPhysics(),
+              child: FirestoreListView<AnimalSound>(
                 shrinkWrap: true,
-                padding: const EdgeInsets.all(11.5),
-                itemCount: mockDataList.length,
-                itemBuilder: (context, index) {
-                  final mockData = mockDataList[index];
-                  final AnimalSound animalSound = AnimalSound.fromMap(mockData);
-                  return _AnimalSoundTile(
-                    image: Image.asset(
-                      animalSound.imageUrl,
-                      height: 108,
-                      width: 108,
-                    ),
-                    breed: animalSound.breed,
-                    title: animalSound.soundType,
-                    subtitle: animalSound.soundDescription,
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const SoundPage(),
+                query: animalSoundQuery(widget.selectedAnimal),
+                itemBuilder: (context, snapshot) {
+                  final animalSound = snapshot.data();
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                    child: _AnimalSoundTile(
+                      image: Image.network(
+                        generateDirectDownloadUrl(animalSound.imageUrl)
+                            .toString(),
+                        height: 108,
+                        width: 108,
+                      ),
+                      breed: animalSound.breed,
+                      title: animalSound.title,
+                      subtitle: animalSound.subtitle,
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SoundPage(selectedAnimalSound: animalSound),
+                        ),
                       ),
                     ),
                   );
                 },
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 20),
               ),
             ),
           ],
