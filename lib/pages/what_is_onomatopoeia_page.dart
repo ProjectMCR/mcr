@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 
 import '../colors.dart';
 
-class OnomatopoeiaDescriptionPage extends StatefulWidget {
-  const OnomatopoeiaDescriptionPage({Key? key}) : super(key: key);
+class WhatIsOnomatopoeiaPage extends StatefulWidget {
+  const WhatIsOnomatopoeiaPage({Key? key}) : super(key: key);
 
   @override
-  State<OnomatopoeiaDescriptionPage> createState() =>
-      _OnomatopoeiaDescriptionPageState();
+  State<WhatIsOnomatopoeiaPage> createState() => _WhatIsOnomatopoeiaPageState();
 }
 
-class _OnomatopoeiaDescriptionPageState
-    extends State<OnomatopoeiaDescriptionPage> {
+class _WhatIsOnomatopoeiaPageState extends State<WhatIsOnomatopoeiaPage> {
   final List<Widget> _carouselSliderItems = [
     Image.asset('assets/images/landscape1.png'),
     const Placeholder(color: Colors.tealAccent),
