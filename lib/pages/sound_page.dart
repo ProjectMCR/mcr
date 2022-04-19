@@ -1,5 +1,7 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:mcr/models/animal_sound.dart';
+import 'package:video_player/video_player.dart';
 
 class SoundPage extends StatefulWidget {
   const SoundPage({
@@ -14,6 +16,49 @@ class SoundPage extends StatefulWidget {
 }
 
 class _SoundPageState extends State<SoundPage> {
+  late ChewieController _chewieController;
+  late VideoPlayerController _videoPlayerController;
+
+  Future<void> initializeVideoPlayerController() async {
+    _videoPlayerController = VideoPlayerController.network(
+      generateDirectDownloadUrl(widget.selectedAnimalSound.videoUrl).toString(),
+    );
+    await _videoPlayerController.initialize();
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController,
+    );
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
+  Uri generateDirectDownloadUrl(String url) {
+    final splitUrl = url.split('/');
+    final id = splitUrl[5];
+    final baseUrl = Uri.parse('https://drive.google.com/uc');
+    final resultUrl = baseUrl.replace(
+      queryParameters: {
+        'export': 'download',
+        'id': id,
+      },
+    );
+    return resultUrl;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initializeVideoPlayerController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _videoPlayerController.dispose();
+    _chewieController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -41,7 +86,18 @@ class _SoundPageState extends State<SoundPage> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Placeholder(),
+            SizedBox(
+              height: 193.5,
+              width: MediaQuery.of(context).size.width,
+              child: _videoPlayerController.value.isInitialized
+                  ? AspectRatio(
+                      aspectRatio: _videoPlayerController.value.aspectRatio,
+                      child: Chewie(controller: _chewieController),
+                    )
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+            ),
             const SizedBox(height: 34),
             Padding(
               padding: const EdgeInsets.only(left: 32),
