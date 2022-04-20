@@ -71,12 +71,15 @@ class _HomePageState extends State<HomePage> {
                           final animal = snapshot.docs[index].data();
                           return _AnimalTile(
                             animalName: animal.name + '$index',
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    AnimalPage(selectedAnimal: animal),
-                              ),
-                            ),
+                            onTap: animal.onomatopoeiaVideoUrl
+                                    .startsWith('https://')
+                                ? () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AnimalPage(selectedAnimal: animal),
+                                      ),
+                                    )
+                                : null,
                           );
                         },
                       ),
@@ -117,7 +120,7 @@ class _AnimalTile extends StatelessWidget {
     required this.animalName,
   }) : super(key: key);
 
-  final void Function() onTap;
+  final void Function()? onTap;
   final String animalName;
 
   @override
