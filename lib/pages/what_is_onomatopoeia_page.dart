@@ -6,16 +6,8 @@ import 'package:mcr/models/header_image.dart';
 
 import '../colors.dart';
 
-class WhatIsOnomatopoeiaPage extends StatefulWidget {
+class WhatIsOnomatopoeiaPage extends StatelessWidget {
   const WhatIsOnomatopoeiaPage({Key? key}) : super(key: key);
-
-  @override
-  State<WhatIsOnomatopoeiaPage> createState() => _WhatIsOnomatopoeiaPageState();
-}
-
-class _WhatIsOnomatopoeiaPageState extends State<WhatIsOnomatopoeiaPage> {
-  final _dotsIndex = [0, 1, 2, 3, 4, 5, 6];
-  int _currentImageIndex = 0;
 
   Query<HeaderImage> headerImageQuery() {
     return FirebaseFirestore.instance
@@ -58,6 +50,8 @@ class _WhatIsOnomatopoeiaPageState extends State<WhatIsOnomatopoeiaPage> {
                     return CarouselSlider.builder(
                       itemCount: snapshot.docs.length,
                       itemBuilder: (context, index, _) {
+                        final _scrollIndicatorDots = List.generate(
+                            snapshot.docs.length, (index) => index);
                         final headerImage = snapshot.docs[index].data();
                         return Stack(
                           children: [
@@ -71,9 +65,9 @@ class _WhatIsOnomatopoeiaPageState extends State<WhatIsOnomatopoeiaPage> {
                                   alignment: const Alignment(0, 0.79),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    children: _dotsIndex.map(
+                                    children: _scrollIndicatorDots.map(
                                       (dotIndex) {
-                                        return dotIndex == _currentImageIndex
+                                        return dotIndex == index
                                             ? const _SelectedDot()
                                             : const _UnSelectedDot();
                                       },
@@ -90,11 +84,6 @@ class _WhatIsOnomatopoeiaPageState extends State<WhatIsOnomatopoeiaPage> {
                         scrollPhysics: snapshot.docs.length <= 1
                             ? const NeverScrollableScrollPhysics()
                             : const PageScrollPhysics(),
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            _currentImageIndex = index;
-                          });
-                        },
                       ),
                     );
                   },
