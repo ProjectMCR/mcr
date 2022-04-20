@@ -59,9 +59,29 @@ class _WhatIsOnomatopoeiaPageState extends State<WhatIsOnomatopoeiaPage> {
                       itemCount: snapshot.docs.length,
                       itemBuilder: (context, index, _) {
                         final headerImage = snapshot.docs[index].data();
-                        return Image.network(
-                          generateDirectDownloadUrl(headerImage.imageUrl)
-                              .toString(),
+                        return Stack(
+                          children: [
+                            Image.network(
+                              generateDirectDownloadUrl(headerImage.imageUrl)
+                                  .toString(),
+                            ),
+                            if (snapshot.docs.length > 1)
+                              Positioned.fill(
+                                child: Align(
+                                  alignment: const Alignment(0, 0.79),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: _dotsIndex.map(
+                                      (dotIndex) {
+                                        return dotIndex == _currentImageIndex
+                                            ? const _SelectedDot()
+                                            : const _UnSelectedDot();
+                                      },
+                                    ).toList(),
+                                  ),
+                                ),
+                              ),
+                          ],
                         );
                       },
                       options: CarouselOptions(
@@ -78,21 +98,6 @@ class _WhatIsOnomatopoeiaPageState extends State<WhatIsOnomatopoeiaPage> {
                       ),
                     );
                   },
-                ),
-                Positioned.fill(
-                  child: Align(
-                    alignment: const Alignment(0, 0.79),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: _dotsIndex.map(
-                        (dotIndex) {
-                          return dotIndex == _currentImageIndex
-                              ? const _SelectedDot()
-                              : const _UnSelectedDot();
-                        },
-                      ).toList(),
-                    ),
-                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
