@@ -1,29 +1,37 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/firestore.dart';
+import 'package:mcr/models/header_image.dart';
 
 import '../colors.dart';
 
-class OnomatopoeiaDescriptionPage extends StatefulWidget {
-  const OnomatopoeiaDescriptionPage({Key? key}) : super(key: key);
+class WhatIsOnomatopoeiaPage extends StatelessWidget {
+  const WhatIsOnomatopoeiaPage({Key? key}) : super(key: key);
 
-  @override
-  State<OnomatopoeiaDescriptionPage> createState() =>
-      _OnomatopoeiaDescriptionPageState();
-}
+  Query<HeaderImage> headerImageQuery() {
+    return FirebaseFirestore.instance
+        .collection('headerImages')
+        .orderBy('createdAt')
+        .withConverter(
+          fromFirestore: (snapshot, _) => HeaderImage.fromMap(snapshot.data()!),
+          toFirestore: (headerImage, _) => headerImage.toMap(),
+        );
+  }
 
-class _OnomatopoeiaDescriptionPageState
-    extends State<OnomatopoeiaDescriptionPage> {
-  final List<Widget> _carouselSliderItems = [
-    Image.asset('assets/images/landscape1.png'),
-    const Placeholder(color: Colors.tealAccent),
-    const Placeholder(color: Colors.purple),
-    const Placeholder(color: Colors.green),
-    const Placeholder(color: Colors.pink),
-    const Placeholder(color: Colors.red),
-    const Placeholder(color: Colors.orangeAccent),
-  ];
-  final _dotsIndex = [0, 1, 2, 3, 4, 5, 6];
-  int _currentImageIndex = 0;
+  /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
+  Uri generateDirectDownloadUrl(String url) {
+    final splitUrl = url.split('/');
+    final id = splitUrl[5];
+    final baseUrl = Uri.parse('https://drive.google.com/uc');
+    final resultUrl = baseUrl.replace(
+      queryParameters: {
+        'export': 'download',
+        'id': id,
+      },
+    );
+    return resultUrl;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,33 +41,52 @@ class _OnomatopoeiaDescriptionPageState
           children: [
             Stack(
               children: [
-                CarouselSlider(
-                  options: CarouselOptions(
-                    // TODO(shimizu-saffle): Pixel 3aと異なる画面サイズの端末でもデザイン通りにImageが表示されるか確認する
-                    height: 240.9,
-                    viewportFraction: 1.0,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        _currentImageIndex = index;
-                      });
-                    },
-                  ),
-                  items: _carouselSliderItems,
-                ),
-                Positioned.fill(
-                  child: Align(
-                    alignment: const Alignment(0, 0.79),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: _dotsIndex.map(
-                        (dotIndex) {
-                          return dotIndex == _currentImageIndex
-                              ? const _SelectedDot()
-                              : const _UnSelectedDot();
-                        },
-                      ).toList(),
-                    ),
-                  ),
+                FirestoreQueryBuilder<HeaderImage>(
+                  query: headerImageQuery(),
+                  builder: (context, snapshot, _) {
+                    if (snapshot.isFetching) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return CarouselSlider.builder(
+                      itemCount: snapshot.docs.length,
+                      itemBuilder: (context, index, _) {
+                        final _scrollIndicatorDots = List.generate(
+                            snapshot.docs.length, (index) => index);
+                        final headerImage = snapshot.docs[index].data();
+                        return Stack(
+                          children: [
+                            Image.network(
+                              generateDirectDownloadUrl(headerImage.imageUrl)
+                                  .toString(),
+                            ),
+                            if (snapshot.docs.length > 1)
+                              Positioned.fill(
+                                child: Align(
+                                  alignment: const Alignment(0, 0.79),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: _scrollIndicatorDots.map(
+                                      (dotIndex) {
+                                        return dotIndex == index
+                                            ? const _SelectedDot()
+                                            : const _UnSelectedDot();
+                                      },
+                                    ).toList(),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                      options: CarouselOptions(
+                        height: 240.9,
+                        viewportFraction: 1.0,
+                        scrollPhysics: snapshot.docs.length <= 1
+                            ? const NeverScrollableScrollPhysics()
+                            : const PageScrollPhysics(),
+                      ),
+                    );
+                  },
                 ),
                 Padding(
                   padding: const EdgeInsets.only(

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
-import 'package:mcr/pages/onomatopoeia_description_page.dart';
+import 'package:mcr/pages/what_is_onomatopoeia_page.dart';
 
 import '../colors.dart';
 import '../models/animal.dart';
@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
                 child: TextButton(
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const OnomatopoeiaDescriptionPage(),
+                      builder: (context) => const WhatIsOnomatopoeiaPage(),
                     ),
                   ),
                   child: const Text(
