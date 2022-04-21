@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AnimalSound {
   AnimalSound({
+    required this.createdAt,
     required this.animalSoundRef,
     required this.imageUrl,
     required this.breed,
@@ -13,6 +14,7 @@ class AnimalSound {
   });
 
   factory AnimalSound.fromMap(Map<String, dynamic> data) => AnimalSound(
+        createdAt: data['createdAt'],
         animalSoundRef: data['animalSoundRef'],
         imageUrl: data['imageUrl'],
         breed: data['breed'],
@@ -23,6 +25,7 @@ class AnimalSound {
       );
 
   factory AnimalSound.initialData() => AnimalSound(
+        createdAt: Timestamp.now(),
         animalSoundRef: null,
         imageUrl: '',
         breed: '',
@@ -32,6 +35,7 @@ class AnimalSound {
         soundDescription: '',
       );
 
+  Timestamp createdAt;
   DocumentReference? animalSoundRef;
   String imageUrl;
   String breed;
@@ -41,6 +45,7 @@ class AnimalSound {
   String soundDescription;
 
   Map<String, dynamic> toMap() => {
+        'createdAt': createdAt,
         'animalSoundRef': animalSoundRef,
         'imageUrl': imageUrl,
         'breed': breed,

@@ -70,13 +70,17 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (context, index) {
                           final animal = snapshot.docs[index].data();
                           return _AnimalTile(
+                            imageUrl: animal.imageUrl,
                             animalName: animal.name + '$index',
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    AnimalPage(selectedAnimal: animal),
-                              ),
-                            ),
+                            onTap: animal.onomatopoeiaVideoUrl
+                                    .startsWith('https://')
+                                ? () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AnimalPage(selectedAnimal: animal),
+                                      ),
+                                    )
+                                : null,
                           );
                         },
                       ),
@@ -115,20 +119,43 @@ class _AnimalTile extends StatelessWidget {
     Key? key,
     required this.onTap,
     required this.animalName,
+    required this.imageUrl,
   }) : super(key: key);
 
-  final void Function() onTap;
+  final void Function()? onTap;
   final String animalName;
+  final String imageUrl;
+
+  /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
+  Uri generateDirectDownloadUrl(String url) {
+    final List<String> splitUrl = url.split('/');
+    final id = splitUrl[5];
+    final baseUrl = Uri.parse('https://drive.google.com/uc');
+    final resultUrl = baseUrl.replace(
+      queryParameters: {
+        'export': 'download',
+        'id': id,
+      },
+    );
+    return resultUrl;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          height: 110,
-          width: 150,
-          color: AnimalOnomatopoeiaColor.blue,
-        ),
+        if (!imageUrl.startsWith('https://'))
+          Container(
+            height: 110,
+            width: 150,
+            color: AnimalOnomatopoeiaColor.blue,
+          ),
+        if (imageUrl.startsWith('https://'))
+          Image.network(
+            generateDirectDownloadUrl(imageUrl).toString(),
+            height: 110,
+            width: 150,
+          ),
         Material(
           type: MaterialType.button,
           color: Colors.white,

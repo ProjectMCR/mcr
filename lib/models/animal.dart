@@ -2,30 +2,45 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Animal {
   Animal({
+    required this.createdAt,
     required this.animalRef,
     required this.name,
-    required this.onomatopoeiaMovieUrl,
+    required this.onomatopoeiaVideoUrl,
+    required this.informationOnVideo,
+    required this.imageUrl,
   });
 
   factory Animal.fromMap(Map<String, dynamic> data) => Animal(
+        createdAt: data['createdAt'],
         animalRef: data['animalRef'],
         name: data['name'],
-        onomatopoeiaMovieUrl: data['onomatopoeiaMovieUrl'],
+        onomatopoeiaVideoUrl: data['onomatopoeiaVideoUrl'],
+        informationOnVideo: data['informationOnVideo'],
+        imageUrl: data['imageUrl'],
       );
 
   factory Animal.initialData() => Animal(
+        createdAt: Timestamp.now(),
         animalRef: FirebaseFirestore.instance.collection('animals').doc(),
         name: '',
-        onomatopoeiaMovieUrl: '',
+        onomatopoeiaVideoUrl: '',
+        informationOnVideo: '',
+        imageUrl: '',
       );
 
+  Timestamp createdAt;
   DocumentReference animalRef;
   String name;
-  String onomatopoeiaMovieUrl;
+  String onomatopoeiaVideoUrl;
+  String informationOnVideo;
+  String imageUrl;
 
   Map<String, dynamic> toMap() => {
+        'createdAt': createdAt,
         'animalRef': animalRef,
         'name': name,
-        'onomatopoeiaMovieUrl': onomatopoeiaMovieUrl,
+        'onomatopoeiaVideoUrl': onomatopoeiaVideoUrl,
+        'informationOnVideo': informationOnVideo,
+        'imageUrl': imageUrl,
       };
 }

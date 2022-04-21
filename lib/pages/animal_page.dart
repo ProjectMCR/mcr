@@ -42,7 +42,7 @@ class _AnimalPageState extends State<AnimalPage> {
 
   Future<void> initializeVideoPlayerController() async {
     _videoPlayerController = VideoPlayerController.network(
-      generateDirectDownloadUrl(widget.selectedAnimal.onomatopoeiaMovieUrl)
+      generateDirectDownloadUrl(widget.selectedAnimal.onomatopoeiaVideoUrl)
           .toString(),
     );
     await _videoPlayerController.initialize();
