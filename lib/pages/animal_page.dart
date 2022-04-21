@@ -219,7 +219,7 @@ class _AnimalSoundTile extends StatelessWidget {
         children: [
           const SizedBox(width: 6),
           image,
-          const Spacer(),
+          const SizedBox(width: 58),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,25 +248,28 @@ class _AnimalSoundTile extends StatelessWidget {
                   fontWeight: FontWeight.w300,
                 ),
               ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                onPressed: onPressed,
-                child: const Text(
-                  '音源',
-                  style: TextStyle(
-                    color: AnimalOnomatopoeiaColor.blue,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w300,
+              SizedBox(
+                height: 25,
+                width: 30,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  onPressed: onPressed,
+                  child: const Text(
+                    '音源',
+                    style: TextStyle(
+                      color: AnimalOnomatopoeiaColor.blue,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w300,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          const Spacer(),
         ],
       ),
     );
