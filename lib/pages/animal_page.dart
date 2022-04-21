@@ -59,6 +59,7 @@ class _AnimalPageState extends State<AnimalPage> {
         .collection('animals')
         .doc(selectedAnimal.animalRef.id)
         .collection('animalSounds')
+        .orderBy('createdAt')
         .withConverter(
           fromFirestore: (snapshot, _) => AnimalSound.fromMap(snapshot.data()!),
           toFirestore: (animalSound, _) => animalSound.toMap(),
