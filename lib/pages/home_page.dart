@@ -18,7 +18,10 @@ class _HomePageState extends State<HomePage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   Query<Animal> animalQuery() {
-    return _firebaseFirestore.collection('animals').withConverter(
+    return _firebaseFirestore
+        .collection('animals')
+        .orderBy('createdAt')
+        .withConverter(
           fromFirestore: (snapshot, _) => Animal.fromMap(snapshot.data()!),
           toFirestore: (animal, _) => animal.toMap(),
         );
@@ -71,7 +74,7 @@ class _HomePageState extends State<HomePage> {
                           final animal = snapshot.docs[index].data();
                           return _AnimalTile(
                             imageUrl: animal.imageUrl,
-                            animalName: animal.name + '$index',
+                            animalName: animal.name,
                             onTap: animal.onomatopoeiaVideoUrl
                                     .startsWith('https://')
                                 ? () => Navigator.of(context).push(
@@ -151,10 +154,19 @@ class _AnimalTile extends StatelessWidget {
             color: AnimalOnomatopoeiaColor.blue,
           ),
         if (imageUrl.startsWith('https://'))
-          Image.network(
-            generateDirectDownloadUrl(imageUrl).toString(),
-            height: 110,
-            width: 150,
+          Stack(
+            children: [
+              Container(
+                height: 110,
+                width: 150,
+                color: AnimalOnomatopoeiaColor.blue,
+              ),
+              Image.network(
+                generateDirectDownloadUrl(imageUrl).toString(),
+                height: 110,
+                width: 150,
+              ),
+            ],
           ),
         Material(
           type: MaterialType.button,
