@@ -1,36 +1,15 @@
-import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:mcr/models/animal_sound.dart';
-import 'package:video_player/video_player.dart';
 
-class SoundPage extends StatefulWidget {
+import '../widgets/youtube_player.dart';
+
+class SoundPage extends StatelessWidget {
   const SoundPage({
     Key? key,
     required this.selectedAnimalSound,
   }) : super(key: key);
 
   final AnimalSound selectedAnimalSound;
-
-  @override
-  State<SoundPage> createState() => _SoundPageState();
-}
-
-class _SoundPageState extends State<SoundPage> {
-  late ChewieController _chewieController;
-  late VideoPlayerController _videoPlayerController;
-
-  Future<void> initializeVideoPlayerController() async {
-    _videoPlayerController = VideoPlayerController.network(
-      generateDirectDownloadUrl(widget.selectedAnimalSound.videoUrl).toString(),
-    );
-    await _videoPlayerController.initialize();
-    _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-    );
-    if (mounted) {
-      setState(() {});
-    }
-  }
 
   /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
   Uri generateDirectDownloadUrl(String url) {
@@ -44,19 +23,6 @@ class _SoundPageState extends State<SoundPage> {
       },
     );
     return resultUrl;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    initializeVideoPlayerController();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _videoPlayerController.dispose();
-    _chewieController.dispose();
   }
 
   @override
@@ -87,22 +53,16 @@ class _SoundPageState extends State<SoundPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 193.5,
-              width: MediaQuery.of(context).size.width,
-              child: _videoPlayerController.value.isInitialized
-                  ? AspectRatio(
-                      aspectRatio: _videoPlayerController.value.aspectRatio,
-                      child: Chewie(controller: _chewieController),
-                    )
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+              height: 350,
+              child: YoutubePlayer(
+                videoUrl: selectedAnimalSound.videoUrl,
+              ),
             ),
             const SizedBox(height: 34),
             Padding(
               padding: const EdgeInsets.only(left: 32),
               child: Text(
-                widget.selectedAnimalSound.breed,
+                selectedAnimalSound.breed,
                 style: const TextStyle(
                   fontSize: 23,
                   fontWeight: FontWeight.w600,
@@ -113,7 +73,7 @@ class _SoundPageState extends State<SoundPage> {
             Padding(
               padding: const EdgeInsets.only(left: 32),
               child: Text(
-                widget.selectedAnimalSound.subtitle,
+                selectedAnimalSound.subtitle,
                 style: const TextStyle(
                   fontSize: 23,
                   fontWeight: FontWeight.w600,
@@ -126,7 +86,7 @@ class _SoundPageState extends State<SoundPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 35),
                 child: SingleChildScrollView(
                   child: Text(
-                    widget.selectedAnimalSound.soundDescription,
+                    selectedAnimalSound.soundDescription,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w300,
