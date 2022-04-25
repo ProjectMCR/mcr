@@ -129,20 +129,6 @@ class _AnimalTile extends StatelessWidget {
   final String animalName;
   final String imageUrl;
 
-  /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
-  Uri generateDirectDownloadUrl(String url) {
-    final List<String> splitUrl = url.split('/');
-    final id = splitUrl[5];
-    final baseUrl = Uri.parse('https://drive.google.com/uc');
-    final resultUrl = baseUrl.replace(
-      queryParameters: {
-        'export': 'download',
-        'id': id,
-      },
-    );
-    return resultUrl;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -162,7 +148,7 @@ class _AnimalTile extends StatelessWidget {
                 color: AnimalOnomatopoeiaColor.blue,
               ),
               Image.network(
-                generateDirectDownloadUrl(imageUrl).toString(),
+                imageUrl,
                 height: 110,
                 width: 150,
               ),
