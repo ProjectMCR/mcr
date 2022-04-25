@@ -7,14 +7,9 @@ import '../colors.dart';
 import '../models/animal.dart';
 import 'animal_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HomePage extends StatelessWidget {
+  HomePage({Key? key}) : super(key: key);
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   Query<Animal> animalQuery() {
