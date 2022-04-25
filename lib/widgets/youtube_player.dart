@@ -14,7 +14,11 @@ class YoutubePlayer extends StatelessWidget {
     final id = splitUrl[3];
     return YoutubePlayerController(
       initialVideoId: id,
-      params: const YoutubePlayerParams(),
+      params: YoutubePlayerParams(
+        loop: true,
+        playlist: [id],
+        interfaceLanguage: 'ja',
+      ),
     );
   }
 

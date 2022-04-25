@@ -1,30 +1,21 @@
-import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/models/animal_sound.dart';
-import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
+import '../widgets/youtube_player.dart';
 import 'sound_page.dart';
 
-class AnimalPage extends StatefulWidget {
-  const AnimalPage({
+class AnimalPage extends StatelessWidget {
+  AnimalPage({
     Key? key,
     required this.selectedAnimal,
   }) : super(key: key);
 
   final Animal selectedAnimal;
-
-  @override
-  State<AnimalPage> createState() => _AnimalPageState();
-}
-
-class _AnimalPageState extends State<AnimalPage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  late ChewieController _chewieController;
-  late VideoPlayerController _videoPlayerController;
 
   /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
   Uri generateDirectDownloadUrl(String url) {
@@ -40,20 +31,6 @@ class _AnimalPageState extends State<AnimalPage> {
     return resultUrl;
   }
 
-  Future<void> initializeVideoPlayerController() async {
-    _videoPlayerController = VideoPlayerController.network(
-      generateDirectDownloadUrl(widget.selectedAnimal.onomatopoeiaVideoUrl)
-          .toString(),
-    );
-    await _videoPlayerController.initialize();
-    _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-    );
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
     return _firebaseFirestore
         .collection('animals')
@@ -64,19 +41,6 @@ class _AnimalPageState extends State<AnimalPage> {
           fromFirestore: (snapshot, _) => AnimalSound.fromMap(snapshot.data()!),
           toFirestore: (animalSound, _) => animalSound.toMap(),
         );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    initializeVideoPlayerController();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _videoPlayerController.dispose();
-    _chewieController.dispose();
   }
 
   @override
@@ -102,17 +66,12 @@ class _AnimalPageState extends State<AnimalPage> {
         ),
         body: Column(
           children: [
+            // TODO(shimizu-saffle): ここに配置
             SizedBox(
-              height: 193.5,
-              width: MediaQuery.of(context).size.width,
-              child: _videoPlayerController.value.isInitialized
-                  ? AspectRatio(
-                      aspectRatio: _videoPlayerController.value.aspectRatio,
-                      child: Chewie(controller: _chewieController),
-                    )
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+              height: 222.5,
+              child: YoutubePlayer(
+                videoUrl: selectedAnimal.onomatopoeiaVideoUrl,
+              ),
             ),
             const SizedBox(height: 14),
             const Text(
@@ -150,7 +109,7 @@ class _AnimalPageState extends State<AnimalPage> {
             ),
             const SizedBox(height: 20),
             Text(
-              '${widget.selectedAnimal.name}さんの気持ちわかるかな？',
+              '${selectedAnimal.name}さんの気持ちわかるかな？',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -160,7 +119,7 @@ class _AnimalPageState extends State<AnimalPage> {
             Expanded(
               child: FirestoreListView<AnimalSound>(
                 shrinkWrap: true,
-                query: animalSoundQuery(widget.selectedAnimal),
+                query: animalSoundQuery(selectedAnimal),
                 itemBuilder: (context, snapshot) {
                   final animalSound = snapshot.data();
                   return Padding(
