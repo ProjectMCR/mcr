@@ -17,20 +17,6 @@ class AnimalPage extends StatelessWidget {
   final Animal selectedAnimal;
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
-  /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
-  Uri generateDirectDownloadUrl(String url) {
-    final splitUrl = url.split('/');
-    final id = splitUrl[5];
-    final baseUrl = Uri.parse('https://drive.google.com/uc');
-    final resultUrl = baseUrl.replace(
-      queryParameters: {
-        'export': 'download',
-        'id': id,
-      },
-    );
-    return resultUrl;
-  }
-
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
     return _firebaseFirestore
         .collection('animals')
@@ -125,8 +111,7 @@ class AnimalPage extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                     child: _AnimalSoundTile(
                       image: Image.network(
-                        generateDirectDownloadUrl(animalSound.imageUrl)
-                            .toString(),
+                        animalSound.imageUrl,
                         height: 108,
                         width: 108,
                       ),

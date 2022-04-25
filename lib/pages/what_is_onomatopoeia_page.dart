@@ -19,20 +19,6 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
         );
   }
 
-  /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
-  Uri generateDirectDownloadUrl(String url) {
-    final splitUrl = url.split('/');
-    final id = splitUrl[5];
-    final baseUrl = Uri.parse('https://drive.google.com/uc');
-    final resultUrl = baseUrl.replace(
-      queryParameters: {
-        'export': 'download',
-        'id': id,
-      },
-    );
-    return resultUrl;
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -55,10 +41,7 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
                         final headerImage = snapshot.docs[index].data();
                         return Stack(
                           children: [
-                            Image.network(
-                              generateDirectDownloadUrl(headerImage.imageUrl)
-                                  .toString(),
-                            ),
+                            Image.network(headerImage.imageUrl),
                             if (snapshot.docs.length > 1)
                               Positioned.fill(
                                 child: Align(
