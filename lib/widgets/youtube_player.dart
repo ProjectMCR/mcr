@@ -5,9 +5,11 @@ class YoutubePlayer extends StatelessWidget {
   const YoutubePlayer({
     Key? key,
     required this.videoUrl,
+    this.aspectRatio,
   }) : super(key: key);
 
   final String videoUrl;
+  final double? aspectRatio;
 
   YoutubePlayerController _youtubePlayerController() {
     final splitUrl = videoUrl.split('/');
@@ -26,7 +28,9 @@ class YoutubePlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     return YoutubePlayerControllerProvider(
       controller: _youtubePlayerController(),
-      child: const YoutubePlayerIFrame(),
+      child: YoutubePlayerIFrame(
+        aspectRatio: aspectRatio ?? 16 / 9,
+      ),
     );
   }
 }

@@ -66,7 +66,6 @@ class AnimalPage extends StatelessWidget {
         ),
         body: Column(
           children: [
-            // TODO(shimizu-saffle): ここに配置
             SizedBox(
               height: 222.5,
               child: YoutubePlayer(
