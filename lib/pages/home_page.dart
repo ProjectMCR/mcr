@@ -126,49 +126,46 @@ class _AnimalTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (!imageUrl.startsWith('https://'))
-          Container(
-            height: 110,
-            width: 150,
-            color: AnimalOnomatopoeiaColor.blue,
-          ),
-        if (imageUrl.startsWith('https://'))
-          Stack(
-            children: [
-              Container(
-                height: 110,
-                width: 150,
-                color: AnimalOnomatopoeiaColor.blue,
-              ),
-              Image.network(
-                imageUrl,
-                height: 110,
-                width: 150,
-              ),
-            ],
-          ),
-        Material(
-          type: MaterialType.button,
-          color: Colors.white,
-          child: InkWell(
-            onTap: onTap,
-            child: SizedBox(
-              height: 42,
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          if (!imageUrl.startsWith('https://'))
+            Container(
+              height: 110,
               width: 150,
-              child: Center(
-                child: Text(
-                  animalName,
-                  style: const TextStyle(
-                    color: AnimalOnomatopoeiaColor.gray1,
-                  ),
+              color: AnimalOnomatopoeiaColor.blue,
+            ),
+          if (imageUrl.startsWith('https://'))
+            Stack(
+              children: [
+                Container(
+                  height: 110,
+                  width: 150,
+                  color: AnimalOnomatopoeiaColor.blue,
+                ),
+                Image.network(
+                  imageUrl,
+                  height: 110,
+                  width: 150,
+                ),
+              ],
+            ),
+          Container(
+            color: Colors.white,
+            height: 42,
+            width: 150,
+            child: Center(
+              child: Text(
+                animalName,
+                style: const TextStyle(
+                  color: AnimalOnomatopoeiaColor.gray1,
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
