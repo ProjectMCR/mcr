@@ -118,7 +118,7 @@ class AnimalPage extends StatelessWidget {
                       breed: animalSound.breed,
                       title: animalSound.title,
                       subtitle: animalSound.subtitle,
-                      onPressed: () => Navigator.of(context).push(
+                      onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) =>
                               SoundPage(selectedAnimalSound: animalSound),
@@ -143,14 +143,14 @@ class _AnimalSoundTile extends StatelessWidget {
     required this.breed,
     required this.title,
     required this.subtitle,
-    required this.onPressed,
+    required this.onTap,
   }) : super(key: key);
 
   final Image image;
   final String breed;
   final String title;
   final String subtitle;
-  final void Function() onPressed;
+  final void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -161,47 +161,45 @@ class _AnimalSoundTile extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: 6),
-          image,
+          InkWell(
+            onTap: onTap,
+            child: image,
+          ),
           const SizedBox(width: 58),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                breed,
-                style: const TextStyle(
-                  color: AnimalOnomatopoeiaColor.clearWhite,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-              SizedBox(
-                height: 25,
-                width: 30,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          InkWell(
+            onTap: onTap,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  breed,
+                  style: const TextStyle(
+                    color: AnimalOnomatopoeiaColor.clearWhite,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w300,
                   ),
-                  onPressed: onPressed,
-                  child: const Text(
+                ),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+                const SizedBox(
+                  height: 25,
+                  width: 30,
+                  child: Text(
                     '音源',
                     style: TextStyle(
                       color: AnimalOnomatopoeiaColor.blue,
@@ -210,8 +208,8 @@ class _AnimalSoundTile extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

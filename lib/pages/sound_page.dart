@@ -11,20 +11,6 @@ class SoundPage extends StatelessWidget {
 
   final AnimalSound selectedAnimalSound;
 
-  /// Google DriveのUrlを引数として、GoogleDriveのDirectDownloadリンクを返す。
-  Uri generateDirectDownloadUrl(String url) {
-    final splitUrl = url.split('/');
-    final id = splitUrl[5];
-    final baseUrl = Uri.parse('https://drive.google.com/uc');
-    final resultUrl = baseUrl.replace(
-      queryParameters: {
-        'export': 'download',
-        'id': id,
-      },
-    );
-    return resultUrl;
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
