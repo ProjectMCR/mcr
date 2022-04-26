@@ -76,10 +76,10 @@ class AnimalPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
-            const Text(
-              '動画：日立市かみね動物園園長先生撮影',
+            Text(
+              '動画：${selectedAnimal.informationOnVideo}',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: AnimalOnomatopoeiaColor.gray1,
                 fontSize: 12,
                 fontWeight: FontWeight.w300,
