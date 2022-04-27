@@ -9,10 +9,10 @@ import '../colors.dart';
 class WhatIsOnomatopoeiaPage extends StatelessWidget {
   const WhatIsOnomatopoeiaPage({Key? key}) : super(key: key);
 
-  Query<HeaderImage> headerImageQuery() {
+  Query<HeaderImage> get headerImageQuery {
     return FirebaseFirestore.instance
         .collection('headerImages')
-        .orderBy('createdAt')
+        .orderBy('createdAt', descending: true)
         .withConverter(
           fromFirestore: (snapshot, _) => HeaderImage.fromMap(snapshot.data()!),
           toFirestore: (headerImage, _) => headerImage.toMap(),
@@ -28,7 +28,8 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
             Stack(
               children: [
                 FirestoreQueryBuilder<HeaderImage>(
-                  query: headerImageQuery(),
+                  pageSize: 7,
+                  query: headerImageQuery,
                   builder: (context, snapshot, _) {
                     if (snapshot.isFetching) {
                       return const Center(child: CircularProgressIndicator());
