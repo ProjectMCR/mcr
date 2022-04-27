@@ -50,66 +50,67 @@ class AnimalPage extends StatelessWidget {
             ),
           ),
         ),
-        body: Column(
-          children: [
-            SizedBox(
-              height: 222.5,
-              child: YoutubePlayer(
-                videoUrl: selectedAnimal.onomatopoeiaVideoUrl,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 222.5,
+                child: YoutubePlayer(
+                  videoUrl: selectedAnimal.onomatopoeiaVideoUrl,
+                ),
               ),
-            ),
-            const SizedBox(height: 14),
-            const Text(
-              'こんなふうにきこえたよ',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+              const SizedBox(height: 14),
+              const Text(
+                'こんなふうにきこえたよ',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            const Text(
-              'この鳴き声オノマトペは聞いた人が\nきこえた感じを自由に言葉にしたものです',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AnimalOnomatopoeiaColor.gray1,
-                fontSize: 12,
-                fontWeight: FontWeight.w300,
-              ),
-            ),
-            const SizedBox(height: 15),
-            SizedBox(
-              width: 245,
-              child: Text(
-                '動画：${selectedAnimal.informationOnVideo}',
+              const Text(
+                'この鳴き声オノマトペは聞いた人が\nきこえた感じを自由に言葉にしたものです',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AnimalOnomatopoeiaColor.gray1,
                   fontSize: 12,
                   fontWeight: FontWeight.w300,
                 ),
               ),
-            ),
-            const SizedBox(height: 15),
-            const Divider(
-              color: AnimalOnomatopoeiaColor.blue,
-              thickness: 2,
-              indent: 155,
-              endIndent: 155,
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                '${selectedAnimal.name}さんの気持ちわかるかな？',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+              const SizedBox(height: 15),
+              SizedBox(
+                width: 245,
+                child: Text(
+                  '動画：${selectedAnimal.informationOnVideo}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AnimalOnomatopoeiaColor.gray1,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w300,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: FirestoreListView<AnimalSound>(
+              const SizedBox(height: 15),
+              const Divider(
+                color: AnimalOnomatopoeiaColor.blue,
+                thickness: 2,
+                indent: 155,
+                endIndent: 155,
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  '${selectedAnimal.name}さんの気持ちわかるかな？',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              FirestoreListView<AnimalSound>(
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 query: animalSoundQuery(selectedAnimal),
                 itemBuilder: (context, snapshot) {
@@ -135,8 +136,8 @@ class AnimalPage extends StatelessWidget {
                   );
                 },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
