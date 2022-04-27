@@ -76,13 +76,16 @@ class AnimalPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
-            Text(
-              '動画：${selectedAnimal.informationOnVideo}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AnimalOnomatopoeiaColor.gray1,
-                fontSize: 12,
-                fontWeight: FontWeight.w300,
+            SizedBox(
+              width: 245,
+              child: Text(
+                '動画：${selectedAnimal.informationOnVideo}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AnimalOnomatopoeiaColor.gray1,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w300,
+                ),
               ),
             ),
             const SizedBox(height: 15),
