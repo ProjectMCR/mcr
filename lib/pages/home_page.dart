@@ -29,36 +29,36 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 19),
-          child: Column(
-            children: [
-              const SizedBox(height: 21),
-              Image.asset(
-                'assets/images/main_title1.png',
-                height: 153.51,
-                width: 205.95,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'オノマトペ',
-                style: TextStyle(
-                  color: AnimalOnomatopoeiaColor.gray1,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  decoration: TextDecoration.underline,
-                  decorationColor: AnimalOnomatopoeiaColor.blue,
-                  decorationThickness: 2,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 21),
+                Image.asset(
+                  'assets/images/main_title1.png',
+                  height: 153.51,
+                  width: 205.95,
                 ),
-              ),
-              const SizedBox(height: 16),
-              FirestoreQueryBuilder<Animal>(
-                query: animalQuery(),
-                builder: (context, snapshot, _) {
-                  if (snapshot.isFetching) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else {
-                    return SizedBox(
-                      height: 365,
-                      child: GridView.builder(
+                const SizedBox(height: 16),
+                const Text(
+                  'オノマトペ',
+                  style: TextStyle(
+                    color: AnimalOnomatopoeiaColor.gray1,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
+                    decorationColor: AnimalOnomatopoeiaColor.blue,
+                    decorationThickness: 2,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                FirestoreQueryBuilder<Animal>(
+                  query: animalQuery(),
+                  builder: (context, snapshot, _) {
+                    if (snapshot.isFetching) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else {
+                      return GridView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: snapshot.docs.length,
                         gridDelegate:
@@ -81,30 +81,30 @@ class HomePage extends StatelessWidget {
                                 : null,
                           );
                         },
-                      ),
-                    );
-                  }
-                },
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const WhatIsOnomatopoeiaPage(),
-                    ),
-                  ),
-                  child: const Text(
-                    'オノマトペとは',
-                    style: TextStyle(
-                      color: AnimalOnomatopoeiaColor.gray1,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                      );
+                    }
+                  },
                 ),
-              )
-            ],
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const WhatIsOnomatopoeiaPage(),
+                      ),
+                    ),
+                    child: const Text(
+                      'オノマトペとは',
+                      style: TextStyle(
+                        color: AnimalOnomatopoeiaColor.gray1,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
