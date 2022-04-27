@@ -156,10 +156,13 @@ class _AnimalTile extends StatelessWidget {
             height: 42,
             width: 150,
             child: Center(
-              child: Text(
-                animalName,
-                style: const TextStyle(
-                  color: AnimalOnomatopoeiaColor.gray1,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Text(
+                  animalName,
+                  style: const TextStyle(
+                    color: AnimalOnomatopoeiaColor.gray1,
+                  ),
                 ),
               ),
             ),
