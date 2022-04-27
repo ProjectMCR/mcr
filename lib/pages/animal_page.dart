@@ -96,11 +96,15 @@ class AnimalPage extends StatelessWidget {
               endIndent: 155,
             ),
             const SizedBox(height: 20),
-            Text(
-              '${selectedAnimal.name}さんの気持ちわかるかな？',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                '${selectedAnimal.name}さんの気持ちわかるかな？',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             const SizedBox(height: 20),
