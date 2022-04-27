@@ -35,53 +35,49 @@ class SoundPage extends StatelessWidget {
             ),
           ),
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 350,
-              child: YoutubePlayer(
-                videoUrl: selectedAnimalSound.videoUrl,
-              ),
-            ),
-            const SizedBox(height: 34),
-            Padding(
-              padding: const EdgeInsets.only(left: 32),
-              child: Text(
-                selectedAnimalSound.breed,
-                style: const TextStyle(
-                  fontSize: 23,
-                  fontWeight: FontWeight.w600,
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 350,
+                child: YoutubePlayer(
+                  videoUrl: selectedAnimalSound.videoUrl,
                 ),
               ),
-            ),
-            const SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.only(left: 32),
-              child: Text(
-                selectedAnimalSound.subtitle,
-                style: const TextStyle(
-                  fontSize: 23,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 35),
-                child: SingleChildScrollView(
-                  child: Text(
-                    selectedAnimalSound.soundDescription,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w300,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 34),
+                    Text(
+                      selectedAnimalSound.breed,
+                      style: const TextStyle(
+                        fontSize: 23,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 15),
+                    Text(
+                      selectedAnimalSound.subtitle,
+                      style: const TextStyle(
+                        fontSize: 23,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+                    Text(
+                      selectedAnimalSound.soundDescription,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );
