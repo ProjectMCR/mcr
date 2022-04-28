@@ -49,6 +49,7 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
                                 headerImage.imageUrl,
                                 fit: BoxFit.cover,
                                 width: MediaQuery.of(context).size.width,
+                                height: screenHeight / 3,
                               ),
                               if (snapshot.docs.length > 1)
                                 Column(
