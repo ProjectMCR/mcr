@@ -135,6 +135,7 @@ class _AnimalTile extends StatelessWidget {
                 ),
                 Image.network(
                   imageUrl,
+                  fit: BoxFit.cover,
                   height: 110,
                   width: 150,
                 ),
