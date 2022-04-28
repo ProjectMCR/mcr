@@ -24,6 +24,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: AnimalOnomatopoeiaColor.yellow,
       body: SafeArea(
@@ -75,6 +77,8 @@ class HomePage extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final animal = snapshot.docs[index].data();
                           return _AnimalTile(
+                            screenHeight: screenHeight,
+                            screenWidth: screenWidth,
                             imageUrl: animal.imageUrl,
                             animalName: animal.name,
                             onTap: animal.onomatopoeiaVideoUrl
@@ -107,11 +111,15 @@ class _AnimalTile extends StatelessWidget {
     required this.onTap,
     required this.animalName,
     required this.imageUrl,
+    required this.screenHeight,
+    required this.screenWidth,
   }) : super(key: key);
 
   final void Function()? onTap;
   final String animalName;
   final String imageUrl;
+  final double screenWidth;
+  final double screenHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -121,21 +129,29 @@ class _AnimalTile extends StatelessWidget {
         children: [
           if (!imageUrl.startsWith('https://'))
             Container(
+              height: screenHeight / 6.9,
+              width: screenWidth / 2.6,
               color: AnimalOnomatopoeiaColor.blue,
             ),
           if (imageUrl.startsWith('https://'))
             Stack(
               children: [
                 Container(
+                  height: screenHeight / 6.9,
+                  width: screenWidth / 2.6,
                   color: AnimalOnomatopoeiaColor.blue,
                 ),
                 Image.network(
                   imageUrl,
+                  height: screenHeight / 6.9,
+                  width: screenWidth / 2.6,
                   fit: BoxFit.cover,
                 ),
               ],
             ),
           Container(
+            height: screenHeight / 18.1,
+            width: screenWidth / 2.6,
             color: Colors.white,
             child: Center(
               child: SingleChildScrollView(
