@@ -93,11 +93,11 @@ class AnimalPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 15),
-              const Divider(
+              Divider(
                 color: AnimalOnomatopoeiaColor.blue,
                 thickness: 2,
-                indent: 155,
-                endIndent: 155,
+                indent: screenWidth / 3,
+                endIndent: screenWidth / 3,
               ),
               const SizedBox(height: 20),
               Padding(
