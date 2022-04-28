@@ -31,6 +31,8 @@ class AnimalPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
         backgroundColor: AnimalOnomatopoeiaColor.yellow,
@@ -118,11 +120,13 @@ class AnimalPage extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                     child: _AnimalSoundTile(
+                      screenHeight: screenHeight,
+                      screenWidth: screenWidth,
                       image: Image.network(
                         animalSound.imageUrl,
                         fit: BoxFit.cover,
-                        height: 108,
-                        width: 108,
+                        height: screenHeight / 7.02777778,
+                        width: screenWidth / 3.63888889,
                       ),
                       breed: animalSound.breed,
                       title: animalSound.title,
@@ -153,6 +157,8 @@ class _AnimalSoundTile extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    required this.screenHeight,
+    required this.screenWidth,
   }) : super(key: key);
 
   final Image image;
@@ -160,75 +166,83 @@ class _AnimalSoundTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final void Function() onTap;
+  final double screenWidth;
+  final double screenHeight;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120,
-      width: 348,
+      height: screenHeight / 6.325,
+      width: screenWidth / 1.12931034,
       color: AnimalOnomatopoeiaColor.clearBlack,
       child: Row(
         children: [
-          const SizedBox(width: 6),
+          const Spacer(flex: 6),
           InkWell(
             onTap: onTap,
             child: image,
           ),
-          const SizedBox(width: 58),
-          InkWell(
-            onTap: onTap,
-            child: SizedBox(
-              width: 150,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    breed,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: const TextStyle(
-                      color: AnimalOnomatopoeiaColor.clearWhite,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                  Text(
-                    title,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 25,
-                    width: 30,
-                    child: Text(
-                      '音源',
-                      style: TextStyle(
-                        color: AnimalOnomatopoeiaColor.blue,
-                        fontSize: 11,
+          const Spacer(flex: 58),
+          Expanded(
+            flex: 136,
+            child: InkWell(
+              onTap: onTap,
+              child: SizedBox(
+                //
+                width: 150,
+                //
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      breed,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: const TextStyle(
+                        color: AnimalOnomatopoeiaColor.clearWhite,
+                        fontSize: 12,
                         fontWeight: FontWeight.w300,
                       ),
                     ),
-                  ),
-                ],
+                    Text(
+                      title,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 25,
+                      width: 30,
+                      child: Text(
+                        '音源',
+                        style: TextStyle(
+                          color: AnimalOnomatopoeiaColor.blue,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
+          const Spacer(flex: 40),
         ],
       ),
     );
