@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mcr/pages/home_page.dart';
 
 Future<void> main() async {
@@ -13,9 +14,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'どうぶつオノマトペ',
-      home: HomePage(),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        // Android のステータスバーアイコンの色が変更される
+        statusBarIconBrightness: Brightness.light,
+        // iOS のステータスバーの文字色が変更される
+        statusBarBrightness: Brightness.light,
+      ),
+      child: MaterialApp(
+        title: 'どうぶつオノマトペ',
+        home: HomePage(),
+      ),
     );
   }
 }
