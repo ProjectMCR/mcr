@@ -56,7 +56,8 @@ class AnimalPage extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(
-                height: 222.5,
+                height: screenHeight / 3,
+                width: screenWidth,
                 child: YoutubePlayer(
                   videoUrl: selectedAnimal.onomatopoeiaVideoUrl,
                 ),
