@@ -120,6 +120,7 @@ class AnimalPage extends StatelessWidget {
                     child: _AnimalSoundTile(
                       image: Image.network(
                         animalSound.imageUrl,
+                        fit: BoxFit.cover,
                         height: 108,
                         width: 108,
                       ),
