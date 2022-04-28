@@ -31,30 +31,33 @@ class AnimalPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: AnimalOnomatopoeiaColor.yellow,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(30.0),
-          child: AppBar(
-            backgroundColor: Colors.white,
-            leadingWidth: 50,
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 18),
-              child: InkWell(
-                onTap: () => Navigator.of(context).pop(),
-                child: Image.asset(
-                  'assets/images/home_icon.png',
-                ),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      backgroundColor: AnimalOnomatopoeiaColor.yellow,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(30.0),
+        child: AppBar(
+          backgroundColor: Colors.white,
+          leadingWidth: 50,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 18),
+            child: InkWell(
+              onTap: () => Navigator.of(context).pop(),
+              child: Image.asset(
+                'assets/images/home_icon.png',
               ),
             ),
           ),
         ),
-        body: SingleChildScrollView(
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Column(
             children: [
               SizedBox(
-                height: 222.5,
+                height: screenHeight / 3,
+                width: screenWidth,
                 child: YoutubePlayer(
                   videoUrl: selectedAnimal.onomatopoeiaVideoUrl,
                 ),
@@ -90,11 +93,11 @@ class AnimalPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 15),
-              const Divider(
+              Divider(
                 color: AnimalOnomatopoeiaColor.blue,
                 thickness: 2,
-                indent: 155,
-                endIndent: 155,
+                indent: screenWidth / 3,
+                endIndent: screenWidth / 3,
               ),
               const SizedBox(height: 20),
               Padding(
@@ -118,11 +121,13 @@ class AnimalPage extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                     child: _AnimalSoundTile(
+                      screenHeight: screenHeight,
+                      screenWidth: screenWidth,
                       image: Image.network(
                         animalSound.imageUrl,
                         fit: BoxFit.cover,
-                        height: 108,
-                        width: 108,
+                        height: screenHeight / 7.02777778,
+                        width: screenWidth / 3.63888889,
                       ),
                       breed: animalSound.breed,
                       title: animalSound.title,
@@ -153,6 +158,8 @@ class _AnimalSoundTile extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    required this.screenHeight,
+    required this.screenWidth,
   }) : super(key: key);
 
   final Image image;
@@ -160,25 +167,27 @@ class _AnimalSoundTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final void Function() onTap;
+  final double screenWidth;
+  final double screenHeight;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120,
-      width: 348,
+      height: screenHeight / 6.325,
+      width: screenWidth / 1.12931034,
       color: AnimalOnomatopoeiaColor.clearBlack,
       child: Row(
         children: [
-          const SizedBox(width: 6),
+          const Spacer(flex: 6),
           InkWell(
             onTap: onTap,
             child: image,
           ),
-          const SizedBox(width: 58),
-          InkWell(
-            onTap: onTap,
-            child: SizedBox(
-              width: 150,
+          const Spacer(flex: 58),
+          Expanded(
+            flex: 136,
+            child: InkWell(
+              onTap: onTap,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,22 +222,19 @@ class _AnimalSoundTile extends StatelessWidget {
                       fontWeight: FontWeight.w300,
                     ),
                   ),
-                  const SizedBox(
-                    height: 25,
-                    width: 30,
-                    child: Text(
-                      '音源',
-                      style: TextStyle(
-                        color: AnimalOnomatopoeiaColor.blue,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w300,
-                      ),
+                  const Text(
+                    '音源',
+                    style: TextStyle(
+                      color: AnimalOnomatopoeiaColor.blue,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w300,
                     ),
                   ),
                 ],
               ),
             ),
           ),
+          const Spacer(flex: 40),
         ],
       ),
     );

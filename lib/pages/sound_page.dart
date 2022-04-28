@@ -13,34 +13,35 @@ class SoundPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(30.0),
-          child: AppBar(
-            backgroundColor: Colors.white,
-            leadingWidth: 50,
-            leading: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 4,
-              ),
-              child: InkWell(
-                onTap: () => Navigator.of(context).pop(),
-                child: Image.asset(
-                  'assets/images/back_icon.png',
-                ),
+    final screenWidth = MediaQuery.of(context).size.width;
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(30.0),
+        child: AppBar(
+          backgroundColor: Colors.white,
+          leadingWidth: 50,
+          leading: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 4,
+            ),
+            child: InkWell(
+              onTap: () => Navigator.of(context).pop(),
+              child: Image.asset(
+                'assets/images/back_icon.png',
               ),
             ),
           ),
         ),
-        body: SingleChildScrollView(
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 350,
+                height: screenWidth,
                 child: YoutubePlayer(
                   videoUrl: selectedAnimalSound.videoUrl,
                 ),
@@ -74,6 +75,7 @@ class SoundPage extends StatelessWidget {
                         fontWeight: FontWeight.w300,
                       ),
                     ),
+                    const SizedBox(height: 100),
                   ],
                 ),
               ),
