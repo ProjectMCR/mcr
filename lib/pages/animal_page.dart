@@ -187,58 +187,49 @@ class _AnimalSoundTile extends StatelessWidget {
             flex: 136,
             child: InkWell(
               onTap: onTap,
-              child: SizedBox(
-                //
-                width: 150,
-                //
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      breed,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        color: AnimalOnomatopoeiaColor.clearWhite,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w300,
-                      ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    breed,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: const TextStyle(
+                      color: AnimalOnomatopoeiaColor.clearWhite,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
                     ),
-                    Text(
-                      title,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w300,
-                      ),
+                  ),
+                  Text(
+                    title,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
                     ),
-                    Text(
-                      subtitle,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w300,
-                      ),
+                  ),
+                  Text(
+                    subtitle,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
                     ),
-                    const SizedBox(
-                      height: 25,
-                      width: 30,
-                      child: Text(
-                        '音源',
-                        style: TextStyle(
-                          color: AnimalOnomatopoeiaColor.blue,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
+                  ),
+                  const Text(
+                    '音源',
+                    style: TextStyle(
+                      color: AnimalOnomatopoeiaColor.blue,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w300,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
