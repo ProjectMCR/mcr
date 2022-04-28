@@ -14,29 +14,29 @@ class SoundPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(30.0),
-          child: AppBar(
-            backgroundColor: Colors.white,
-            leadingWidth: 50,
-            leading: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 4,
-              ),
-              child: InkWell(
-                onTap: () => Navigator.of(context).pop(),
-                child: Image.asset(
-                  'assets/images/back_icon.png',
-                ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(30.0),
+        child: AppBar(
+          backgroundColor: Colors.white,
+          leadingWidth: 50,
+          leading: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 4,
+            ),
+            child: InkWell(
+              onTap: () => Navigator.of(context).pop(),
+              child: Image.asset(
+                'assets/images/back_icon.png',
               ),
             ),
           ),
         ),
-        body: SingleChildScrollView(
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -75,6 +75,7 @@ class SoundPage extends StatelessWidget {
                         fontWeight: FontWeight.w300,
                       ),
                     ),
+                    const SizedBox(height: 100),
                   ],
                 ),
               ),
