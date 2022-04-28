@@ -121,30 +121,22 @@ class _AnimalTile extends StatelessWidget {
         children: [
           if (!imageUrl.startsWith('https://'))
             Container(
-              height: 110,
-              width: 150,
               color: AnimalOnomatopoeiaColor.blue,
             ),
           if (imageUrl.startsWith('https://'))
             Stack(
               children: [
                 Container(
-                  height: 110,
-                  width: 150,
                   color: AnimalOnomatopoeiaColor.blue,
                 ),
                 Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
-                  height: 110,
-                  width: 150,
                 ),
               ],
             ),
           Container(
             color: Colors.white,
-            height: 42,
-            width: 150,
             child: Center(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
