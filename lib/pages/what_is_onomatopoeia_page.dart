@@ -45,12 +45,10 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
                           final headerImage = snapshot.docs[index].data();
                           return Stack(
                             children: [
-                              Expanded(
-                                child: Image.network(
-                                  headerImage.imageUrl,
-                                  fit: BoxFit.cover,
-                                  width: MediaQuery.of(context).size.width,
-                                ),
+                              Image.network(
+                                headerImage.imageUrl,
+                                fit: BoxFit.cover,
+                                width: MediaQuery.of(context).size.width,
                               ),
                               if (snapshot.docs.length > 1)
                                 Column(
