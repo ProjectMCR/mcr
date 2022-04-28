@@ -13,6 +13,7 @@ class SoundPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -40,7 +41,7 @@ class SoundPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 350,
+                height: screenWidth,
                 child: YoutubePlayer(
                   videoUrl: selectedAnimalSound.videoUrl,
                 ),
