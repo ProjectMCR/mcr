@@ -23,6 +23,12 @@ class MyApp extends StatelessWidget {
       ),
       child: MaterialApp(
         title: 'どうぶつオノマトペ',
+        theme: ThemeData(
+          appBarTheme: const AppBarTheme(
+            toolbarHeight: 30,
+            backgroundColor: Colors.white,
+          ),
+        ),
         home: HomePage(),
       ),
     );

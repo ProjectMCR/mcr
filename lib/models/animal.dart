@@ -14,7 +14,7 @@ class Animal {
         createdAt: data['createdAt'],
         animalRef: data['animalRef'],
         name: data['name'],
-        onomatopoeiaVideoUrl: data['onomatopoeiaVideoUrl'],
+        onomatopoeiaVideoUrl: Uri.tryParse(data['onomatopoeiaVideoUrl']),
         informationOnVideo: data['informationOnVideo'],
         imageUrl: data['imageUrl'],
       );
@@ -23,7 +23,7 @@ class Animal {
         createdAt: Timestamp.now(),
         animalRef: FirebaseFirestore.instance.collection('animals').doc(),
         name: '',
-        onomatopoeiaVideoUrl: '',
+        onomatopoeiaVideoUrl: null,
         informationOnVideo: '',
         imageUrl: '',
       );
@@ -31,7 +31,7 @@ class Animal {
   Timestamp createdAt;
   DocumentReference animalRef;
   String name;
-  String onomatopoeiaVideoUrl;
+  Uri? onomatopoeiaVideoUrl;
   String informationOnVideo;
   String imageUrl;
 
@@ -39,7 +39,7 @@ class Animal {
         'createdAt': createdAt,
         'animalRef': animalRef,
         'name': name,
-        'onomatopoeiaVideoUrl': onomatopoeiaVideoUrl,
+        'onomatopoeiaVideoUrl': onomatopoeiaVideoUrl?.toString(),
         'informationOnVideo': informationOnVideo,
         'imageUrl': imageUrl,
       };

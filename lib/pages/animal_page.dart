@@ -35,18 +35,14 @@ class AnimalPage extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: AnimalOnomatopoeiaColor.yellow,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(30.0),
-        child: AppBar(
-          backgroundColor: Colors.white,
-          leadingWidth: 50,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 18),
-            child: InkWell(
-              onTap: () => Navigator.of(context).pop(),
-              child: Image.asset(
-                'assets/images/home_icon.png',
-              ),
+      appBar: AppBar(
+        leadingWidth: 50,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 18),
+          child: InkWell(
+            onTap: () => Navigator.of(context).pop(),
+            child: Image.asset(
+              'assets/images/home_icon.png',
             ),
           ),
         ),
@@ -59,7 +55,7 @@ class AnimalPage extends StatelessWidget {
                 height: screenHeight / 3,
                 width: screenWidth,
                 child: YoutubePlayer(
-                  videoUrl: selectedAnimal.onomatopoeiaVideoUrl,
+                  videoUrl: selectedAnimal.onomatopoeiaVideoUrl!.toString(),
                 ),
               ),
               const SizedBox(height: 14),
@@ -134,8 +130,7 @@ class AnimalPage extends StatelessWidget {
                       subtitle: animalSound.subtitle,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) =>
-                              SoundPage(selectedAnimalSound: animalSound),
+                          builder: (context) => SoundPage(selectedAnimalSound: animalSound),
                         ),
                       ),
                     ),

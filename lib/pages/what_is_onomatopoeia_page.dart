@@ -10,10 +10,7 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
   const WhatIsOnomatopoeiaPage({Key? key}) : super(key: key);
 
   Query<HeaderImage> get headerImageQuery {
-    return FirebaseFirestore.instance
-        .collection('headerImages')
-        .orderBy('createdAt', descending: true)
-        .withConverter(
+    return FirebaseFirestore.instance.collection('headerImages').orderBy('createdAt', descending: true).withConverter(
           fromFirestore: (snapshot, _) => HeaderImage.fromMap(snapshot.data()!),
           toFirestore: (headerImage, _) => headerImage.toMap(),
         );
@@ -28,20 +25,19 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Stack(
-                children: [
-                  FirestoreQueryBuilder<HeaderImage>(
-                    pageSize: 7,
-                    query: headerImageQuery,
-                    builder: (context, snapshot, _) {
-                      if (snapshot.isFetching) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      return CarouselSlider.builder(
+              FirestoreQueryBuilder<HeaderImage>(
+                pageSize: 7,
+                query: headerImageQuery,
+                builder: (context, snapshot, _) {
+                  if (snapshot.isFetching) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return Stack(
+                    children: [
+                      CarouselSlider.builder(
                         itemCount: snapshot.docs.length,
                         itemBuilder: (context, index, _) {
-                          final _scrollIndicatorDots = List.generate(
-                              snapshot.docs.length, (index) => index);
+                          final _scrollIndicatorDots = List.generate(snapshot.docs.length, (index) => index);
                           final headerImage = snapshot.docs[index].data();
                           return Stack(
                             children: [
@@ -71,24 +67,24 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
                               ? const NeverScrollableScrollPhysics()
                               : const PageScrollPhysics(),
                         ),
-                      );
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 12,
-                      top: 6,
-                    ),
-                    child: SizedBox(
-                      height: 21,
-                      width: 28,
-                      child: InkWell(
-                        onTap: () => Navigator.of(context).pop(),
-                        child: Image.asset('assets/images/home_icon_white.png'),
                       ),
-                    ),
-                  ),
-                ],
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 12,
+                          top: 6,
+                        ),
+                        child: SizedBox(
+                          height: 21,
+                          width: 28,
+                          child: InkWell(
+                            onTap: () => Navigator.of(context).pop(),
+                            child: Image.asset('assets/images/home_icon_white.png'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
               SizedBox(height: screenHeight / 50),
               const Text(
@@ -162,9 +158,7 @@ class _ScrollIndicator extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: _scrollIndicatorDots.map(
         (dotIndex) {
-          return dotIndex == index
-              ? const _SelectedDot()
-              : const _UnSelectedDot();
+          return dotIndex == index ? const _SelectedDot() : const _UnSelectedDot();
         },
       ).toList(),
     );

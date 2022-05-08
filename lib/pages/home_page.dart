@@ -13,10 +13,7 @@ class HomePage extends StatelessWidget {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   Query<Animal> animalQuery() {
-    return _firebaseFirestore
-        .collection('animals')
-        .orderBy('createdAt')
-        .withConverter(
+    return _firebaseFirestore.collection('animals').orderBy('createdAt').withConverter(
           fromFirestore: (snapshot, _) => Animal.fromMap(snapshot.data()!),
           toFirestore: (animal, _) => animal.toMap(),
         );
@@ -30,17 +27,16 @@ class HomePage extends StatelessWidget {
       backgroundColor: AnimalOnomatopoeiaColor.yellow,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 19),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 21),
-                Image.asset(
-                  'assets/images/main_title1.png',
-                  height: 153.51,
-                  width: 205.95,
+                const SizedBox(height: 24),
+                SizedBox(
+                  height: 160,
+                  child: Image.asset('assets/images/main_title1.png'),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 16),
                 TextButton(
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(
@@ -59,7 +55,7 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 24),
                 FirestoreQueryBuilder<Animal>(
                   query: animalQuery(),
                   builder: (context, snapshot, _) {
@@ -70,8 +66,9 @@ class HomePage extends StatelessWidget {
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: snapshot.docs.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 16,
                           crossAxisCount: 2,
                         ),
                         itemBuilder: (context, index) {
@@ -81,12 +78,10 @@ class HomePage extends StatelessWidget {
                             screenWidth: screenWidth,
                             imageUrl: animal.imageUrl,
                             animalName: animal.name,
-                            onTap: animal.onomatopoeiaVideoUrl
-                                    .startsWith('https://')
+                            onTap: animal.onomatopoeiaVideoUrl != null
                                 ? () => Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            AnimalPage(selectedAnimal: animal),
+                                        builder: (context) => AnimalPage(selectedAnimal: animal),
                                       ),
                                     )
                                 : null,
@@ -96,6 +91,7 @@ class HomePage extends StatelessWidget {
                     }
                   },
                 ),
+                const SizedBox(height: 24),
               ],
             ),
           ),
@@ -128,38 +124,42 @@ class _AnimalTile extends StatelessWidget {
       child: Column(
         children: [
           if (!imageUrl.startsWith('https://'))
-            Container(
-              height: screenHeight / 6.9,
-              width: screenWidth / 2.6,
-              color: AnimalOnomatopoeiaColor.blue,
+            AspectRatio(
+              aspectRatio: 5 / 4,
+              child: Container(
+                color: AnimalOnomatopoeiaColor.blue,
+              ),
+            )
+          else
+            AspectRatio(
+              aspectRatio: 5 / 4,
+              child: Stack(
+                children: [
+                  Container(
+                    color: AnimalOnomatopoeiaColor.blue,
+                  ),
+                  AspectRatio(
+                    aspectRatio: 5 / 4,
+                    child: Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          if (imageUrl.startsWith('https://'))
-            Stack(
-              children: [
-                Container(
-                  height: screenHeight / 6.9,
-                  width: screenWidth / 2.6,
-                  color: AnimalOnomatopoeiaColor.blue,
-                ),
-                Image.network(
-                  imageUrl,
-                  height: screenHeight / 6.9,
-                  width: screenWidth / 2.6,
-                  fit: BoxFit.cover,
-                ),
-              ],
-            ),
-          Container(
-            height: screenHeight / 18.1,
-            width: screenWidth / 2.6,
-            color: Colors.white,
-            child: Center(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Text(
-                  animalName,
-                  style: const TextStyle(
-                    color: AnimalOnomatopoeiaColor.gray1,
+          AspectRatio(
+            aspectRatio: 5 / 1,
+            child: Container(
+              color: Colors.white,
+              child: Center(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Text(
+                    animalName,
+                    style: const TextStyle(
+                      color: AnimalOnomatopoeiaColor.gray1,
+                    ),
                   ),
                 ),
               ),
