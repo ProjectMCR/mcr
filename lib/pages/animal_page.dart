@@ -1,21 +1,36 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/models/animal_sound.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../colors.dart';
-import '../widgets/youtube_player.dart';
 import 'sound_page.dart';
 
-class AnimalPage extends StatelessWidget {
-  AnimalPage({
+class AnimalPage extends StatefulWidget {
+  const AnimalPage({
     Key? key,
     required this.selectedAnimal,
   }) : super(key: key);
 
   final Animal selectedAnimal;
+
+  @override
+  State<AnimalPage> createState() => _AnimalPageState();
+}
+
+class _AnimalPageState extends State<AnimalPage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    // Enable virtual display.
+    if (Platform.isAndroid) WebView.platform = AndroidWebView();
+  }
 
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
     return _firebaseFirestore
@@ -58,8 +73,9 @@ class AnimalPage extends StatelessWidget {
               SizedBox(
                 height: screenHeight / 3,
                 width: screenWidth,
-                child: YoutubePlayer(
-                  videoUrl: selectedAnimal.onomatopoeiaVideoUrl,
+                child: const WebView(
+                  initialUrl: 'https://animalberks.github.io/?docid=lion001',
+                  javascriptMode: JavascriptMode.unrestricted,
                 ),
               ),
               const SizedBox(height: 14),
@@ -83,7 +99,7 @@ class AnimalPage extends StatelessWidget {
               SizedBox(
                 width: 245,
                 child: Text(
-                  '動画：${selectedAnimal.informationOnVideo}',
+                  '動画：${widget.selectedAnimal.informationOnVideo}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AnimalOnomatopoeiaColor.gray1,
@@ -103,7 +119,7 @@ class AnimalPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  '${selectedAnimal.name}さんの気持ちわかるかな？',
+                  '${widget.selectedAnimal.name}さんの気持ちわかるかな？',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 18,
@@ -115,7 +131,7 @@ class AnimalPage extends StatelessWidget {
               FirestoreListView<AnimalSound>(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                query: animalSoundQuery(selectedAnimal),
+                query: animalSoundQuery(widget.selectedAnimal),
                 itemBuilder: (context, snapshot) {
                   final animalSound = snapshot.data();
                   return Padding(
