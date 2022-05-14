@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/models/animal_sound.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import '../colors.dart';
 import 'sound_page.dart';
@@ -25,12 +23,12 @@ class AnimalPage extends StatefulWidget {
 class _AnimalPageState extends State<AnimalPage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
-  @override
-  void initState() {
-    super.initState();
-    // Enable virtual display.
-    if (Platform.isAndroid) WebView.platform = AndroidWebView();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Enable virtual display.
+  //   if (Platform.isAndroid) WebView.platform = AndroidWebView();
+  // }
 
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
     return _firebaseFirestore
@@ -73,9 +71,18 @@ class _AnimalPageState extends State<AnimalPage> {
               SizedBox(
                 height: screenHeight / 3,
                 width: screenWidth,
-                child: const WebView(
-                  initialUrl: 'https://animalberks.github.io/?docid=lion001',
-                  javascriptMode: JavascriptMode.unrestricted,
+                child: InAppWebView(
+                  initialOptions: InAppWebViewGroupOptions(
+                    crossPlatform: InAppWebViewOptions(
+                      // Set to true to prevent HTML5 audio or video from autoplaying. The default value is true.
+                      mediaPlaybackRequiresUserGesture: false,
+                    ),
+                  ),
+                  initialUrlRequest: URLRequest(
+                    url: Uri.parse(
+                      'https://animalberks.github.io/?docid=lion001',
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 14),
