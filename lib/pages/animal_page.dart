@@ -55,9 +55,8 @@ class AnimalPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(
-                height: screenHeight / 3,
-                width: screenWidth,
+              AspectRatio(
+                aspectRatio: 16 / 9.5,
                 child: InAppWebView(
                   initialOptions: InAppWebViewGroupOptions(
                     crossPlatform: InAppWebViewOptions(
