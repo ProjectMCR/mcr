@@ -20,6 +20,7 @@ class YoutubePlayer extends StatelessWidget {
         loop: true,
         playlist: [id],
         interfaceLanguage: 'ja',
+        autoPlay: true,
       ),
     );
   }

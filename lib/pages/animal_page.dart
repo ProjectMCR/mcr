@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/models/animal_sound.dart';
 
 import '../colors.dart';
-import '../widgets/youtube_player.dart';
 import 'sound_page.dart';
 
 class AnimalPage extends StatelessWidget {
@@ -55,11 +55,17 @@ class AnimalPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(
-                height: screenHeight / 3,
-                width: screenWidth,
-                child: YoutubePlayer(
-                  videoUrl: selectedAnimal.onomatopoeiaVideoUrl,
+              AspectRatio(
+                aspectRatio: 16 / 9.5,
+                child: InAppWebView(
+                  initialOptions: InAppWebViewGroupOptions(
+                    crossPlatform: InAppWebViewOptions(
+                      mediaPlaybackRequiresUserGesture: false,
+                    ),
+                  ),
+                  initialUrlRequest: URLRequest(
+                    url: Uri.parse(selectedAnimal.onomatopoeiaVideoUrl),
+                  ),
                 ),
               ),
               const SizedBox(height: 14),
