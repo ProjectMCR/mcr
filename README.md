@@ -15,3 +15,7 @@ Firestoreにはそのリンクを持たせます。
 まずはFirebaseStrageを使用してしまっていいです。
 
 
+# iOS のビルドとアップロード
+
+`flutter build ipa --export-options-plist=ExportOptions.plist`
+
