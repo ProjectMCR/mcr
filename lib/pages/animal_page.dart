@@ -62,6 +62,9 @@ class AnimalPage extends StatelessWidget {
                     crossPlatform: InAppWebViewOptions(
                       mediaPlaybackRequiresUserGesture: false,
                     ),
+                    ios: IOSInAppWebViewOptions(
+                      allowsInlineMediaPlayback: true,
+                    ),
                   ),
                   initialUrlRequest: URLRequest(
                     url: Uri.parse(selectedAnimal.onomatopoeiaVideoUrl),
