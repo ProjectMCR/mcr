@@ -67,7 +67,9 @@ class AnimalPage extends StatelessWidget {
                     ),
                   ),
                   initialUrlRequest: URLRequest(
-                    url: Uri.parse(selectedAnimal.onomatopoeiaVideoUrl),
+                    url: Uri.parse(
+                      'http://192.168.1.3:5500/animalberks/index.html',
+                    ),
                   ),
                 ),
               ),
