@@ -138,7 +138,9 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
                   ),
                 ),
               ),
-              TextButton(
+              Padding(
+                padding: const EdgeInsets.only(top: 30.0),
+                child: TextButton(
                   onPressed: () async {
                     final url = Uri.parse(
                       'https://forms.gle/Df1QEFvyBrNjv2Na7',
@@ -147,7 +149,24 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
                       launchUrl(url);
                     }
                   },
-                  child: const Text('創作オノマトペに参加'))
+                  child: const Text(
+                    '創作オノマトペに参加',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    side: const BorderSide(
+                      color: Colors.blue,
+                    ),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
