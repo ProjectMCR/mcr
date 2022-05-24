@@ -1,5 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.ac.tech.tsukuba.mcr">
+    <queries>
+    <intent>
+        <!-- androidからGoogleフォームに遷移する時に必要 -->
+        <action android:name="android.intent.action.VIEW" />
+        <data android:scheme="https" />
+    </intent>
+</queries>
    <application
         android:label="mcr"
         android:name="${applicationName}"
