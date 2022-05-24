@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:mcr/models/header_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../colors.dart';
 
@@ -137,6 +138,16 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
                   ),
                 ),
               ),
+              TextButton(
+                  onPressed: () async {
+                    final url = Uri.parse(
+                      'https://forms.gle/Df1QEFvyBrNjv2Na7',
+                    );
+                    if (await canLaunchUrl(url)) {
+                      launchUrl(url);
+                    }
+                  },
+                  child: const Text('創作オノマトペに参加'))
             ],
           ),
         ),
