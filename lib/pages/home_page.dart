@@ -1,25 +1,41 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterfire_ui/firestore.dart';
 import 'package:mcr/pages/what_is_onomatopoeia_page.dart';
 
 import '../colors.dart';
 import '../models/animal.dart';
 import 'animal_page.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   Query<Animal> animalQuery() {
-    return _firebaseFirestore
-        .collection('animals')
-        .orderBy('createdAt')
-        .withConverter(
+    return _firebaseFirestore.collection('animals').withConverter(
           fromFirestore: (snapshot, _) => Animal.fromMap(snapshot.data()!),
           toFirestore: (animal, _) => animal.toMap(),
         );
+  }
+
+  List<Animal> animals = [];
+
+  Future<void> fetchAnimals() async {
+    final snapshot = await animalQuery().get();
+    animals = snapshot.docs.map((e) => e.data()).toList();
+    animals.sort((a, b) => a.index.compareTo(b.index));
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAnimals();
   }
 
   @override
@@ -60,40 +76,29 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 25),
-                FirestoreQueryBuilder<Animal>(
-                  query: animalQuery(),
-                  builder: (context, snapshot, _) {
-                    if (snapshot.isFetching) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else {
-                      return GridView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: snapshot.docs.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                        ),
-                        itemBuilder: (context, index) {
-                          final animal = snapshot.docs[index].data();
-                          return _AnimalTile(
-                            screenHeight: screenHeight,
-                            screenWidth: screenWidth,
-                            imageUrl: animal.imageUrl,
-                            animalName: animal.name,
-                            onTap: animal.onomatopoeiaVideoUrl
-                                    .startsWith('https://')
-                                ? () => Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            AnimalPage(selectedAnimal: animal),
-                                      ),
-                                    )
-                                : null,
-                          );
-                        },
-                      );
-                    }
+                GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: animals.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                  ),
+                  itemBuilder: (context, index) {
+                    final animal = animals[index];
+                    return _AnimalTile(
+                      screenHeight: screenHeight,
+                      screenWidth: screenWidth,
+                      imageUrl: animal.imageUrl,
+                      animalName: animal.name,
+                      onTap: animal.onomatopoeiaVideoUrl.startsWith('https://')
+                          ? () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AnimalPage(selectedAnimal: animal),
+                                ),
+                              )
+                          : null,
+                    );
                   },
                 ),
               ],

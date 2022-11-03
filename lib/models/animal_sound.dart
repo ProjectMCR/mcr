@@ -11,6 +11,7 @@ class AnimalSound {
     required this.subtitle,
     required this.videoUrl,
     required this.soundDescription,
+    required this.index,
   });
 
   factory AnimalSound.fromMap(Map<String, dynamic> data) => AnimalSound(
@@ -22,6 +23,7 @@ class AnimalSound {
         subtitle: data['subtitle'],
         videoUrl: data['videoUrl'],
         soundDescription: data['soundDescription'],
+        index: data['index'] ?? -1,
       );
 
   factory AnimalSound.initialData() => AnimalSound(
@@ -33,6 +35,7 @@ class AnimalSound {
         subtitle: '',
         videoUrl: '',
         soundDescription: '',
+        index: -1,
       );
 
   Timestamp createdAt;
@@ -43,6 +46,7 @@ class AnimalSound {
   String subtitle;
   String videoUrl;
   String soundDescription;
+  int index;
 
   Map<String, dynamic> toMap() => {
         'createdAt': createdAt,
@@ -53,5 +57,6 @@ class AnimalSound {
         'subtitle': subtitle,
         'videoUrl': subtitle,
         'soundDescription': soundDescription,
+        'index': index,
       };
 }

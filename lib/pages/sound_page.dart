@@ -40,12 +40,13 @@ class SoundPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: screenWidth,
-                child: YoutubePlayer(
-                  videoUrl: selectedAnimalSound.videoUrl,
+              if (selectedAnimalSound.videoUrl.isNotEmpty)
+                SizedBox(
+                  height: screenWidth,
+                  child: YoutubePlayer(
+                    videoUrl: selectedAnimalSound.videoUrl,
+                  ),
                 ),
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Column(

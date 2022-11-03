@@ -1,20 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:flutterfire_ui/firestore.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/models/animal_sound.dart';
 
 import '../colors.dart';
 import 'sound_page.dart';
 
-class AnimalPage extends StatelessWidget {
-  AnimalPage({
+class AnimalPage extends StatefulWidget {
+  const AnimalPage({
     Key? key,
     required this.selectedAnimal,
   }) : super(key: key);
 
   final Animal selectedAnimal;
+
+  @override
+  State<AnimalPage> createState() => _AnimalPageState();
+}
+
+class _AnimalPageState extends State<AnimalPage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
@@ -22,11 +27,25 @@ class AnimalPage extends StatelessWidget {
         .collection('animals')
         .doc(selectedAnimal.animalRef.id)
         .collection('animalSounds')
-        .orderBy('createdAt')
         .withConverter(
           fromFirestore: (snapshot, _) => AnimalSound.fromMap(snapshot.data()!),
           toFirestore: (animalSound, _) => animalSound.toMap(),
         );
+  }
+
+  List<AnimalSound> animalSounds = [];
+
+  Future<void> fetchAnimalSounds() async {
+    final snapshot = await animalSoundQuery(widget.selectedAnimal).get();
+    animalSounds = snapshot.docs.map((e) => e.data()).toList();
+    animalSounds.sort(((a, b) => a.index.compareTo(b.index)));
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAnimalSounds();
   }
 
   @override
@@ -67,7 +86,7 @@ class AnimalPage extends StatelessWidget {
                     ),
                   ),
                   initialUrlRequest: URLRequest(
-                    url: Uri.parse(selectedAnimal.onomatopoeiaVideoUrl),
+                    url: Uri.parse(widget.selectedAnimal.onomatopoeiaVideoUrl),
                   ),
                 ),
               ),
@@ -92,7 +111,7 @@ class AnimalPage extends StatelessWidget {
               SizedBox(
                 width: 245,
                 child: Text(
-                  '動画：${selectedAnimal.informationOnVideo}',
+                  '動画：${widget.selectedAnimal.informationOnVideo}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AnimalOnomatopoeiaColor.gray1,
@@ -112,7 +131,7 @@ class AnimalPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  '${selectedAnimal.name}さんの気持ちわかるかな？',
+                  '${widget.selectedAnimal.name}さんの気持ちわかるかな？',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 18,
@@ -121,12 +140,12 @@ class AnimalPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              FirestoreListView<AnimalSound>(
+              ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                query: animalSoundQuery(selectedAnimal),
-                itemBuilder: (context, snapshot) {
-                  final animalSound = snapshot.data();
+                itemCount: animalSounds.length,
+                itemBuilder: (context, index) {
+                  final animalSound = animalSounds[index];
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                     child: _AnimalSoundTile(

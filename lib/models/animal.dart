@@ -8,6 +8,7 @@ class Animal {
     required this.onomatopoeiaVideoUrl,
     required this.informationOnVideo,
     required this.imageUrl,
+    required this.index,
   });
 
   factory Animal.fromMap(Map<String, dynamic> data) => Animal(
@@ -17,6 +18,7 @@ class Animal {
         onomatopoeiaVideoUrl: data['onomatopoeiaVideoUrl'],
         informationOnVideo: data['informationOnVideo'],
         imageUrl: data['imageUrl'],
+        index: data['index'] ?? -1,
       );
 
   factory Animal.initialData() => Animal(
@@ -26,6 +28,7 @@ class Animal {
         onomatopoeiaVideoUrl: '',
         informationOnVideo: '',
         imageUrl: '',
+        index: -1,
       );
 
   Timestamp createdAt;
@@ -34,6 +37,7 @@ class Animal {
   String onomatopoeiaVideoUrl;
   String informationOnVideo;
   String imageUrl;
+  int index;
 
   Map<String, dynamic> toMap() => {
         'createdAt': createdAt,
@@ -42,5 +46,6 @@ class Animal {
         'onomatopoeiaVideoUrl': onomatopoeiaVideoUrl,
         'informationOnVideo': informationOnVideo,
         'imageUrl': imageUrl,
+        'index': index,
       };
 }
