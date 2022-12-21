@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -22,8 +24,10 @@ class AnimalPage extends StatefulWidget {
 
 class _AnimalPageState extends State<AnimalPage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  late VideoPlayerController _videoController;
-  
+  VideoPlayerController? _videoController;
+  //以下video playerに再生停止ボタンを付けるためのもの
+  // bool _onTouch = false;
+  // late Timer _timer;
 
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
     return _firebaseFirestore
@@ -45,17 +49,45 @@ class _AnimalPageState extends State<AnimalPage> {
     setState(() {});
   }
 
+
+  /// idからGoogleDriveのDirectDownloadリンクを生成する
+Uri generateDirectDownloadUrl() {
+  // var srcUrl = widget.selectedAnimal.onomatopoeiaVideoUrl;
+  var srcUrl = "https://drive.google.com/file/d/1Hz36ulvkPkIEn3Eam-hsgIp_PAAZ5qlh/view?usp=share_link";
+
+  if (srcUrl.endsWith("/")) {
+    srcUrl = srcUrl.substring(0, srcUrl.length -1);
+  }
+
+  List<String> parts = srcUrl.split('/');
+  //get id
+ final id = parts[parts.length - 2];
+  
+  final baseUrl = Uri.parse('https://drive.google.com/uc');
+  final resultUrl = baseUrl.replace(
+    queryParameters: {
+      'export': 'download',
+      'id': id,
+    },
+  );
+  return resultUrl;
+}
+
 //video player初期化
   Future<void> initializeVideoPlayer() async {
     _videoController = VideoPlayerController.network(
-      widget.selectedAnimal.onomatopoeiaVideoUrl,
+      generateDirectDownloadUrl().toString(),
     );
-    await _videoController.initialize()
+
+    await _videoController?.initialize();
     //初期化されたら、自動で再生する
-    .then((_) => _videoController.play());
+   await _videoController?.play();
     if (mounted) {
       setState(() {});
     }
+     //ループ再生
+    _videoController?.setLooping(true);
+
   }
 
   @override
@@ -63,14 +95,13 @@ class _AnimalPageState extends State<AnimalPage> {
     super.initState();
     fetchAnimalSounds();
     initializeVideoPlayer();
-    //ループ再生
-    _videoController.setLooping(true);
   }
 
   @override
   void dispose() {
     super.dispose();
-    _videoController.dispose();
+    _videoController?.dispose();
+    // _timer.cancel();
   }
 
   @override
@@ -101,13 +132,44 @@ class _AnimalPageState extends State<AnimalPage> {
             children: [
               AspectRatio(
                 aspectRatio: 16 / 9.5,
-                child: _videoController.value.isInitialized 
+                child:  _videoController != null && _videoController!.value.isInitialized 
+                //動画再生部分
                     ? Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        VideoPlayer(_videoController),
-                        VideoProgressIndicator(_videoController, allowScrubbing: true)
-                        ]) 
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          VideoPlayer(_videoController!),
+                          Visibility(
+                              visible: false,
+                              child: Container(
+                                color: Colors.grey.withOpacity(0.5),
+                                alignment: Alignment.center,
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    shape: const CircleBorder(side: BorderSide(color: Colors.white)),
+                                  ),
+                                  child: Icon(_videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white,),
+                                  onPressed: () {
+                                    // _timer.cancel();
+                    
+                                    // pause while video is playing, play while video is pausing
+                                    setState(() {
+                                      _videoController!.value.isPlaying ?
+                                      _videoController!.pause() :
+                                      _videoController!.play();
+                                    });
+                    
+                                    // Auto dismiss overlay after 1 second
+                                    // _timer = Timer.periodic(const Duration(milliseconds: 1000), (_) {
+                                    //   setState(() {
+                                    //     _onTouch = false;
+                                    //   });
+                                    // });
+                                  },
+                                ),
+                              ),
+                            ),
+                          VideoProgressIndicator(_videoController!, allowScrubbing: true)
+                        ])
                     : const Center(child: CircularProgressIndicator(),),
                     ),
               const SizedBox(height: 14),
