@@ -25,9 +25,6 @@ class AnimalPage extends StatefulWidget {
 class _AnimalPageState extends State<AnimalPage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   VideoPlayerController? _videoController;
-  //以下video playerに再生停止ボタンを付けるためのもの
-  // bool _onTouch = false;
-  // late Timer _timer;
 
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
     return _firebaseFirestore
@@ -50,33 +47,10 @@ class _AnimalPageState extends State<AnimalPage> {
   }
 
 
-  /// idからGoogleDriveのDirectDownloadリンクを生成する
-Uri generateDirectDownloadUrl() {
-  // var srcUrl = widget.selectedAnimal.onomatopoeiaVideoUrl;
-  var srcUrl = "https://drive.google.com/file/d/1Hz36ulvkPkIEn3Eam-hsgIp_PAAZ5qlh/view?usp=share_link";
-
-  if (srcUrl.endsWith("/")) {
-    srcUrl = srcUrl.substring(0, srcUrl.length -1);
-  }
-
-  List<String> parts = srcUrl.split('/');
-  //get id
- final id = parts[parts.length - 2];
-  
-  final baseUrl = Uri.parse('https://drive.google.com/uc');
-  final resultUrl = baseUrl.replace(
-    queryParameters: {
-      'export': 'download',
-      'id': id,
-    },
-  );
-  return resultUrl;
-}
-
 //video player初期化
   Future<void> initializeVideoPlayer() async {
     _videoController = VideoPlayerController.network(
-      generateDirectDownloadUrl().toString(),
+      widget.selectedAnimal.onomatopoeiaVideoUrl.toString(),
     );
 
     await _videoController?.initialize();
@@ -101,7 +75,6 @@ Uri generateDirectDownloadUrl() {
   void dispose() {
     super.dispose();
     _videoController?.dispose();
-    // _timer.cancel();
   }
 
   @override
@@ -138,37 +111,7 @@ Uri generateDirectDownloadUrl() {
                         alignment: Alignment.bottomCenter,
                         children: [
                           VideoPlayer(_videoController!),
-                          Visibility(
-                              visible: false,
-                              child: Container(
-                                color: Colors.grey.withOpacity(0.5),
-                                alignment: Alignment.center,
-                                child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    shape: const CircleBorder(side: BorderSide(color: Colors.white)),
-                                  ),
-                                  child: Icon(_videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white,),
-                                  onPressed: () {
-                                    // _timer.cancel();
-                    
-                                    // pause while video is playing, play while video is pausing
-                                    setState(() {
-                                      _videoController!.value.isPlaying ?
-                                      _videoController!.pause() :
-                                      _videoController!.play();
-                                    });
-                    
-                                    // Auto dismiss overlay after 1 second
-                                    // _timer = Timer.periodic(const Duration(milliseconds: 1000), (_) {
-                                    //   setState(() {
-                                    //     _onTouch = false;
-                                    //   });
-                                    // });
-                                  },
-                                ),
-                              ),
-                            ),
-                          VideoProgressIndicator(_videoController!, allowScrubbing: true)
+                          VideoProgressIndicator(_videoController!, allowScrubbing: true),
                         ])
                     : const Center(child: CircularProgressIndicator(),),
                     ),
