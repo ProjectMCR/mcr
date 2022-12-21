@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/models/animal_sound.dart';
+import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
 import 'sound_page.dart';
@@ -21,6 +22,8 @@ class AnimalPage extends StatefulWidget {
 
 class _AnimalPageState extends State<AnimalPage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  late VideoPlayerController _videoController;
+  
 
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
     return _firebaseFirestore
@@ -42,10 +45,32 @@ class _AnimalPageState extends State<AnimalPage> {
     setState(() {});
   }
 
+//video player初期化
+  Future<void> initializeVideoPlayer() async {
+    _videoController = VideoPlayerController.network(
+      widget.selectedAnimal.onomatopoeiaVideoUrl,
+    );
+    await _videoController.initialize()
+    //初期化されたら、自動で再生する
+    .then((_) => _videoController.play());
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     fetchAnimalSounds();
+    initializeVideoPlayer();
+    //ループ再生
+    _videoController.setLooping(true);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _videoController.dispose();
   }
 
   @override
@@ -76,20 +101,15 @@ class _AnimalPageState extends State<AnimalPage> {
             children: [
               AspectRatio(
                 aspectRatio: 16 / 9.5,
-                child: InAppWebView(
-                  initialOptions: InAppWebViewGroupOptions(
-                    crossPlatform: InAppWebViewOptions(
-                      mediaPlaybackRequiresUserGesture: false,
+                child: _videoController.value.isInitialized 
+                    ? Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        VideoPlayer(_videoController),
+                        VideoProgressIndicator(_videoController, allowScrubbing: true)
+                        ]) 
+                    : const Center(child: CircularProgressIndicator(),),
                     ),
-                    ios: IOSInAppWebViewOptions(
-                      allowsInlineMediaPlayback: true,
-                    ),
-                  ),
-                  initialUrlRequest: URLRequest(
-                    url: Uri.parse(widget.selectedAnimal.onomatopoeiaVideoUrl),
-                  ),
-                ),
-              ),
               const SizedBox(height: 14),
               const Text(
                 'こんなふうにきこえたよ',
