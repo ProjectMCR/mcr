@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/models/animal_sound.dart';
 import 'package:video_player/video_player.dart';
+import 'package:spritewidget/spritewidget.dart';
+
 
 import '../colors.dart';
 import 'sound_page.dart';
@@ -25,6 +27,7 @@ class AnimalPage extends StatefulWidget {
 class _AnimalPageState extends State<AnimalPage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   VideoPlayerController? _videoController;
+  late NodeWithSize _rootNode;
 
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
     return _firebaseFirestore
@@ -69,12 +72,19 @@ class _AnimalPageState extends State<AnimalPage> {
     super.initState();
     fetchAnimalSounds();
     initializeVideoPlayer();
+
+    _rootNode = Scene(
+      Size(
+        200,
+        200 / _videoController!.value.aspectRatio,
+      ),
+    );
   }
 
   @override
   void dispose() {
-    super.dispose();
     _videoController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -111,6 +121,10 @@ class _AnimalPageState extends State<AnimalPage> {
                         alignment: Alignment.bottomCenter,
                         children: [
                           VideoPlayer(_videoController!),
+                          SpriteWidget(
+                            _rootNode,
+                            transformMode: SpriteBoxTransformMode.fixedWidth,
+                          ),
                           VideoProgressIndicator(_videoController!, allowScrubbing: true),
                         ])
                     : const Center(child: CircularProgressIndicator(),),
@@ -200,6 +214,49 @@ class _AnimalPageState extends State<AnimalPage> {
         ),
       ),
     );
+  }
+}
+
+class Scene extends NodeWithSize {
+  late List<Label> _animalOnomatopoeiaLabelList;
+  final _animalOnomatopoeia =
+  ["むむーん","ふぉぉん","フェーン","エーン","ぱおーーん","プァーン","ふぅーふぅー","えんえーん","ピェオー　ピェオー","パオーン　パオーン"];
+  Scene(Size size) : super(size) {
+    _initialize();
+  }
+
+  void _initialize() {
+    final random = Random();
+
+    var labelIndex = 0.0;
+    _animalOnomatopoeiaLabelList = _animalOnomatopoeia.map((text) {
+      final label = Label(
+        text,
+        textAlign: TextAlign.left,
+        textStyle: const TextStyle(fontSize: 12, color: Colors.black),
+      );
+      label.position =
+          Offset(size.width + labelIndex * 100.0, random.nextDouble() * size.height - 30);
+      labelIndex += 1;
+
+      return label;
+    }).toList();
+
+    for (var label in _animalOnomatopoeiaLabelList) {
+      addChild(label);
+    }
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    for (var label in _animalOnomatopoeiaLabelList) {
+      label.position = Offset(label.position.dx - 1, label.position.dy);
+
+      if (label.position.dx <  - 800) {
+        label.position = Offset(size.width, label.position.dy);
+      }
+    }
   }
 }
 

@@ -23,6 +23,7 @@ dependencies:
   youtube_player_iframe: ^2.2.2
   flutter_inappwebview: ^5.4.3+7
   url_launcher: ^6.1.2
+  spritewidget: ^2.0.1
 
 dev_dependencies:
   flutter_test:
