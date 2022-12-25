@@ -236,7 +236,7 @@ class Scene extends NodeWithSize {
         textStyle: const TextStyle(fontSize: 12, color: Colors.black),
       );
       label.position =
-          Offset(size.width + labelIndex * 100.0, random.nextDouble() * size.height - 30);
+          Offset(size.width + labelIndex * 100.0, random.nextDouble() * 100 );
       labelIndex += 1;
 
       return label;
@@ -253,7 +253,7 @@ class Scene extends NodeWithSize {
     for (var label in _animalOnomatopoeiaLabelList) {
       label.position = Offset(label.position.dx - 1, label.position.dy);
 
-      if (label.position.dx <  - 800) {
+      if (label.position.dx <  - 900) {
         label.position = Offset(size.width, label.position.dy);
       }
     }
