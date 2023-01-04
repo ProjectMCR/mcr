@@ -20,8 +20,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
+    return const AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
         // Android のステータスバーアイコンの色が変更される
         statusBarIconBrightness: Brightness.light,
         // iOS のステータスバーの文字色が変更される
