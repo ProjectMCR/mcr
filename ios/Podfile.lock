@@ -602,6 +602,8 @@ PODS:
   - AppAuth/Core (1.6.0)
   - AppAuth/ExternalUserAgent (1.6.0):
     - AppAuth/Core
+  - background_fetch (1.1.2):
+    - Flutter
   - BoringSSL-GRPC (0.0.24):
     - BoringSSL-GRPC/Implementation (= 0.0.24)
     - BoringSSL-GRPC/Interface (= 0.0.24)
@@ -613,6 +615,9 @@ PODS:
     - firebase_core
     - Flutter
     - nanopb (< 2.30910.0, >= 2.30908.0)
+  - CocoaLumberjack (3.7.4):
+    - CocoaLumberjack/Core (= 3.7.4)
+  - CocoaLumberjack/Core (3.7.4)
   - desktop_webview_auth (0.0.1):
     - Flutter
   - FBAEMKit (14.1.0):
@@ -682,6 +687,9 @@ PODS:
     - leveldb-library (~> 1.22)
     - nanopb (< 2.30910.0, >= 2.30908.0)
   - Flutter (1.0.0)
+  - flutter_background_geolocation (4.8.5):
+    - CocoaLumberjack (~> 3.7.2)
+    - Flutter
   - flutter_facebook_auth (4.4.1):
     - FBSDKLoginKit (= 14.1.0)
     - Flutter
@@ -795,6 +803,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - background_fetch (from `.symlinks/plugins/background_fetch/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - desktop_webview_auth (from `.symlinks/plugins/desktop_webview_auth/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -802,6 +811,7 @@ DEPENDENCIES:
   - firebase_database (from `.symlinks/plugins/firebase_database/ios`)
   - firebase_dynamic_links (from `.symlinks/plugins/firebase_dynamic_links/ios`)
   - Flutter (from `Flutter`)
+  - flutter_background_geolocation (from `.symlinks/plugins/flutter_background_geolocation/ios`)
   - flutter_facebook_auth (from `.symlinks/plugins/flutter_facebook_auth/ios`)
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/ios`)
@@ -816,6 +826,7 @@ SPEC REPOS:
     - abseil
     - AppAuth
     - BoringSSL-GRPC
+    - CocoaLumberjack
     - FBAEMKit
     - FBSDKCoreKit
     - FBSDKCoreKit_Basics
@@ -840,6 +851,8 @@ SPEC REPOS:
     - PromisesObjC
 
 EXTERNAL SOURCES:
+  background_fetch:
+    :path: ".symlinks/plugins/background_fetch/ios"
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
   desktop_webview_auth:
@@ -854,6 +867,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_dynamic_links/ios"
   Flutter:
     :path: Flutter
+  flutter_background_geolocation:
+    :path: ".symlinks/plugins/flutter_background_geolocation/ios"
   flutter_facebook_auth:
     :path: ".symlinks/plugins/flutter_facebook_auth/ios"
   flutter_inappwebview:
@@ -874,8 +889,10 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   abseil: ebe5b5529fb05d93a8bdb7951607be08b7fa71bc
   AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
+  background_fetch: aaf8fc9d1da7f04e5373aabd4bb239704a5be6eb
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
   cloud_firestore: 5e5bb98722f66e820bf1aa7b3c98ffc9b2450ffb
+  CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   desktop_webview_auth: d645139460ef203d50bd0cdb33356785dd939cce
   FBAEMKit: a899515e45476027f73aef377b5cffadcd56ca3a
   FBSDKCoreKit: 24f8bc8d3b5b2a8c5c656a1329492a12e8efa792
@@ -893,6 +910,7 @@ SPEC CHECKSUMS:
   FirebaseDynamicLinks: 51c81d07bd63155bb56d76b0abdda79c8a3d8d02
   FirebaseFirestore: 244f71ff14ef44f39e00b44d356eac708ce03103
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_background_geolocation: 761d38758ffff55a153e0a690d0d514d36512a29
   flutter_facebook_auth: 361ac7a57263ebf327f26089507ead0d66558ee8
   flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
   google_sign_in_ios: 4f85eb9f937450765c8573bb85fd8cd6a5af675c

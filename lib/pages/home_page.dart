@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
+    as bg;
 import 'package:mcr/pages/what_is_onomatopoeia_page.dart';
 
 import '../colors.dart';
@@ -32,10 +34,52 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
+  List<String> logs = [];
+
   @override
   void initState() {
     super.initState();
     fetchAnimals();
+    // Fired whenever a location is recorded
+    bg.BackgroundGeolocation.onLocation((bg.Location location) {
+      print('[location] - $location');
+
+      logs.add('[location ${DateTime.now()}] - $location');
+      setState(() {});
+    });
+
+    // Fired whenever the plugin changes motion-state (stationary->moving and vice-versa)
+    bg.BackgroundGeolocation.onMotionChange((bg.Location location) {
+      print('[motionchange] - $location');
+      logs.add('[motionchange ${DateTime.now()}] - $location');
+      setState(() {});
+    });
+
+    // Fired whenever the state of location-services changes.  Always fired at boot
+    bg.BackgroundGeolocation.onProviderChange((bg.ProviderChangeEvent event) {
+      print('[providerchange] - $event');
+      logs.add('[providerchange ${DateTime.now()}] - $event');
+      setState(() {});
+    });
+
+    ////
+    // 2.  Configure the plugin
+    //
+    bg.BackgroundGeolocation.ready(bg.Config(
+            desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
+            distanceFilter: 10.0,
+            stopOnTerminate: false,
+            startOnBoot: true,
+            debug: true,
+            logLevel: bg.Config.LOG_LEVEL_VERBOSE))
+        .then((bg.State state) {
+      if (!state.enabled) {
+        ////
+        // 3.  Start the plugin.
+        //
+        bg.BackgroundGeolocation.start();
+      }
+    });
   }
 
   @override
@@ -45,65 +89,78 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: AnimalOnomatopoeiaColor.yellow,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 19),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 21),
-                Image.asset(
-                  'assets/images/main_title1.png',
-                  height: 153.51,
-                  width: 205.95,
-                ),
-                const SizedBox(height: 14),
-                TextButton(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const WhatIsOnomatopoeiaPage(),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 19),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 21),
+                    Image.asset(
+                      'assets/images/main_title1.png',
+                      height: 153.51,
+                      width: 205.95,
                     ),
-                  ),
-                  child: const Text(
-                    'オノマトペとは',
-                    style: TextStyle(
-                      color: AnimalOnomatopoeiaColor.gray1,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      decoration: TextDecoration.underline,
-                      decorationColor: AnimalOnomatopoeiaColor.blue,
-                      decorationThickness: 1,
+                    const SizedBox(height: 14),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const WhatIsOnomatopoeiaPage(),
+                        ),
+                      ),
+                      child: const Text(
+                        'オノマトペとは',
+                        style: TextStyle(
+                          color: AnimalOnomatopoeiaColor.gray1,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AnimalOnomatopoeiaColor.blue,
+                          decorationThickness: 1,
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 25),
+                    GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: animals.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                      ),
+                      itemBuilder: (context, index) {
+                        final animal = animals[index];
+                        return _AnimalTile(
+                          screenHeight: screenHeight,
+                          screenWidth: screenWidth,
+                          imageUrl: animal.imageUrl,
+                          animalName: animal.name,
+                          onTap: animal.onomatopoeiaVideoUrl
+                                  .startsWith('https://')
+                              ? () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          AnimalPage(selectedAnimal: animal),
+                                    ),
+                                  )
+                              : null,
+                        );
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 25),
-                GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: animals.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
-                  itemBuilder: (context, index) {
-                    final animal = animals[index];
-                    return _AnimalTile(
-                      screenHeight: screenHeight,
-                      screenWidth: screenWidth,
-                      imageUrl: animal.imageUrl,
-                      animalName: animal.name,
-                      onTap: animal.onomatopoeiaVideoUrl.startsWith('https://')
-                          ? () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      AnimalPage(selectedAnimal: animal),
-                                ),
-                              )
-                          : null,
-                    );
-                  },
-                ),
-              ],
+              ),
             ),
-          ),
+            Container(
+              color: Colors.grey.withOpacity(.3),
+              height: 240,
+              child: SingleChildScrollView(
+                child: Text(logs.reversed.join('/')),
+              ),
+            )
+          ],
         ),
       ),
     );

@@ -24,6 +24,7 @@ dependencies:
   flutter_inappwebview: ^5.4.3+7
   url_launcher: ^6.1.2
   spritewidget: ^2.0.1
+  flutter_background_geolocation: "^4.8.1"
 
 dev_dependencies:
   flutter_test:
