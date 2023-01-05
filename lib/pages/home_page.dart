@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mcr/pages/what_is_onomatopoeia_page.dart';
 
 import '../colors.dart';
@@ -36,6 +39,21 @@ class _HomePageState extends State<HomePage> {
 
   List<String> logs = [];
 
+  final _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  Future<void> _initializeNotification() async {
+    const initializationSettingsIOS = DarwinInitializationSettings();
+    const initializationSettingsAndroid =
+        AndroidInitializationSettings('ic_notification');
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -43,9 +61,26 @@ class _HomePageState extends State<HomePage> {
     // Fired whenever a location is recorded
     bg.BackgroundGeolocation.onLocation((bg.Location location) {
       print('[location] - $location');
+      final latitude = location.coords.latitude;
+      final longitude = location.coords.longitude;
 
-      logs.add('[location ${DateTime.now()}] - $location');
+      const latitudeDestination = 35.1224305;
+      const longitudeDestination = 136.2814251;
+
+      final distance = distanceBetween(
+          latitude, longitude, latitudeDestination, longitudeDestination);
+
+      logs.add('[$distance location ${DateTime.now()}] - $location');
       setState(() {});
+
+      if (distance < 10) {
+        _flutterLocalNotificationsPlugin.show(
+          0,
+          '上山町集落センター',
+          '到着しました！',
+          null,
+        );
+      }
     });
 
     // Fired whenever the plugin changes motion-state (stationary->moving and vice-versa)
@@ -80,6 +115,7 @@ class _HomePageState extends State<HomePage> {
         bg.BackgroundGeolocation.start();
       }
     });
+    _initializeNotification();
   }
 
   @override
@@ -231,4 +267,22 @@ class _AnimalTile extends StatelessWidget {
       ),
     );
   }
+}
+
+double distanceBetween(
+  double latitude1,
+  double longitude1,
+  double latitude2,
+  double longitude2,
+) {
+  toRadians(double degree) => degree * pi / 180;
+  const double r = 6378137.0; // 地球の半径
+  final double f1 = toRadians(latitude1);
+  final double f2 = toRadians(latitude2);
+  final double l1 = toRadians(longitude1);
+  final double l2 = toRadians(longitude2);
+  final num a = pow(sin((f2 - f1) / 2), 2);
+  final double b = cos(f1) * cos(f2) * pow(sin((l2 - l1) / 2), 2);
+  final double d = 2 * r * asin(sqrt(a + b));
+  return d;
 }
