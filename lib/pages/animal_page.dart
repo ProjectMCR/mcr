@@ -29,6 +29,9 @@ class _AnimalPageState extends State<AnimalPage> {
   VideoPlayerController? _videoController;
   late NodeWithSize _rootNode;
 
+  bool _onTouch = false;
+  Timer? _timer;
+
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
     return _firebaseFirestore
         .collection('animals')
@@ -84,6 +87,7 @@ class _AnimalPageState extends State<AnimalPage> {
   @override
   void dispose() {
     _videoController?.dispose();
+    _timer!.cancel();
     super.dispose();
   }
 
@@ -113,22 +117,73 @@ class _AnimalPageState extends State<AnimalPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              AspectRatio(
-                aspectRatio: 16 / 9.5,
-                child:  _videoController != null && _videoController!.value.isInitialized 
-                //動画再生部分
-                    ? Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          VideoPlayer(_videoController!),
-                          SpriteWidget(
-                            _rootNode,
-                            transformMode: SpriteBoxTransformMode.fixedWidth,
-                          ),
-                          VideoProgressIndicator(_videoController!, allowScrubbing: true),
-                        ])
-                    : const Center(child: CircularProgressIndicator(),),
-                    ),
+              GestureDetector(
+                onTap: () {
+                  _timer?.cancel();
+                  setState(() {
+                    _onTouch = !_onTouch;
+                  });
+                  //3秒したらボタン消える
+                  _timer = Timer.periodic(const Duration(milliseconds: 3000), (_) {
+                    setState(() {
+                      _onTouch = false;
+                    });
+                  });
+                },
+                child: AspectRatio(
+                  aspectRatio: 16 / 9.5,
+                  child:  _videoController != null && _videoController!.value.isInitialized
+                  //動画再生部分
+                      ? Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            VideoPlayer(_videoController!),
+                            SpriteWidget(
+                              _rootNode,
+                              transformMode: SpriteBoxTransformMode.fixedWidth,
+                            ),
+                            Visibility(
+                              visible: _onTouch,
+                              child: Container(
+                                // color: Colors.grey.withOpacity(0.5),
+                                alignment: Alignment.center,
+                                child: MaterialButton(
+                                  child: Icon(
+                                    _videoController!.value.isPlaying
+                                        ? Icons.pause
+                                        : Icons.play_arrow,
+                                    color: Colors.white,
+                                    size: 35,
+                                  ),
+                                  padding: const EdgeInsets.all(15),//パディング
+                                  color: Colors.black38, //背景色
+                                  textColor: Colors.white, //アイコンの色
+                                  shape: const CircleBorder(),//丸
+                                  onPressed: () {
+                                    _timer?.cancel();
+
+                                    // 再生、停止切り替え
+                                    setState(() {
+                                      _videoController!.value.isPlaying ?
+                                      _videoController!.pause() :
+                                      _videoController!.play();
+                                    });
+
+                                    // 3秒したらボタン消える
+                                    _timer = Timer.periodic(const Duration(milliseconds: 3000), (_) {
+                                      setState(() {
+                                        _onTouch = false;
+                                      });
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                            VideoProgressIndicator(_videoController!, allowScrubbing: true),
+                          ])
+                      : const Center(child: CircularProgressIndicator(),),
+                      ),
+              ),
               const SizedBox(height: 14),
               const Text(
                 'こんなふうにきこえたよ',
