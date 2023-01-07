@@ -261,7 +261,6 @@ class _AnimalPageState extends State<AnimalPage> {
                       title: animalSound.title,
                       subtitle: animalSound.subtitle,
                       onTap: () => Navigator.of(context).push(
-                        // print(widget.selectedAnimal.)
                         MaterialPageRoute(
                           builder: (context) =>
                               SoundPage(selectedAnimalSound: animalSound),
@@ -282,25 +281,23 @@ class _AnimalPageState extends State<AnimalPage> {
 class Scene extends NodeWithSize {
   late List<Label> _animalOnomatopoeiaLabelList;
   final _animalOnomatopoeia = _AnimalPageState.onomatopoeiaList;
-  // final _animalOnomatopoeia =
-  // ["むむーん","ふぉぉん","フェーン","エーン","ぱおーーん","プァーン","ふぅーふぅー","えんえーん","ピェオー　ピェオー","パオーン　パオーン"];
 
   Scene(Size size,) : super(size) {
     _initialize();
   }
 
   void _initialize() {
-    final random = Random();
-    var labelIndex = 0.0;
-    _animalOnomatopoeiaLabelList = _animalOnomatopoeia!.map((text) {
+    var _random = Random();
+    var _labelIndex = 0.0;
+    _animalOnomatopoeiaLabelList = _animalOnomatopoeia.map((text) {
       final label = Label(
         text,
         textAlign: TextAlign.left,
         textStyle: const TextStyle(fontSize: 12, color: Colors.black),
       );
       label.position =
-          Offset(size.width + labelIndex * 100.0, random.nextDouble() * 100 );
-      labelIndex += 1;
+          Offset(size.width + _labelIndex * 100.0, _random.nextDouble() * 100 );
+      _labelIndex += 1;
 
       return label;
     }).toList();
