@@ -29,8 +29,11 @@ class _AnimalPageState extends State<AnimalPage> {
   VideoPlayerController? _videoController;
   late NodeWithSize _rootNode;
 
+  //動画の再生、停止用
   bool _onTouch = false;
   Timer? _timer;
+
+  // static List<String> list = ["a"];
 
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
     return _firebaseFirestore
@@ -124,7 +127,7 @@ class _AnimalPageState extends State<AnimalPage> {
                     _onTouch = !_onTouch;
                   });
                   //3秒したらボタン消える
-                  _timer = Timer.periodic(const Duration(milliseconds: 3000), (_) {
+                  _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
                     setState(() {
                       _onTouch = false;
                     });
@@ -144,9 +147,7 @@ class _AnimalPageState extends State<AnimalPage> {
                             ),
                             Visibility(
                               visible: _onTouch,
-                              child: Container(
-                                // color: Colors.grey.withOpacity(0.5),
-                                alignment: Alignment.center,
+                              child: Center(
                                 child: MaterialButton(
                                   child: Icon(
                                     _videoController!.value.isPlaying
@@ -170,7 +171,7 @@ class _AnimalPageState extends State<AnimalPage> {
                                     });
 
                                     // 3秒したらボタン消える
-                                    _timer = Timer.periodic(const Duration(milliseconds: 3000), (_) {
+                                    _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
                                       setState(() {
                                         _onTouch = false;
                                       });
@@ -255,6 +256,7 @@ class _AnimalPageState extends State<AnimalPage> {
                       title: animalSound.title,
                       subtitle: animalSound.subtitle,
                       onTap: () => Navigator.of(context).push(
+                        // print(widget.selectedAnimal.)
                         MaterialPageRoute(
                           builder: (context) =>
                               SoundPage(selectedAnimalSound: animalSound),
@@ -274,15 +276,16 @@ class _AnimalPageState extends State<AnimalPage> {
 
 class Scene extends NodeWithSize {
   late List<Label> _animalOnomatopoeiaLabelList;
+  // final _animalOnomatopoeia = _AnimalPageState.list;
   final _animalOnomatopoeia =
   ["むむーん","ふぉぉん","フェーン","エーン","ぱおーーん","プァーン","ふぅーふぅー","えんえーん","ピェオー　ピェオー","パオーン　パオーン"];
-  Scene(Size size) : super(size) {
+
+  Scene(Size size,) : super(size) {
     _initialize();
   }
 
   void _initialize() {
     final random = Random();
-
     var labelIndex = 0.0;
     _animalOnomatopoeiaLabelList = _animalOnomatopoeia.map((text) {
       final label = Label(
