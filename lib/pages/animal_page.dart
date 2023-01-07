@@ -33,7 +33,11 @@ class _AnimalPageState extends State<AnimalPage> {
   bool _onTouch = false;
   Timer? _timer;
 
-  // static List<String> list = ["a"];
+  static List onomatopoeiaList = [];
+
+  void getOnomatopoeiaList(onomatopoeiaLabelList) {
+    onomatopoeiaList = onomatopoeiaLabelList;
+  }
 
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
     return _firebaseFirestore
@@ -64,7 +68,7 @@ class _AnimalPageState extends State<AnimalPage> {
 
     await _videoController?.initialize();
     //初期化されたら、自動で再生する
-   await _videoController?.play();
+    await _videoController?.play();
     if (mounted) {
       setState(() {});
     }
@@ -78,6 +82,7 @@ class _AnimalPageState extends State<AnimalPage> {
     super.initState();
     fetchAnimalSounds();
     initializeVideoPlayer();
+    getOnomatopoeiaList(widget.selectedAnimal.onomatopoeiaList);
 
     _rootNode = Scene(
       Size(
@@ -90,7 +95,7 @@ class _AnimalPageState extends State<AnimalPage> {
   @override
   void dispose() {
     _videoController?.dispose();
-    _timer!.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -276,9 +281,9 @@ class _AnimalPageState extends State<AnimalPage> {
 
 class Scene extends NodeWithSize {
   late List<Label> _animalOnomatopoeiaLabelList;
-  // final _animalOnomatopoeia = _AnimalPageState.list;
-  final _animalOnomatopoeia =
-  ["むむーん","ふぉぉん","フェーン","エーン","ぱおーーん","プァーン","ふぅーふぅー","えんえーん","ピェオー　ピェオー","パオーン　パオーン"];
+  final _animalOnomatopoeia = _AnimalPageState.onomatopoeiaList;
+  // final _animalOnomatopoeia =
+  // ["むむーん","ふぉぉん","フェーン","エーン","ぱおーーん","プァーン","ふぅーふぅー","えんえーん","ピェオー　ピェオー","パオーン　パオーン"];
 
   Scene(Size size,) : super(size) {
     _initialize();
@@ -287,7 +292,7 @@ class Scene extends NodeWithSize {
   void _initialize() {
     final random = Random();
     var labelIndex = 0.0;
-    _animalOnomatopoeiaLabelList = _animalOnomatopoeia.map((text) {
+    _animalOnomatopoeiaLabelList = _animalOnomatopoeia!.map((text) {
       final label = Label(
         text,
         textAlign: TextAlign.left,
