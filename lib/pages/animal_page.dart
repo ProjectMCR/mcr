@@ -5,8 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/models/animal_sound.dart';
-import 'package:video_player/video_player.dart';
 import 'package:spritewidget/spritewidget.dart';
+import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
 import 'sound_page.dart';
@@ -100,7 +100,7 @@ class _AnimalPageState extends State<AnimalPage> {
     return Scaffold(
       backgroundColor: AnimalOnomatopoeiaColor.yellow,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(30.0),
+        preferredSize: const Size.fromHeight(40.0),
         child: AppBar(
           backgroundColor: Colors.white,
           leadingWidth: 50,
@@ -255,7 +255,7 @@ class _AnimalPageState extends State<AnimalPage> {
                       breed: animalSound.breed,
                       title: animalSound.title,
                       subtitle: animalSound.subtitle,
-                      onTap: () async{
+                      onTap: () async {
                         _videoController.pause();
                         await Navigator.of(context).push(
                           MaterialPageRoute(

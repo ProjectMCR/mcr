@@ -3,6 +3,7 @@
     "Chewie",
     "flutterfire",
     "Fullscreen",
+    "geopoint",
     "iframe",
     "inappwebview",
     "LTRB",
@@ -12,7 +13,6 @@
   "search.exclude": {
     // .fvmフォルダ内のファイルをVsCodeの検索対象外にする
     // これをsetting.jsonに書く
-    ".fvm/": true,
-  },
+    ".fvm/": true
+  }
 }
-

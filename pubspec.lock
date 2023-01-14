@@ -29,13 +29,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.9.0"
-  background_fetch:
-    dependency: transitive
-    description:
-      name: background_fetch
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -86,7 +79,7 @@ packages:
     source: hosted
     version: "3.2.1"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       url: "https://pub.dartlang.org"
@@ -244,13 +237,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_background_geolocation:
-    dependency: "direct main"
-    description:
-      name: flutter_background_geolocation
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.8.5"
   flutter_facebook_auth:
     dependency: transitive
     description:
@@ -427,6 +413,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  location:
+    dependency: "direct main"
+    description:
+      name: location
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.4.0"
+  location_platform_interface:
+    dependency: transitive
+    description:
+      name: location_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.3.0"
+  location_web:
+    dependency: transitive
+    description:
+      name: location_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.1"
   matcher:
     dependency: transitive
     description:
@@ -727,5 +734,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.18.0 <3.0.0"
+  dart: ">=2.18.2 <3.0.0"
   flutter: ">=3.0.0"
