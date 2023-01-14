@@ -124,6 +124,13 @@ class _HomePageState extends State<HomePage> {
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
+    final enable = await _flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestPermission();
+    if (enable == false) {
+      return;
+    }
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (response) {
