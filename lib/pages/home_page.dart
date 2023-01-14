@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:location/location.dart';
+import 'package:mcr/pages/question_page.dart';
 import 'package:mcr/pages/what_is_onomatopoeia_page.dart';
 
 import '../colors.dart';
@@ -247,6 +248,19 @@ class _HomePageState extends State<HomePage> {
                         );
                       },
                     ),
+                    const SizedBox(
+                      height: 32,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) {
+                            return const QuestionPage();
+                          }),
+                        );
+                      },
+                      child: const Text('アンケートに答える'),
+                    ),
                   ],
                 ),
               ),
@@ -258,7 +272,7 @@ class _HomePageState extends State<HomePage> {
                 child: SingleChildScrollView(
                   child: Text(logs.reversed.join('\n')),
                 ),
-              )
+              ),
           ],
         ),
       ),
