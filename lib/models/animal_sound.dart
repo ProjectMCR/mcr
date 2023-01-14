@@ -26,18 +26,6 @@ class AnimalSound {
         index: data['index'] ?? -1,
       );
 
-  factory AnimalSound.initialData() => AnimalSound(
-        createdAt: Timestamp.now(),
-        animalSoundRef: null,
-        imageUrl: '',
-        breed: '',
-        title: '',
-        subtitle: '',
-        videoUrl: '',
-        soundDescription: '',
-        index: -1,
-      );
-
   Timestamp createdAt;
   DocumentReference? animalSoundRef;
   String imageUrl;

@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mcr/models/animal.dart';
-import 'package:mcr/models/animal_sound.dart';
 import 'package:spritewidget/spritewidget.dart';
 import 'package:video_player/video_player.dart';
 
@@ -35,27 +34,7 @@ class _AnimalPageState extends State<AnimalPage> {
   //鳴き声字幕が入るリスト
   static List onomatopoeiaList = [];
 
-  Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
-    return _firebaseFirestore
-        .collection('animals')
-        .doc(selectedAnimal.animalRef.id)
-        .collection('animalSounds')
-        .withConverter(
-          fromFirestore: (snapshot, _) => AnimalSound.fromMap(snapshot.data()!),
-          toFirestore: (animalSound, _) => animalSound.toMap(),
-        );
-  }
-
-  List<AnimalSound> animalSounds = [];
-
-  Future<void> fetchAnimalSounds() async {
-    final snapshot = await animalSoundQuery(widget.selectedAnimal).get();
-    animalSounds = snapshot.docs.map((e) => e.data()).toList();
-    animalSounds.sort(((a, b) => a.index.compareTo(b.index)));
-    setState(() {});
-  }
-
-//video player初期化
+  /// video player初期化
   Future<void> initializeVideoPlayer() async {
     _videoController = VideoPlayerController.network(
       widget.selectedAnimal.onomatopoeiaVideoUrl.toString(),
@@ -74,7 +53,7 @@ class _AnimalPageState extends State<AnimalPage> {
   @override
   void initState() {
     super.initState();
-    fetchAnimalSounds();
+    // fetchAnimalSounds();
     initializeVideoPlayer();
     onomatopoeiaList = widget.selectedAnimal.onomatopoeiaList;
 
@@ -238,9 +217,9 @@ class _AnimalPageState extends State<AnimalPage> {
               ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                itemCount: animalSounds.length,
+                itemCount: widget.selectedAnimal.animalSounds.length,
                 itemBuilder: (context, index) {
-                  final animalSound = animalSounds[index];
+                  final animalSound = widget.selectedAnimal.animalSounds[index];
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                     child: _AnimalSoundTile(

@@ -24,12 +24,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
-  Query<Animal> animalQuery() {
-    return _firebaseFirestore.collection('animals').withConverter(
-          fromFirestore: (snapshot, _) => Animal.fromMap(snapshot.data()!),
-          toFirestore: (animal, _) => animal.toMap(),
-        );
-  }
+  // Query<Animal> animalQuery() {
+  //   return _firebaseFirestore.collection('animals').withConverter(
+  //         fromFirestore: (snapshot, _) => Animal.fromMap(snapshot.data()!),
+  //         toFirestore: (animal, _) => animal.toMap(),
+  //       );
+  // }
 
   List<Animal> animals = [];
 
@@ -99,8 +99,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchAnimals() async {
-    final snapshot = await animalQuery().get();
-    animals = snapshot.docs.map((e) => e.data()).toList();
+    final qs = await _firebaseFirestore.collection('animals').get();
+    animals = await Future.wait(qs.docs.map((e) => Animal.fromMap(e.data())));
     animals.sort((a, b) => a.index.compareTo(b.index));
 
     inAnimalPointMap = animals.asMap().map(
@@ -255,7 +255,9 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(builder: (context) {
-                            return const QuestionPage();
+                            return QuestionPage(
+                              animals: animals,
+                            );
                           }),
                         );
                       },
