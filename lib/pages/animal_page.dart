@@ -5,9 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/models/animal_sound.dart';
-import 'package:video_player/video_player.dart';
 import 'package:spritewidget/spritewidget.dart';
-
+import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
 import 'sound_page.dart';
@@ -26,8 +25,15 @@ class AnimalPage extends StatefulWidget {
 
 class _AnimalPageState extends State<AnimalPage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  VideoPlayerController? _videoController;
+  late VideoPlayerController _videoController;
   late NodeWithSize _rootNode;
+
+  //動画の再生、停止用
+  bool _onTouch = false;
+  Timer? _timer;
+
+  //鳴き声字幕が入るリスト
+  static List onomatopoeiaList = [];
 
   Query<AnimalSound> animalSoundQuery(Animal selectedAnimal) {
     return _firebaseFirestore
@@ -49,22 +55,20 @@ class _AnimalPageState extends State<AnimalPage> {
     setState(() {});
   }
 
-
 //video player初期化
   Future<void> initializeVideoPlayer() async {
     _videoController = VideoPlayerController.network(
       widget.selectedAnimal.onomatopoeiaVideoUrl.toString(),
     );
 
-    await _videoController?.initialize();
+    await _videoController.initialize();
     //初期化されたら、自動で再生する
-   await _videoController?.play();
+    await _videoController.play();
     if (mounted) {
       setState(() {});
     }
-     //ループ再生
-    _videoController?.setLooping(true);
-
+    //ループ再生
+    _videoController.setLooping(true);
   }
 
   @override
@@ -72,18 +76,20 @@ class _AnimalPageState extends State<AnimalPage> {
     super.initState();
     fetchAnimalSounds();
     initializeVideoPlayer();
+    onomatopoeiaList = widget.selectedAnimal.onomatopoeiaList;
 
     _rootNode = Scene(
       Size(
         200,
-        200 / _videoController!.value.aspectRatio,
+        200 / _videoController.value.aspectRatio,
       ),
     );
   }
 
   @override
   void dispose() {
-    _videoController?.dispose();
+    _videoController.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -94,7 +100,7 @@ class _AnimalPageState extends State<AnimalPage> {
     return Scaffold(
       backgroundColor: AnimalOnomatopoeiaColor.yellow,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(30.0),
+        preferredSize: const Size.fromHeight(40.0),
         child: AppBar(
           backgroundColor: Colors.white,
           leadingWidth: 50,
@@ -113,22 +119,72 @@ class _AnimalPageState extends State<AnimalPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              AspectRatio(
-                aspectRatio: 16 / 9.5,
-                child:  _videoController != null && _videoController!.value.isInitialized 
-                //動画再生部分
-                    ? Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          VideoPlayer(_videoController!),
+              GestureDetector(
+                onTap: () {
+                  _timer?.cancel();
+                  setState(() {
+                    _onTouch = !_onTouch;
+                  });
+                  //3秒したらボタン消える
+                  _timer =
+                      Timer.periodic(const Duration(milliseconds: 2500), (_) {
+                    setState(() {
+                      _onTouch = false;
+                    });
+                  });
+                },
+                child: AspectRatio(
+                  aspectRatio: 16 / 9.5,
+                  child: _videoController.value.isInitialized
+                      //動画再生部分
+                      ? Stack(alignment: Alignment.bottomCenter, children: [
+                          VideoPlayer(_videoController),
                           SpriteWidget(
                             _rootNode,
                             transformMode: SpriteBoxTransformMode.fixedWidth,
                           ),
-                          VideoProgressIndicator(_videoController!, allowScrubbing: true),
+                          Visibility(
+                            visible: _onTouch,
+                            child: Center(
+                              child: MaterialButton(
+                                child: Icon(
+                                  _videoController.value.isPlaying
+                                      ? Icons.pause
+                                      : Icons.play_arrow,
+                                  color: Colors.white,
+                                  size: 35,
+                                ),
+                                padding: const EdgeInsets.all(15), //パディング
+                                color: Colors.black38, //背景色
+                                textColor: Colors.white, //アイコンの色
+                                shape: const CircleBorder(), //丸
+                                onPressed: () {
+                                  _timer?.cancel();
+
+                                  // 再生、停止切り替え
+                                  setState(() {
+                                    _videoController.value.isPlaying
+                                        ? _videoController.pause()
+                                        : _videoController.play();
+                                  });
+
+                                  // 3秒したらボタン消える
+                                  _timer = Timer.periodic(
+                                      const Duration(milliseconds: 2500), (_) {
+                                    setState(() {
+                                      _onTouch = false;
+                                    });
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          VideoProgressIndicator(_videoController,
+                              allowScrubbing: true),
                         ])
-                    : const Center(child: CircularProgressIndicator(),),
-                    ),
+                      : const Center(child: CircularProgressIndicator()),
+                ),
+              ),
               const SizedBox(height: 14),
               const Text(
                 'こんなふうにきこえたよ',
@@ -199,12 +255,16 @@ class _AnimalPageState extends State<AnimalPage> {
                       breed: animalSound.breed,
                       title: animalSound.title,
                       subtitle: animalSound.subtitle,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              SoundPage(selectedAnimalSound: animalSound),
-                        ),
-                      ),
+                      onTap: () async {
+                        _videoController.pause();
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SoundPage(selectedAnimalSound: animalSound),
+                          ),
+                        );
+                        _videoController.play();
+                      },
                     ),
                   );
                 },
@@ -219,16 +279,17 @@ class _AnimalPageState extends State<AnimalPage> {
 
 class Scene extends NodeWithSize {
   late List<Label> _animalOnomatopoeiaLabelList;
-  final _animalOnomatopoeia =
-  ["むむーん","ふぉぉん","フェーン","エーン","ぱおーーん","プァーン","ふぅーふぅー","えんえーん","ピェオー　ピェオー","パオーン　パオーン"];
-  Scene(Size size) : super(size) {
+  final _animalOnomatopoeia = _AnimalPageState.onomatopoeiaList;
+
+  Scene(
+    Size size,
+  ) : super(size) {
     _initialize();
   }
 
   void _initialize() {
-    final random = Random();
-
-    var labelIndex = 0.0;
+    var _random = Random();
+    var _labelIndex = 0.0;
     _animalOnomatopoeiaLabelList = _animalOnomatopoeia.map((text) {
       final label = Label(
         text,
@@ -236,8 +297,8 @@ class Scene extends NodeWithSize {
         textStyle: const TextStyle(fontSize: 12, color: Colors.black),
       );
       label.position =
-          Offset(size.width + labelIndex * 100.0, random.nextDouble() * 100 );
-      labelIndex += 1;
+          Offset(size.width + _labelIndex * 100.0, _random.nextDouble() * 100);
+      _labelIndex += 1;
 
       return label;
     }).toList();
@@ -253,7 +314,7 @@ class Scene extends NodeWithSize {
     for (var label in _animalOnomatopoeiaLabelList) {
       label.position = Offset(label.position.dx - 1, label.position.dy);
 
-      if (label.position.dx <  - 900) {
+      if (label.position.dx < -900) {
         label.position = Offset(size.width, label.position.dy);
       }
     }

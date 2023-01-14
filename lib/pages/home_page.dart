@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:location/location.dart';
 import 'package:mcr/pages/what_is_onomatopoeia_page.dart';
 
 import '../colors.dart';
@@ -30,12 +32,83 @@ class _HomePageState extends State<HomePage> {
 
   List<Animal> animals = [];
 
-  Future<void> fetchAnimals() async {
+  final location = Location();
+  bool serviceEnabled = false;
+  PermissionStatus? permissionGranted;
+  LocationData? locationData;
+
+  StreamSubscription? sub;
+
+  Future<void> _subscribeCurrentLocation() async {
+    bool serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        return;
+      }
+    }
+
+    PermissionStatus permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    location.enableBackgroundMode(enable: true);
+
+    sub = location.onLocationChanged.listen((LocationData currentLocation) {
+      pushNotificationForAnimal(currentLocation);
+    });
+  }
+
+  Future<void> pushNotificationForAnimal(LocationData currentLocation) async {
+    final currentLatitude = currentLocation.latitude;
+    final currentLongitude = currentLocation.longitude;
+
+    if (currentLatitude == null || currentLongitude == null) {
+      return;
+    }
+    final currentGeoPoint = GeoPoint(
+      currentLatitude,
+      currentLongitude,
+    );
+    for (final animal in animals) {
+      final distance = distanceBetween(
+        currentGeoPoint,
+        animal.geopoint,
+      );
+      logs.add('${animal.name} distance: $distance');
+      setState(() {});
+      if (distance < 20) {
+        /// 中に入っている間は出さない
+        if (inAnimalPointMap[animal] == false) {
+          await showLocalNotification(
+            title: '${animal.name}の近くです',
+            body: 'アプリを開いて動画を見てみましょう',
+            payload: animal.name,
+          );
+        }
+        inAnimalPointMap[animal] = true;
+      } else {
+        inAnimalPointMap[animal] = false;
+      }
+    }
+  }
+
+  Future<void> _fetchAnimals() async {
     final snapshot = await animalQuery().get();
     animals = snapshot.docs.map((e) => e.data()).toList();
     animals.sort((a, b) => a.index.compareTo(b.index));
+
+    inAnimalPointMap = animals.asMap().map(
+          (key, value) => MapEntry(value, false),
+        );
     setState(() {});
   }
+
+  var inAnimalPointMap = <Animal, bool>{};
 
   List<String> logs = [];
 
@@ -51,71 +124,53 @@ class _HomePageState extends State<HomePage> {
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await _flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (response) {
+        print(response.payload);
+        final animal = animals
+            .firstWhereOrNull((element) => element.name == response.payload);
+        if (animal == null) {
+          return;
+        }
+
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return AnimalPage(selectedAnimal: animal);
+        }));
+      },
+    );
+  }
+
+  Future<void> showLocalNotification({
+    required String title,
+    required String body,
+    required String payload,
+  }) async {
+    _flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      body,
+      null,
+      payload: payload,
+    );
+  }
+
+  Future<void> init() async {
+    await _fetchAnimals();
+    await _initializeNotification();
+    await _subscribeCurrentLocation();
   }
 
   @override
   void initState() {
     super.initState();
-    fetchAnimals();
-    // Fired whenever a location is recorded
-    bg.BackgroundGeolocation.onLocation((bg.Location location) {
-      print('[location] - $location');
-      final latitude = location.coords.latitude;
-      final longitude = location.coords.longitude;
+    init();
+  }
 
-      const latitudeDestination = 35.1224305;
-      const longitudeDestination = 136.2814251;
-
-      final distance = distanceBetween(
-          latitude, longitude, latitudeDestination, longitudeDestination);
-
-      logs.add('[$distance location ${DateTime.now()}] - $location');
-      setState(() {});
-
-      if (distance < 10) {
-        _flutterLocalNotificationsPlugin.show(
-          0,
-          '上山町集落センター',
-          '到着しました！',
-          null,
-        );
-      }
-    });
-
-    // Fired whenever the plugin changes motion-state (stationary->moving and vice-versa)
-    bg.BackgroundGeolocation.onMotionChange((bg.Location location) {
-      print('[motionchange] - $location');
-      logs.add('[motionchange ${DateTime.now()}] - $location');
-      setState(() {});
-    });
-
-    // Fired whenever the state of location-services changes.  Always fired at boot
-    bg.BackgroundGeolocation.onProviderChange((bg.ProviderChangeEvent event) {
-      print('[providerchange] - $event');
-      logs.add('[providerchange ${DateTime.now()}] - $event');
-      setState(() {});
-    });
-
-    ////
-    // 2.  Configure the plugin
-    //
-    bg.BackgroundGeolocation.ready(bg.Config(
-            desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
-            distanceFilter: 10.0,
-            stopOnTerminate: false,
-            startOnBoot: true,
-            debug: true,
-            logLevel: bg.Config.LOG_LEVEL_VERBOSE))
-        .then((bg.State state) {
-      if (!state.enabled) {
-        ////
-        // 3.  Start the plugin.
-        //
-        bg.BackgroundGeolocation.start();
-      }
-    });
-    _initializeNotification();
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
   }
 
   @override
@@ -189,13 +244,14 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            Container(
-              color: Colors.grey.withOpacity(.3),
-              height: 240,
-              child: SingleChildScrollView(
-                child: Text(logs.reversed.join('/')),
-              ),
-            )
+            if (kDebugMode)
+              Container(
+                color: Colors.grey.withOpacity(.3),
+                height: 240,
+                child: SingleChildScrollView(
+                  child: Text(logs.reversed.join('\n')),
+                ),
+              )
           ],
         ),
       ),
@@ -270,17 +326,15 @@ class _AnimalTile extends StatelessWidget {
 }
 
 double distanceBetween(
-  double latitude1,
-  double longitude1,
-  double latitude2,
-  double longitude2,
+  GeoPoint geoPoint1,
+  GeoPoint geoPoint2,
 ) {
   toRadians(double degree) => degree * pi / 180;
   const double r = 6378137.0; // 地球の半径
-  final double f1 = toRadians(latitude1);
-  final double f2 = toRadians(latitude2);
-  final double l1 = toRadians(longitude1);
-  final double l2 = toRadians(longitude2);
+  final double f1 = toRadians(geoPoint1.latitude);
+  final double f2 = toRadians(geoPoint2.latitude);
+  final double l1 = toRadians(geoPoint1.longitude);
+  final double l2 = toRadians(geoPoint2.longitude);
   final num a = pow(sin((f2 - f1) / 2), 2);
   final double b = cos(f1) * cos(f2) * pow(sin((l2 - l1) / 2), 2);
   final double d = 2 * r * asin(sqrt(a + b));
