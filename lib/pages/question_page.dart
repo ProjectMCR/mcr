@@ -585,6 +585,7 @@ class _QuestionPageState extends State<QuestionPage> {
                                 child: const Text(
                                   '動物動画',
                                   style: TextStyle(
+                                    fontSize: 10,
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -602,6 +603,7 @@ class _QuestionPageState extends State<QuestionPage> {
                                 child: const Text(
                                   'イラスト',
                                   style: TextStyle(
+                                    fontSize: 10,
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -619,6 +621,7 @@ class _QuestionPageState extends State<QuestionPage> {
                                 child: const Text(
                                   '音の波形',
                                   style: TextStyle(
+                                    fontSize: 10,
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -636,6 +639,7 @@ class _QuestionPageState extends State<QuestionPage> {
                                 child: const Text(
                                   'タイトル',
                                   style: TextStyle(
+                                    fontSize: 10,
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -643,7 +647,7 @@ class _QuestionPageState extends State<QuestionPage> {
                               ),
                             ),
                             Align(
-                              alignment: const Alignment(0, .6),
+                              alignment: const Alignment(0, .55),
                               child: Container(
                                 padding: const EdgeInsets.all(2),
                                 decoration: BoxDecoration(
@@ -653,6 +657,7 @@ class _QuestionPageState extends State<QuestionPage> {
                                 child: const Text(
                                   '説明文章',
                                   style: TextStyle(
+                                    fontSize: 10,
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                   ),

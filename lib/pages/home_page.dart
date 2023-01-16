@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:location/location.dart';
@@ -23,13 +22,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-
-  // Query<Animal> animalQuery() {
-  //   return _firebaseFirestore.collection('animals').withConverter(
-  //         fromFirestore: (snapshot, _) => Animal.fromMap(snapshot.data()!),
-  //         toFirestore: (animal, _) => animal.toMap(),
-  //       );
-  // }
 
   List<Animal> animals = [];
 
@@ -183,99 +175,88 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: AnimalOnomatopoeiaColor.yellow,
       body: SafeArea(
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 19),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 21),
-                    Image.asset(
-                      'assets/images/main_title1.png',
-                      height: 153.51,
-                      width: 205.95,
-                    ),
-                    const SizedBox(height: 14),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const WhatIsOnomatopoeiaPage(),
-                        ),
-                      ),
-                      child: const Text(
-                        'オノマトペとは',
-                        style: TextStyle(
-                          color: AnimalOnomatopoeiaColor.gray1,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AnimalOnomatopoeiaColor.blue,
-                          decorationThickness: 1,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 25),
-                    GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: animals.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                      ),
-                      itemBuilder: (context, index) {
-                        final animal = animals[index];
-                        return _AnimalTile(
-                          screenHeight: screenHeight,
-                          screenWidth: screenWidth,
-                          imageUrl: animal.imageUrl,
-                          animalName: animal.name,
-                          onTap: animal.onomatopoeiaVideoUrl
-                                  .startsWith('https://')
-                              ? () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          AnimalPage(selectedAnimal: animal),
-                                    ),
-                                  )
-                              : null,
-                        );
-                      },
-                    ),
-                    const SizedBox(
-                      height: 32,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) {
-                            return QuestionPage(
-                              animals: animals,
-                            );
-                          }),
-                        );
-                      },
-                      child: const Text('アンケートに答える'),
-                    ),
-                  ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              const SizedBox(height: 21),
+              SizedBox(
+                height: 120,
+                child: Image.asset(
+                  'assets/images/main_title1.png',
                 ),
               ),
-            ),
-            if (kDebugMode)
-              Container(
-                color: Colors.grey.withOpacity(.3),
-                height: 240,
-                child: SingleChildScrollView(
-                  child: Text(logs.reversed.join('\n')),
+              const SizedBox(height: 14),
+              TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const WhatIsOnomatopoeiaPage(),
+                  ),
+                ),
+                child: const Text(
+                  'オノマトペとは',
+                  style: TextStyle(
+                    color: AnimalOnomatopoeiaColor.gray1,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
+                    decorationColor: AnimalOnomatopoeiaColor.blue,
+                    decorationThickness: 1,
+                  ),
                 ),
               ),
-          ],
+              const SizedBox(height: 25),
+              Expanded(
+                child: GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: animals.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                  ),
+                  itemBuilder: (context, index) {
+                    final animal = animals[index];
+                    return _AnimalTile(
+                      imageUrl: animal.imageUrl,
+                      animalName: animal.name,
+                      onTap: animal.onomatopoeiaVideoUrl.startsWith('https://')
+                          ? () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AnimalPage(selectedAnimal: animal),
+                                ),
+                              )
+                          : null,
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(
+                height: 32,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) {
+                      return QuestionPage(
+                        animals: animals,
+                      );
+                    }),
+                  );
+                },
+                child: const Text('アンケートに答える'),
+              ),
+              const SizedBox(
+                height: 32,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -288,15 +269,11 @@ class _AnimalTile extends StatelessWidget {
     required this.onTap,
     required this.animalName,
     required this.imageUrl,
-    required this.screenHeight,
-    required this.screenWidth,
   }) : super(key: key);
 
   final void Function()? onTap;
   final String animalName;
   final String imageUrl;
-  final double screenWidth;
-  final double screenHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -304,39 +281,37 @@ class _AnimalTile extends StatelessWidget {
       onTap: onTap,
       child: Column(
         children: [
-          if (!imageUrl.startsWith('https://'))
-            Container(
-              height: screenHeight / 6.9,
-              width: screenWidth / 2.6,
-              color: AnimalOnomatopoeiaColor.blue,
-            ),
-          if (imageUrl.startsWith('https://'))
-            Stack(
-              children: [
-                Container(
-                  height: screenHeight / 6.9,
-                  width: screenWidth / 2.6,
-                  color: AnimalOnomatopoeiaColor.blue,
-                ),
-                Image.network(
-                  imageUrl,
-                  height: screenHeight / 6.9,
-                  width: screenWidth / 2.6,
-                  fit: BoxFit.cover,
-                ),
-              ],
-            ),
-          Container(
-            height: screenHeight / 18.1,
-            width: screenWidth / 2.6,
-            color: Colors.white,
-            child: Center(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Text(
-                  animalName,
-                  style: const TextStyle(
-                    color: AnimalOnomatopoeiaColor.gray1,
+          Expanded(
+            flex: 4,
+            child: imageUrl.startsWith('https://')
+                ? Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Container(
+                        color: AnimalOnomatopoeiaColor.blue,
+                      ),
+                      Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                      ),
+                    ],
+                  )
+                : Container(
+                    color: AnimalOnomatopoeiaColor.blue,
+                  ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              color: Colors.white,
+              child: Center(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Text(
+                    animalName,
+                    style: const TextStyle(
+                      color: AnimalOnomatopoeiaColor.gray1,
+                    ),
                   ),
                 ),
               ),
