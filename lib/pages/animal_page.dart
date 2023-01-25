@@ -61,16 +61,61 @@ class _AnimalPageState extends State<AnimalPage> {
   @override
   void initState() {
     super.initState();
-    // fetchAnimalSounds();
     initializeVideoPlayer();
-    onomatopoeiaList = widget.selectedAnimal.onomatopoeiaList;
+    generateRandomValue();
+    loop();
 
-    _rootNode = Scene(
-      Size(
-        200,
-        200 / _videoController.value.aspectRatio,
-      ),
-    );
+    //  _rootNode = Scene(
+    //   Size(
+    //     200,
+    //     200 / _videoController.value.aspectRatio,
+    //   ),
+    //   false,
+    // );
+  }
+
+  var isStop = false;
+
+  var offsetList = <Offset>[];
+
+  final random = Random();
+
+  void generateRandomValue() async {
+    for (var index = 0; index < widget.selectedAnimal.onomatopoeiaList.length; index++) {
+      offsetList.add(
+        Offset(
+          1 + random.nextDouble() * 10,
+          -1 + 2 * random.nextDouble(),
+        ),
+      );
+    }
+  }
+
+  Future<void> loop() async {
+    while (true) {
+      await Future.delayed(const Duration(milliseconds: 1));
+      if (isStop) {
+        continue;
+      }
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        for (var index = 0; index < offsetList.length; index++) {
+          if (offsetList[index].dx < -2) {
+            offsetList[index] = Offset(
+              1 + random.nextDouble() * 10,
+              -1 + 2 * random.nextDouble(),
+            );
+          } else {
+            offsetList[index] = Offset(
+              offsetList[index].dx - 0.002,
+              offsetList[index].dy,
+            );
+          }
+        }
+      });
+    }
   }
 
   @override
@@ -123,10 +168,55 @@ class _AnimalPageState extends State<AnimalPage> {
                       //動画再生部分
                       ? Stack(alignment: Alignment.bottomCenter, children: [
                           VideoPlayer(_videoController),
-                          SpriteWidget(
-                            _rootNode,
-                            transformMode: SpriteBoxTransformMode.fixedWidth,
-                          ),
+
+                          for (var index = 0; index < widget.selectedAnimal.onomatopoeiaList.length; index++)
+                            Align(
+                              alignment: Alignment(
+                                offsetList[index].dx,
+                                offsetList[index].dy,
+                              ),
+                              child: SizedBox(
+                                width: 32,
+                                height: 32,
+                                child: OverflowBox(
+                                  minWidth: 100,
+                                  maxWidth: 400,
+                                  child: Stack(
+                                    children: [
+                                      Text(
+                                        widget.selectedAnimal.onomatopoeiaList[index],
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                          foreground: Paint()
+                                            ..style = PaintingStyle.stroke
+                                            ..strokeWidth = 1
+                                            ..color = Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        widget.selectedAnimal.onomatopoeiaList[index],
+                                        style: const TextStyle(
+                                          fontSize: 24,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          // SpriteWidget(
+                          //   Scene(
+                          //     Size(
+                          //       200,
+                          //       200 / _videoController.value.aspectRatio,
+                          //     ),
+                          //     false,
+                          //   ),
+                          //   transformMode: SpriteBoxTransformMode.fixedWidth,
+                          // ),
                           Visibility(
                             visible: _onTouch,
                             child: Center(
@@ -145,9 +235,13 @@ class _AnimalPageState extends State<AnimalPage> {
 
                                   // 再生、停止切り替え
                                   setState(() {
-                                    _videoController.value.isPlaying
-                                        ? _videoController.pause()
-                                        : _videoController.play();
+                                    if (_videoController.value.isPlaying) {
+                                      _videoController.pause();
+                                      isStop = true;
+                                    } else {
+                                      _videoController.play();
+                                      isStop = false;
+                                    }
                                   });
 
                                   // 3秒したらボタン消える
@@ -260,9 +354,10 @@ class _AnimalPageState extends State<AnimalPage> {
 class Scene extends NodeWithSize {
   late List<Label> _animalOnomatopoeiaLabelList;
   final _animalOnomatopoeia = _AnimalPageState.onomatopoeiaList;
-
+  final bool isStop;
   Scene(
     Size size,
+    this.isStop,
   ) : super(size) {
     _initialize();
   }
@@ -289,6 +384,9 @@ class Scene extends NodeWithSize {
 
   @override
   void update(double dt) {
+    if (isStop) {
+      return;
+    }
     super.update(dt);
     for (var label in _animalOnomatopoeiaLabelList) {
       label.position = Offset(label.position.dx - 1, label.position.dy);

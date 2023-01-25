@@ -28,7 +28,7 @@ class Animal {
       informationOnVideo: data['informationOnVideo'],
       imageUrl: data['imageUrl'],
       index: data['index'] ?? -1,
-      onomatopoeiaList: data['onomatopoeiaList'],
+      onomatopoeiaList: (data['onomatopoeiaList'] as List).map((e) => e as String).toList(),
       geopoint: (data['geopoint'] is GeoPoint)
           ? data['geopoint']
           : GeoPoint(
@@ -50,9 +50,7 @@ class Animal {
 
     final qs = await animalRef.collection('animalSounds').get();
 
-    final animalSounds = qs.docs
-        .map((e) => AnimalSound.fromMap(e.data()))
-        .toList()
+    final animalSounds = qs.docs.map((e) => AnimalSound.fromMap(e.data())).toList()
       ..sort((a, b) => a.index.compareTo(b.index));
     data['animalSounds'] = animalSounds.map((e) => e.toMap()).toList();
     return Animal.fromMap(data);
@@ -64,7 +62,7 @@ class Animal {
   String informationOnVideo;
   String imageUrl;
   int index;
-  List onomatopoeiaList;
+  List<String> onomatopoeiaList;
   GeoPoint geopoint;
   List<AnimalSound> animalSounds;
 
