@@ -170,103 +170,94 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: AnimalOnomatopoeiaColor.yellow,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Column(
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 21),
-              SizedBox(
-                height: 120,
-                child: Image.asset(
-                  'assets/images/main_title1.png',
-                ),
-              ),
-              const SizedBox(height: 14),
-              TextButton(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const WhatIsOnomatopoeiaPage(),
-                  ),
-                ),
-                child: const Text(
-                  'オノマトペとは',
-                  style: TextStyle(
-                    color: AnimalOnomatopoeiaColor.gray1,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.underline,
-                    decorationColor: AnimalOnomatopoeiaColor.blue,
-                    decorationThickness: 1,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 25),
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.fitHeight,
-                  child: GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: animals.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
+              Column(
+                children: [
+                  const SizedBox(height: 21),
+                  SizedBox(
+                    height: 120,
+                    child: Image.asset(
+                      'assets/images/main_title1.png',
                     ),
-                    itemBuilder: (context, index) {
-                      final animal = animals[index];
-                      return _AnimalTile(
-                        imageUrl: animal.imageUrl,
-                        animalName: animal.name,
-                        onTap: animal.onomatopoeiaVideoUrl.isNotEmpty
-                            ? () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => AnimalPage(selectedAnimal: animal),
-                                  ),
-                                )
-                            : null,
+                  ),
+                  const SizedBox(height: 14),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const WhatIsOnomatopoeiaPage(),
+                      ),
+                    ),
+                    child: const Text(
+                      'オノマトペとは',
+                      style: TextStyle(
+                        color: AnimalOnomatopoeiaColor.gray1,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AnimalOnomatopoeiaColor.blue,
+                        decorationThickness: 1,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+                  SizedBox(
+                    width: screenWidth * 0.8,
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: animals.length,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 1,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                      ),
+                      itemBuilder: (context, index) {
+                        final animal = animals[index];
+                        return _AnimalTile(
+                          imageUrl: animal.imageUrl,
+                          animalName: animal.name,
+                          onTap: animal.onomatopoeiaVideoUrl.isNotEmpty
+                              ? () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => AnimalPage(selectedAnimal: animal),
+                                    ),
+                                  )
+                              : null,
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) {
+                          return QuestionPage(
+                            animals: animals,
+                          );
+                        }),
                       );
                     },
+                    child: const Text('アンケートに答える'),
                   ),
-                ),
-              ),
-              const SizedBox(
-                height: 32,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) {
-                      return QuestionPage(
-                        animals: animals,
-                      );
-                    }),
-                  );
-                },
-                child: const Text('アンケートに答える'),
-              ),
-              const SizedBox(
-                height: 32,
+                  const SizedBox(
+                    height: 32,
+                  ),
+                ],
               ),
             ],
           ),
-          Align(
-            alignment: Alignment.topRight,
-            child: SafeArea(
-              child: IconButton(
-                onPressed: () {
-                  // AnimalRepository().saveAssets(animals);
-                  AnimalRepository().saveAnimals(animals);
-                },
-                icon: const Icon(Icons.settings),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
