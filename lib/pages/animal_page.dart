@@ -39,7 +39,7 @@ class _AnimalPageState extends State<AnimalPage> {
   /// video player初期化
   Future<void> initializeVideoPlayer() async {
     // TODO(kenta-wakasa): ビデオダウンロードと再生の仕組みを見直す
-    final filePath = 'file:/' + widget.selectedAnimal.onomatopoeiaVideoUrl;
+    final filePath = widget.selectedAnimal.onomatopoeiaVideoUrl;
     _videoController = isOffline
         ? VideoPlayerController.file(
             File(filePath),

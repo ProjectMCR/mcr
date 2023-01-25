@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:http/http.dart';
 import 'package:mcr/main.dart';
 import 'package:path/path.dart';
@@ -31,12 +32,28 @@ class AnimalRepository {
   }
 
   Future<void> saveAnimals(List<Animal> animals) async {
+    await animalBox.clear();
     final newAnimals = await saveAssets(animals);
 
     await Future.forEach(newAnimals, (e) async {
       final map = e.toMap();
       return animalBox.add(map);
     });
+  }
+
+  final dio = Dio();
+
+  Future<File> downloadMovie({
+    required String url,
+    required File file,
+  }) async {
+    await file.parent.create(recursive: true);
+    await dio.download(url, file.path, onReceiveProgress: (rec, total) {
+      print("Rec: $rec , Total: $total");
+      print(((rec / total) * 100).toStringAsFixed(0) + "%");
+    });
+
+    return file;
   }
 
   Future<List<Animal>> saveAssets(List<Animal> animals) async {
@@ -61,20 +78,16 @@ class AnimalRepository {
             ))
           .path;
 
-      animal.onomatopoeiaVideoUrl = (File(
-        join(
-          (appDocDir.path),
-          animal.name,
-          'onomatopoeiaVideoUrl',
+      animal.onomatopoeiaVideoUrl = (await downloadMovie(
+        url: animal.onomatopoeiaVideoUrl,
+        file: File(
+          join(
+            (appDocDir.path),
+            animal.name,
+            'movie.mp4',
+          ),
         ),
-      )
-            ..create(recursive: true)
-            ..writeAsBytes((await get(
-              Uri.parse(
-                animal.onomatopoeiaVideoUrl,
-              ),
-            ))
-                .bodyBytes))
+      ))
           .path;
 
       for (final sound in animal.animalSounds) {
@@ -96,21 +109,17 @@ class AnimalRepository {
             .path;
 
         if (sound.videoUrl.isNotEmpty) {
-          sound.videoUrl = (File(
-            join(
-              (appDocDir.path),
-              animal.name,
-              sound.title,
-              'soundVideoUrl',
+          sound.videoUrl = (await downloadMovie(
+            url: sound.videoUrl,
+            file: File(
+              join(
+                (appDocDir.path),
+                animal.name,
+                sound.title,
+                'movie.mp4',
+              ),
             ),
-          )
-                ..create(recursive: true)
-                ..writeAsBytes(
-                  (await get(
-                    Uri.parse(sound.videoUrl),
-                  ))
-                      .bodyBytes,
-                ))
+          ))
               .path;
         }
       }

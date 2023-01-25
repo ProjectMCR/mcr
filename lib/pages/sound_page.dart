@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mcr/models/animal_sound.dart';
 import 'package:video_player/video_player.dart';
+
+import '../main.dart';
 
 class SoundPage extends StatefulWidget {
   const SoundPage({
@@ -27,9 +30,14 @@ class _SoundPageState extends State<SoundPage> {
     if (widget.selectedAnimalSound.videoUrl.isEmpty) {
       return;
     }
-    _videoController = VideoPlayerController.network(
-      widget.selectedAnimalSound.videoUrl.toString(),
-    );
+
+    _videoController = isOffline
+        ? VideoPlayerController.file(
+            File(widget.selectedAnimalSound.videoUrl),
+          )
+        : VideoPlayerController.network(
+            widget.selectedAnimalSound.videoUrl,
+          );
 
     await _videoController?.initialize();
     //初期化されたら、自動で再生する
@@ -91,8 +99,7 @@ class _SoundPageState extends State<SoundPage> {
                       _onTouch = !_onTouch;
                     });
                     //3秒したらボタン消える
-                    _timer =
-                        Timer.periodic(const Duration(milliseconds: 2500), (_) {
+                    _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
                       setState(() {
                         _onTouch = false;
                       });
@@ -110,9 +117,7 @@ class _SoundPageState extends State<SoundPage> {
                                   child: Center(
                                     child: MaterialButton(
                                       child: Icon(
-                                        _videoController!.value.isPlaying
-                                            ? Icons.pause
-                                            : Icons.play_arrow,
+                                        _videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow,
                                         color: Colors.white,
                                         size: 35,
                                       ),
@@ -131,9 +136,7 @@ class _SoundPageState extends State<SoundPage> {
                                         });
 
                                         // 3秒したらボタン消える
-                                        _timer = Timer.periodic(
-                                            const Duration(milliseconds: 2500),
-                                            (_) {
+                                        _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
                                           setState(() {
                                             _onTouch = false;
                                           });
@@ -142,8 +145,7 @@ class _SoundPageState extends State<SoundPage> {
                                     ),
                                   ),
                                 ),
-                                VideoProgressIndicator(_videoController!,
-                                    allowScrubbing: true),
+                                VideoProgressIndicator(_videoController!, allowScrubbing: true),
                               ],
                             )
                           : const Center(
