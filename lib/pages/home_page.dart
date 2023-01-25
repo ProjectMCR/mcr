@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,8 +7,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:location/location.dart';
+import 'package:mcr/main.dart';
 import 'package:mcr/pages/question_page.dart';
 import 'package:mcr/pages/what_is_onomatopoeia_page.dart';
+import 'package:mcr/repositories/animal_repositories.dart';
 
 import '../colors.dart';
 import '../models/animal.dart';
@@ -21,8 +24,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-
   List<Animal> animals = [];
 
   final location = Location();
@@ -91,9 +92,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchAnimals() async {
-    final qs = await _firebaseFirestore.collection('animals').get();
-    animals = await Future.wait(qs.docs.map((e) => Animal.fromMap(e.data())));
-    animals.sort((a, b) => a.index.compareTo(b.index));
+    animals = await AnimalRepository().fetchAnimal();
 
     inAnimalPointMap = animals.asMap().map(
           (key, value) => MapEntry(value, false),
@@ -109,17 +108,14 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _initializeNotification() async {
     const initializationSettingsIOS = DarwinInitializationSettings();
-    const initializationSettingsAndroid =
-        AndroidInitializationSettings('ic_notification');
+    const initializationSettingsAndroid = AndroidInitializationSettings('ic_notification');
 
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
+    const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
     final enable = await _flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.requestPermission();
     if (enable == false) {
       return;
@@ -128,8 +124,7 @@ class _HomePageState extends State<HomePage> {
       initializationSettings,
       onDidReceiveNotificationResponse: (response) {
         print(response.payload);
-        final animal = animals
-            .firstWhereOrNull((element) => element.name == response.payload);
+        final animal = animals.firstWhereOrNull((element) => element.name == response.payload);
         if (animal == null) {
           return;
         }
@@ -177,10 +172,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AnimalOnomatopoeiaColor.yellow,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Column(
             children: [
               const SizedBox(height: 21),
               SizedBox(
@@ -210,31 +205,33 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 25),
               Expanded(
-                child: GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: animals.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
+                child: FittedBox(
+                  fit: BoxFit.fitHeight,
+                  child: GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: animals.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                    ),
+                    itemBuilder: (context, index) {
+                      final animal = animals[index];
+                      return _AnimalTile(
+                        imageUrl: animal.imageUrl,
+                        animalName: animal.name,
+                        onTap: animal.onomatopoeiaVideoUrl.isNotEmpty
+                            ? () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => AnimalPage(selectedAnimal: animal),
+                                  ),
+                                )
+                            : null,
+                      );
+                    },
                   ),
-                  itemBuilder: (context, index) {
-                    final animal = animals[index];
-                    return _AnimalTile(
-                      imageUrl: animal.imageUrl,
-                      animalName: animal.name,
-                      onTap: animal.onomatopoeiaVideoUrl.startsWith('https://')
-                          ? () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      AnimalPage(selectedAnimal: animal),
-                                ),
-                              )
-                          : null,
-                    );
-                  },
                 ),
               ),
               const SizedBox(
@@ -257,7 +254,19 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-        ),
+          Align(
+            alignment: Alignment.topRight,
+            child: SafeArea(
+              child: IconButton(
+                onPressed: () {
+                  // AnimalRepository().saveAssets(animals);
+                  AnimalRepository().saveAnimals(animals);
+                },
+                icon: const Icon(Icons.settings),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -283,17 +292,23 @@ class _AnimalTile extends StatelessWidget {
         children: [
           Expanded(
             flex: 4,
-            child: imageUrl.startsWith('https://')
+            child: imageUrl.isNotEmpty
                 ? Stack(
                     fit: StackFit.expand,
                     children: [
                       Container(
                         color: AnimalOnomatopoeiaColor.blue,
                       ),
-                      Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
-                      ),
+                      if (isOffline)
+                        Image.file(
+                          File(imageUrl),
+                          fit: BoxFit.cover,
+                        )
+                      else
+                        Image.network(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                        ),
                     ],
                   )
                 : Container(

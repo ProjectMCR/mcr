@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'animal_sound.dart';
 
+/// 保存すべきこと
+/// - onomatopoeiaVideoUrl
+/// - imageUrl
 class Animal {
   Animal({
     required this.createdAt,
-    required this.animalRef,
     required this.name,
     required this.onomatopoeiaVideoUrl,
     required this.informationOnVideo,
@@ -16,7 +18,34 @@ class Animal {
     required this.animalSounds,
   });
 
-  static Future<Animal> fromMap(Map<String, dynamic> data) async {
+  factory Animal.fromMap(Map<String, dynamic> data) {
+    return Animal(
+      createdAt: (data['createdAt'] is Timestamp)
+          ? (data['createdAt'] as Timestamp).toDate()
+          : DateTime.parse(data['createdAt']),
+      name: data['name'],
+      onomatopoeiaVideoUrl: data['onomatopoeiaVideoUrl'],
+      informationOnVideo: data['informationOnVideo'],
+      imageUrl: data['imageUrl'],
+      index: data['index'] ?? -1,
+      onomatopoeiaList: data['onomatopoeiaList'],
+      geopoint: (data['geopoint'] is GeoPoint)
+          ? data['geopoint']
+          : GeoPoint(
+              double.parse((data['geopoint'] as String).split(',')[0]),
+              double.parse((data['geopoint'] as String).split(',')[1]),
+            ),
+      animalSounds: (data['animalSounds'] as List)
+          .map(
+            (e) => AnimalSound.fromMap(
+              Map.from(e),
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  static Future<Animal> fromFirestore(Map<String, dynamic> data) async {
     final animalRef = data['animalRef'] as DocumentReference;
 
     final qs = await animalRef.collection('animalSounds').get();
@@ -25,23 +54,11 @@ class Animal {
         .map((e) => AnimalSound.fromMap(e.data()))
         .toList()
       ..sort((a, b) => a.index.compareTo(b.index));
-
-    return Animal(
-      createdAt: data['createdAt'],
-      animalRef: data['animalRef'],
-      name: data['name'],
-      onomatopoeiaVideoUrl: data['onomatopoeiaVideoUrl'],
-      informationOnVideo: data['informationOnVideo'],
-      imageUrl: data['imageUrl'],
-      index: data['index'] ?? -1,
-      onomatopoeiaList: data['onomatopoeiaList'],
-      geopoint: data['geopoint'],
-      animalSounds: animalSounds,
-    );
+    data['animalSounds'] = animalSounds.map((e) => e.toMap()).toList();
+    return Animal.fromMap(data);
   }
 
-  Timestamp createdAt;
-  DocumentReference animalRef;
+  DateTime createdAt;
   String name;
   String onomatopoeiaVideoUrl;
   String informationOnVideo;
@@ -52,14 +69,18 @@ class Animal {
   List<AnimalSound> animalSounds;
 
   Map<String, dynamic> toMap() => {
-        'createdAt': createdAt,
-        'animalRef': animalRef,
+        'createdAt': createdAt.toIso8601String(),
         'name': name,
         'onomatopoeiaVideoUrl': onomatopoeiaVideoUrl,
         'informationOnVideo': informationOnVideo,
         'imageUrl': imageUrl,
         'index': index,
         'onomatopoeiaList': onomatopoeiaList,
-        'geopoint': geopoint,
+        'geopoint': '${geopoint.latitude},${geopoint.longitude}',
+        'animalSounds': animalSounds
+            .map(
+              (e) => e.toMap(),
+            )
+            .toList()
       };
 }

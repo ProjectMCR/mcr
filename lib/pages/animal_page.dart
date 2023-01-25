@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mcr/main.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:spritewidget/spritewidget.dart';
 import 'package:video_player/video_player.dart';
@@ -36,9 +38,15 @@ class _AnimalPageState extends State<AnimalPage> {
 
   /// video player初期化
   Future<void> initializeVideoPlayer() async {
-    _videoController = VideoPlayerController.network(
-      widget.selectedAnimal.onomatopoeiaVideoUrl.toString(),
-    );
+    // TODO(kenta-wakasa): ビデオダウンロードと再生の仕組みを見直す
+    final filePath = 'file:/' + widget.selectedAnimal.onomatopoeiaVideoUrl;
+    _videoController = isOffline
+        ? VideoPlayerController.file(
+            File(filePath),
+          )
+        : VideoPlayerController.network(
+            widget.selectedAnimal.onomatopoeiaVideoUrl.toString(),
+          );
 
     await _videoController.initialize();
     //初期化されたら、自動で再生する
@@ -103,8 +111,7 @@ class _AnimalPageState extends State<AnimalPage> {
                     _onTouch = !_onTouch;
                   });
                   //3秒したらボタン消える
-                  _timer =
-                      Timer.periodic(const Duration(milliseconds: 2500), (_) {
+                  _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
                     setState(() {
                       _onTouch = false;
                     });
@@ -125,9 +132,7 @@ class _AnimalPageState extends State<AnimalPage> {
                             child: Center(
                               child: MaterialButton(
                                 child: Icon(
-                                  _videoController.value.isPlaying
-                                      ? Icons.pause
-                                      : Icons.play_arrow,
+                                  _videoController.value.isPlaying ? Icons.pause : Icons.play_arrow,
                                   color: Colors.white,
                                   size: 35,
                                 ),
@@ -146,8 +151,7 @@ class _AnimalPageState extends State<AnimalPage> {
                                   });
 
                                   // 3秒したらボタン消える
-                                  _timer = Timer.periodic(
-                                      const Duration(milliseconds: 2500), (_) {
+                                  _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
                                     setState(() {
                                       _onTouch = false;
                                     });
@@ -156,8 +160,7 @@ class _AnimalPageState extends State<AnimalPage> {
                               ),
                             ),
                           ),
-                          VideoProgressIndicator(_videoController,
-                              allowScrubbing: true),
+                          VideoProgressIndicator(_videoController, allowScrubbing: true),
                         ])
                       : const Center(child: CircularProgressIndicator()),
                 ),
@@ -221,10 +224,15 @@ class _AnimalPageState extends State<AnimalPage> {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                     child: _AnimalSoundTile(
-                      image: Image.network(
-                        animalSound.imageUrl,
-                        fit: BoxFit.cover,
-                      ),
+                      image: isOffline
+                          ? Image.file(
+                              File(animalSound.imageUrl),
+                              fit: BoxFit.cover,
+                            )
+                          : Image.network(
+                              animalSound.imageUrl,
+                              fit: BoxFit.cover,
+                            ),
                       breed: animalSound.breed,
                       title: animalSound.title,
                       subtitle: animalSound.subtitle,
@@ -232,8 +240,7 @@ class _AnimalPageState extends State<AnimalPage> {
                         _videoController.pause();
                         await Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) =>
-                                SoundPage(selectedAnimalSound: animalSound),
+                            builder: (context) => SoundPage(selectedAnimalSound: animalSound),
                           ),
                         );
                         _videoController.play();
@@ -269,8 +276,7 @@ class Scene extends NodeWithSize {
         textAlign: TextAlign.left,
         textStyle: const TextStyle(fontSize: 12, color: Colors.black),
       );
-      label.position =
-          Offset(size.width + _labelIndex * 100.0, _random.nextDouble() * 100);
+      label.position = Offset(size.width + _labelIndex * 100.0, _random.nextDouble() * 100);
       _labelIndex += 1;
 
       return label;

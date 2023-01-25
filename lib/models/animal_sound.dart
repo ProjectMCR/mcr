@@ -1,10 +1,12 @@
 // 扱うデータはanimalsコレクションのサブコレクションanimalSoundsコレクションのドキュメント
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// 保存すべきこと
+/// - imageUrl
+/// - videoUrl
 class AnimalSound {
   AnimalSound({
     required this.createdAt,
-    required this.animalSoundRef,
     required this.imageUrl,
     required this.breed,
     required this.title,
@@ -15,8 +17,9 @@ class AnimalSound {
   });
 
   factory AnimalSound.fromMap(Map<String, dynamic> data) => AnimalSound(
-        createdAt: data['createdAt'],
-        animalSoundRef: data['animalSoundRef'],
+        createdAt: (data['createdAt'] is Timestamp)
+            ? (data['createdAt'] as Timestamp).toDate()
+            : DateTime.parse(data['createdAt']),
         imageUrl: data['imageUrl'],
         breed: data['breed'],
         title: data['title'],
@@ -26,8 +29,7 @@ class AnimalSound {
         index: data['index'] ?? -1,
       );
 
-  Timestamp createdAt;
-  DocumentReference? animalSoundRef;
+  DateTime createdAt;
   String imageUrl;
   String breed;
   String title;
@@ -37,13 +39,12 @@ class AnimalSound {
   int index;
 
   Map<String, dynamic> toMap() => {
-        'createdAt': createdAt,
-        'animalSoundRef': animalSoundRef,
+        'createdAt': createdAt.toIso8601String(),
         'imageUrl': imageUrl,
         'breed': breed,
         'title': title,
         'subtitle': subtitle,
-        'videoUrl': subtitle,
+        'videoUrl': videoUrl,
         'soundDescription': soundDescription,
         'index': index,
       };

@@ -15,5 +15,6 @@
     // .fvmフォルダ内のファイルをVsCodeの検索対象外にする
     // これをsetting.jsonに書く
     ".fvm/": true
-  }
+  },
+  "dart.lineLength": 120
 }
