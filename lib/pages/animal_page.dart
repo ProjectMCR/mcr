@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:mcr/main.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/pages/animal_question_page.dart';
-import 'package:spritewidget/spritewidget.dart';
 import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
@@ -28,7 +27,6 @@ class AnimalPage extends StatefulWidget {
 class _AnimalPageState extends State<AnimalPage> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   late VideoPlayerController _videoController;
-  late NodeWithSize _rootNode;
 
   //動画の再生、停止用
   bool _onTouch = false;
@@ -65,14 +63,6 @@ class _AnimalPageState extends State<AnimalPage> {
     initializeVideoPlayer();
     generateRandomValue();
     loop();
-
-    //  _rootNode = Scene(
-    //   Size(
-    //     200,
-    //     200 / _videoController.value.aspectRatio,
-    //   ),
-    //   false,
-    // );
   }
 
   var isStop = false;
@@ -280,12 +270,17 @@ class _AnimalPageState extends State<AnimalPage> {
                 ),
               ),
               const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 16,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                    onPressed: () async {
+                      _videoController.pause();
+                      isStop = true;
+                      setState(() {});
+
+                      await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return AnimalQuestion(
                           animal: widget.selectedAnimal,
                           forChild: false,
@@ -295,8 +290,11 @@ class _AnimalPageState extends State<AnimalPage> {
                     child: const Text('大人用アンケートに答える'),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                    onPressed: () async {
+                      _videoController.pause();
+                      isStop = true;
+                      setState(() {});
+                      await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                         return AnimalQuestion(
                           animal: widget.selectedAnimal,
                           forChild: true,
@@ -343,12 +341,12 @@ class _AnimalPageState extends State<AnimalPage> {
                       subtitle: animalSound.subtitle,
                       onTap: () async {
                         _videoController.pause();
+                        isStop = true;
                         await Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => SoundPage(selectedAnimalSound: animalSound),
                           ),
                         );
-                        _videoController.play();
                       },
                     ),
                   );
@@ -359,53 +357,6 @@ class _AnimalPageState extends State<AnimalPage> {
         ),
       ),
     );
-  }
-}
-
-class Scene extends NodeWithSize {
-  late List<Label> _animalOnomatopoeiaLabelList;
-  final _animalOnomatopoeia = _AnimalPageState.onomatopoeiaList;
-  final bool isStop;
-  Scene(
-    Size size,
-    this.isStop,
-  ) : super(size) {
-    _initialize();
-  }
-
-  void _initialize() {
-    var _random = Random();
-    var _labelIndex = 0.0;
-    _animalOnomatopoeiaLabelList = _animalOnomatopoeia.map((text) {
-      final label = Label(
-        text,
-        textAlign: TextAlign.left,
-        textStyle: const TextStyle(fontSize: 12, color: Colors.black),
-      );
-      label.position = Offset(size.width + _labelIndex * 100.0, _random.nextDouble() * 100);
-      _labelIndex += 1;
-
-      return label;
-    }).toList();
-
-    for (var label in _animalOnomatopoeiaLabelList) {
-      addChild(label);
-    }
-  }
-
-  @override
-  void update(double dt) {
-    if (isStop) {
-      return;
-    }
-    super.update(dt);
-    for (var label in _animalOnomatopoeiaLabelList) {
-      label.position = Offset(label.position.dx - 1, label.position.dy);
-
-      if (label.position.dx < -900) {
-        label.position = Offset(size.width, label.position.dy);
-      }
-    }
   }
 }
 

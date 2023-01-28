@@ -182,129 +182,121 @@ class _HomePageState extends State<HomePage> {
         children: [
           SingleChildScrollView(
             child: SafeArea(
-              child: Stack(
-                alignment: Alignment.topRight,
-                children: [
-                  Column(
-                    children: [
-                      const SizedBox(height: 21),
-                      SizedBox(
-                        height: 120,
-                        child: Image.asset(
-                          'assets/images/main_title1.png',
+              child: Center(
+                child: Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    Column(
+                      children: [
+                        const SizedBox(height: 21),
+                        SizedBox(
+                          height: 120,
+                          child: Image.asset(
+                            'assets/images/main_title1.png',
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 14),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).push(
+                        const SizedBox(height: 14),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const WhatIsOnomatopoeiaPage(),
+                            ),
+                          ),
+                          child: const Text(
+                            'オノマトペとは',
+                            style: TextStyle(
+                              color: AnimalOnomatopoeiaColor.gray1,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.underline,
+                              decorationColor: AnimalOnomatopoeiaColor.blue,
+                              decorationThickness: 1,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 25),
+                        SizedBox(
+                          width: screenWidth * 0.8,
+                          child: GridView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: animals.length,
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 1,
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                            ),
+                            itemBuilder: (context, index) {
+                              final animal = animals[index];
+                              return _AnimalTile(
+                                imageUrl: animal.imageUrl,
+                                animalName: animal.name,
+                                onTap: animal.onomatopoeiaVideoUrl.isNotEmpty
+                                    ? () => Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => AnimalPage(selectedAnimal: animal),
+                                          ),
+                                        )
+                                    : null,
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 48,
+                        ),
+                        Wrap(
+                          spacing: 16,
+                          alignment: WrapAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) {
+                                    return QuestionPage(
+                                      animals: animals,
+                                    );
+                                  }),
+                                );
+                              },
+                              child: const Text('大人用アンケートに答える'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) {
+                                    return QuestionForChildPage(
+                                      animals: animals,
+                                    );
+                                  }),
+                                );
+                              },
+                              child: const Text('こども用アンケートに答える'),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 32,
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const WhatIsOnomatopoeiaPage(),
-                          ),
-                        ),
-                        child: const Text(
-                          'オノマトペとは',
-                          style: TextStyle(
-                            color: AnimalOnomatopoeiaColor.gray1,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            decoration: TextDecoration.underline,
-                            decorationColor: AnimalOnomatopoeiaColor.blue,
-                            decorationThickness: 1,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 25),
-                      SizedBox(
-                        width: screenWidth * 0.8,
-                        child: GridView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: animals.length,
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 1,
-                            mainAxisSpacing: 16,
-                            crossAxisSpacing: 16,
-                          ),
-                          itemBuilder: (context, index) {
-                            final animal = animals[index];
-                            return _AnimalTile(
-                              imageUrl: animal.imageUrl,
-                              animalName: animal.name,
-                              onTap: animal.onomatopoeiaVideoUrl.isNotEmpty
-                                  ? () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => AnimalPage(selectedAnimal: animal),
-                                        ),
-                                      )
-                                  : null,
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 48,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) {
-                                  return QuestionForChildPage(
-                                    animals: animals,
-                                  );
-                                }),
+                            builder: (context) {
+                              return SettingsPage(
+                                animals: animals,
                               );
                             },
-                            child: const Text('こども用アンケートに答える'),
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) {
-                                  return QuestionPage(
-                                    animals: animals,
-                                  );
-                                }),
-                              );
-                            },
-                            child: const Text('大人用アンケートに答える'),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 32,
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                    onPressed: () async {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return const SettingsPage();
-                          },
-                        ),
-                      );
-
-                      // setState(() {
-                      //   isLoading = true;
-                      // });
-                      // try {
-                      //   await AnimalRepository().saveAnimals(animals);
-                      // } catch (_) {
-                      // } finally {
-                      //   setState(() {
-                      //     isLoading = false;
-                      //   });
-                      // }
-                    },
-                    icon: const Icon(Icons.settings),
-                  ),
-                ],
+                        );
+                      },
+                      icon: const Icon(Icons.settings),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

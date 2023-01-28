@@ -257,13 +257,19 @@ class _QuestionPageState extends State<QuestionPage> {
             text: '7. 日頃お子様と動物の鳴き声に関する会話をしていますか？\n（動物の鳴き声が出ている絵本を読んだり、そばにいる犬猫を話題にするなど）',
           ),
           const SizedBox(height: 8),
-          LikertScaleQuestions(
+          LikertScaleFreeQuestions(
             groupValue: answers[6],
             onChanged: (value) {
               answers[6] = value;
               setState(() {});
             },
-          )
+            questions: const [
+              '×× 全くしない',
+              '× しない',
+              '○ する',
+              '◎ よくする',
+            ],
+          ),
         ],
       ),
       Column(
@@ -619,6 +625,7 @@ class LikertScaleFreeQuestions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Wrap(
       spacing: 8,
+      runSpacing: 8,
       children: [
         for (final question in questions)
           OptionsTile(

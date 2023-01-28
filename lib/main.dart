@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
@@ -8,11 +9,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mcr/pages/home_page.dart';
+import 'package:mcr/repositories/settings_repository.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 /// オフラインモード
-bool isOffline = false;
+bool get isOffline => SettingsRepository.instance.getOffline();
 
 Future<String> getId() async {
   final deviceInfo = DeviceInfoPlugin();
@@ -30,12 +32,11 @@ Future<Directory> getAnswerDir() async {
 }
 
 late Box<Map> animalBox;
-late Box<bool> settingBox;
 
 Future<void> hiveSetup() async {
   await Hive.initFlutter();
   animalBox = await Hive.openBox<Map>('animalBox');
-  settingBox = await Hive.openBox<bool>('settingBox');
+  await SettingsRepository.instance.init();
 }
 
 Future<void> main() async {
@@ -95,8 +96,8 @@ class _DownloadAndPlayMoviePageState extends State<DownloadAndPlayMoviePage> {
       await directory.create(recursive: true);
       file = File('${dir.path}/demo.mp4');
       await dio.download(videoURL, "${dir.path}/demo.mp4", onReceiveProgress: (rec, total) {
-        print("Rec: $rec , Total: $total");
-        print(((rec / total) * 100).toStringAsFixed(0) + "%");
+        log("Rec: $rec , Total: $total");
+        log(((rec / total) * 100).toStringAsFixed(0) + "%");
       });
 
       controller = VideoPlayerController.file(file!);
@@ -104,7 +105,7 @@ class _DownloadAndPlayMoviePageState extends State<DownloadAndPlayMoviePage> {
       controller?.play();
       setState(() {});
     } catch (e) {
-      print(e);
+      log('$e');
     }
   }
 

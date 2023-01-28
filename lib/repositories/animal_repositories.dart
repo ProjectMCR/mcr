@@ -3,9 +3,10 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:mcr/main.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../models/animal.dart';
@@ -31,9 +32,15 @@ class AnimalRepository {
     return animals;
   }
 
-  Future<void> saveAnimals(List<Animal> animals) async {
+  Future<void> saveAnimals({
+    required List<Animal> animals,
+    required void Function(String) onProgress,
+  }) async {
     await animalBox.clear();
-    final newAnimals = await saveAssets(animals);
+    final newAnimals = await saveAssets(
+      animals: animals,
+      onProgress: onProgress,
+    );
 
     await Future.forEach(newAnimals, (e) async {
       final map = e.toMap();
@@ -56,12 +63,18 @@ class AnimalRepository {
     return file;
   }
 
-  Future<List<Animal>> saveAssets(List<Animal> animals) async {
+  Future<List<Animal>> saveAssets({
+    required List<Animal> animals,
+    required void Function(String) onProgress,
+  }) async {
     final appDocDir = await getApplicationDocumentsDirectory();
 
+    onProgress('0/${animals.length}');
     for (final animal in animals) {
+      final index = animals.indexOf(animal);
+
       animal.imageUrl = (File(
-        join(
+        p.join(
           (appDocDir.path),
           animal.name,
           'animalImageUrl',
@@ -81,7 +94,7 @@ class AnimalRepository {
       animal.onomatopoeiaVideoUrl = (await downloadMovie(
         url: animal.onomatopoeiaVideoUrl,
         file: File(
-          join(
+          p.join(
             (appDocDir.path),
             animal.name,
             'movie.mp4',
@@ -92,7 +105,7 @@ class AnimalRepository {
 
       for (final sound in animal.animalSounds) {
         sound.imageUrl = (File(
-          join(
+          p.join(
             (appDocDir.path),
             animal.name,
             sound.title,
@@ -112,7 +125,7 @@ class AnimalRepository {
           sound.videoUrl = (await downloadMovie(
             url: sound.videoUrl,
             file: File(
-              join(
+              p.join(
                 (appDocDir.path),
                 animal.name,
                 sound.title,
@@ -123,7 +136,61 @@ class AnimalRepository {
               .path;
         }
       }
+      onProgress('${index + 1}/${animals.length}');
     }
     return animals;
+  }
+}
+
+class DownloadDialog extends StatefulWidget {
+  const DownloadDialog({
+    super.key,
+    required this.animals,
+  });
+
+  final List<Animal> animals;
+
+  @override
+  State<DownloadDialog> createState() => _DownloadDialogState();
+}
+
+class _DownloadDialogState extends State<DownloadDialog> {
+  var progress = '';
+
+  Future<void> download() async {
+    await AnimalRepository().saveAnimals(
+      animals: widget.animals,
+      onProgress: (value) {
+        progress = value;
+        setState(() {});
+      },
+    );
+
+    Navigator.of(context).pop();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    download();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('ダウンロード中です'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(
+            width: 40,
+            height: 40,
+            child: CircularProgressIndicator(),
+          ),
+          const SizedBox(height: 16),
+          Text(progress),
+        ],
+      ),
+    );
   }
 }
