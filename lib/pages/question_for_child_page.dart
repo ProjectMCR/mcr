@@ -4,12 +4,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:mcr/pages/question_page.dart';
 
 import '../main.dart';
 import '../models/animal.dart';
 
-class QuestionPage extends StatefulWidget {
-  const QuestionPage({
+class QuestionForChildPage extends StatefulWidget {
+  const QuestionForChildPage({
     super.key,
     required this.animals,
   });
@@ -17,22 +18,17 @@ class QuestionPage extends StatefulWidget {
   final List<Animal> animals;
 
   @override
-  State<QuestionPage> createState() => _QuestionPageState();
+  State<QuestionForChildPage> createState() => _QuestionForChildPageState();
 }
 
-class _QuestionPageState extends State<QuestionPage> {
-  final answers = List<String>.generate(11, (index) => '');
+class _QuestionForChildPageState extends State<QuestionForChildPage> {
+  final answers = List<String>.generate(12, (index) => '');
 
-  final ageControllers = [
-    TextEditingController(),
-    TextEditingController(),
-    TextEditingController(),
-  ];
+  /// 何歳なのか
+  final ageController = TextEditingController();
 
+  /// 最後の自由記述
   final freeController = TextEditingController();
-
-  /// 複数の子供
-  final childrenAnswer = List<String>.generate(3, (index) => '');
 
   final whatFactorAnimalFeel = <String>[];
 
@@ -44,29 +40,16 @@ class _QuestionPageState extends State<QuestionPage> {
     '説明文章',
   ];
 
-  String formattedChildrenAnswer() {
-    var answer = '';
-    for (var index = 0; index < 3; index++) {
-      answer += '${ageControllers[index].text} ${childrenAnswer[index]}, ';
-    }
-    return answer;
-  }
-
   String formattedWhatFactorAnimalFeel() {
     return whatFactorAnimalFeel.join(', ');
   }
 
-  String get fileName {
-    final fileName = '$deviceId-全体-大人用-${DateFormat('HH時mm分ss秒').format(DateTime.now())}.csv';
-    return fileName;
-  }
-
   String get generateCSV {
     /// 複数の子供に関するやつ
-    answers[1] = formattedChildrenAnswer();
+    // answers[1] = formattedChildrenAnswer();
 
     /// どれが気持ちを伝える要因になったか
-    answers[9] = formattedWhatFactorAnimalFeel();
+    answers[10] = formattedWhatFactorAnimalFeel();
 
     var ans = fileName + '\n';
 
@@ -108,10 +91,28 @@ class _QuestionPageState extends State<QuestionPage> {
   @override
   void dispose() {
     super.dispose();
-    for (final c in ageControllers) {
-      c.dispose();
-    }
+    ageController.dispose();
     freeController.dispose();
+  }
+
+  static final questionsText = [
+    '1. あなたは何歳ですか？',
+    '2. 水戸ろう学校に通っていますか？',
+    '3. 今日のイベントはたのしかったですか？',
+    '4. みんなで、いっしょに、たのしめましたか？',
+    '5. どうぶつのことをもっと知りたいとおもいましたか？',
+    '6. どうぶつの鳴き声をもっと知りたいとおもいましたか？',
+    '7. もっといろいろな音をみてみたいとおもいましたか？',
+    '8. どうぶつの鳴き声がでてくる絵本を読んだことがありますか？',
+    '9. 鳴き声の聞こえ方は聞く人によってちがうとおもいましたか？',
+    '10. どうぶつは気持ちによっていろいろな声で鳴くことがわかりましたか？',
+    '11. 気持ちによる鳴き声の雰囲気は何で伝わりましたか？（いくつ選んでもかまいません）',
+    '12. 感想をじゆうにかいてください。',
+  ];
+
+  String get fileName {
+    final fileName = '$deviceId-全体-こども用-${DateFormat('HH時mm分ss秒').format(DateTime.now())}.csv';
+    return fileName;
   }
 
   @override
@@ -120,189 +121,229 @@ class _QuestionPageState extends State<QuestionPage> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const QuestionTitleText(
-            text: '1. イベントは楽しめましたか？',
+          QuestionTitleText(
+            text: questionsText[0],
           ),
           const SizedBox(height: 8),
-          LikertScaleQuestions(
-            groupValue: answers[0],
+          SizedBox(
+            height: 40,
+            width: 80,
+            child: TextFormField(
+              controller: ageController,
+              onChanged: (text) {
+                answers[0] = text;
+              },
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                suffix: Text('さい'),
+                border: OutlineInputBorder(),
+              ),
+            ),
+          )
+        ],
+      ),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          QuestionTitleText(
+            text: questionsText[1],
+          ),
+          const SizedBox(height: 8),
+          LikertScaleFreeQuestions(
+            groupValue: answers[1],
             onChanged: (value) {
-              answers[0] = value;
+              answers[1] = value;
               setState(() {});
             },
+            questions: const [
+              'はい',
+              'いいえ',
+            ],
           ),
         ],
       ),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const QuestionTitleText(
-            text: '2. お子様は楽しんでいるようでしたか？',
-          ),
-          const Text(
-            '（お子様が複数いらっしゃる場合はお子様別にご回答ください）',
-            style: TextStyle(
-              fontSize: 10,
-            ),
+          QuestionTitleText(
+            text: questionsText[2],
           ),
           const SizedBox(height: 8),
-          for (var index = 0; index < 3; index++)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    SizedBox(
-                      height: 32,
-                      width: 80,
-                      child: TextFormField(
-                        controller: ageControllers[index],
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 4,
-                    ),
-                    const Text('歳'),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                LikertScaleQuestions(
-                  groupValue: childrenAnswer[index],
-                  onChanged: (value) {
-                    childrenAnswer[index] = value;
-                    setState(() {});
-                  },
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-        ],
-      ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const QuestionTitleText(
-            text: '3. アプリは家族一緒に動物園を楽しむ助けになりましたか？',
-          ),
-          const SizedBox(height: 8),
-          LikertScaleQuestions(
+          LikertScaleFreeQuestions(
             groupValue: answers[2],
             onChanged: (value) {
               answers[2] = value;
               setState(() {});
             },
-          )
+            questions: const [
+              '×× まったく楽しくない',
+              '× 楽しくない',
+              '○ 楽しい',
+              '○ とても楽しい',
+            ],
+          ),
         ],
       ),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const QuestionTitleText(
-            text: '4. このアプリはお子様が動物に興味を持つきっかけになりそうですか？',
+          QuestionTitleText(
+            text: questionsText[3],
           ),
           const SizedBox(height: 8),
-          LikertScaleQuestions(
+          LikertScaleFreeQuestions(
             groupValue: answers[3],
             onChanged: (value) {
               answers[3] = value;
               setState(() {});
             },
-          )
+            questions: const [
+              '×× まったく楽しくない',
+              '× 楽しくない',
+              '○ 楽しい',
+              '○ とても楽しい',
+            ],
+          ),
         ],
       ),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const QuestionTitleText(
-            text: '5. このアプリはお子様が動物の鳴き声に興味を持つきっかけになりそうですか？',
+          QuestionTitleText(
+            text: questionsText[4],
           ),
           const SizedBox(height: 8),
-          LikertScaleQuestions(
+          LikertScaleFreeQuestions(
             groupValue: answers[4],
             onChanged: (value) {
               answers[4] = value;
               setState(() {});
             },
-          )
+            questions: const [
+              '×× まったく思わない',
+              '× 思わない',
+              '○ 思う',
+              '○ とても思う',
+            ],
+          ),
         ],
       ),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const QuestionTitleText(
-            text: '6. このアプリはお子様が音に興味を持つきっかけになりそうですか？',
+          QuestionTitleText(
+            text: questionsText[5],
           ),
           const SizedBox(height: 8),
-          LikertScaleQuestions(
+          LikertScaleFreeQuestions(
             groupValue: answers[5],
             onChanged: (value) {
               answers[5] = value;
               setState(() {});
             },
-          )
+            questions: const [
+              '×× まったく思わない',
+              '× 思わない',
+              '○ 思う',
+              '○ とても思う',
+            ],
+          ),
         ],
       ),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const QuestionTitleText(
-            text: '7. 日頃お子様と動物の鳴き声に関する会話をしていますか？\n（動物の鳴き声が出ている絵本を読んだり、そばにいる犬猫を話題にするなど）',
+          QuestionTitleText(
+            text: questionsText[6],
           ),
           const SizedBox(height: 8),
-          LikertScaleQuestions(
+          LikertScaleFreeQuestions(
             groupValue: answers[6],
             onChanged: (value) {
               answers[6] = value;
               setState(() {});
             },
-          )
+            questions: const [
+              '×× まったく思わない',
+              '× 思わない',
+              '○ 思う',
+              '○ とても思う',
+            ],
+          ),
         ],
       ),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const QuestionTitleText(
-            text: '8. 鳴き声の受け取り方・聞こえ方は人それぞれだと思いましたか？',
+          QuestionTitleText(
+            text: questionsText[7],
           ),
           const SizedBox(height: 8),
-          LikertScaleQuestions(
+          LikertScaleFreeQuestions(
             groupValue: answers[7],
             onChanged: (value) {
               answers[7] = value;
               setState(() {});
             },
-          )
+            questions: const [
+              '×× まったくない',
+              '× ほとんどない',
+              '○ ある',
+              '○ とてもある',
+            ],
+          ),
         ],
       ),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const QuestionTitleText(
-            text: '9. 動物は気持ちや状況に合わせていろいろな声で鳴くことがわかりましたか？',
+          QuestionTitleText(
+            text: questionsText[8],
           ),
           const SizedBox(height: 8),
-          LikertScaleQuestions(
+          LikertScaleFreeQuestions(
             groupValue: answers[8],
             onChanged: (value) {
               answers[8] = value;
               setState(() {});
             },
-          )
+            questions: const [
+              '×× まったく思わない',
+              '× 思わない',
+              '○ 思う',
+              '○ とても思う',
+            ],
+          ),
         ],
       ),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const QuestionTitleText(
-            text: '10. 気持ちによる鳴き声の雰囲気は何で伝わりましたか？（幾つでも選んでください）',
+          QuestionTitleText(
+            text: questionsText[9],
+          ),
+          const SizedBox(height: 8),
+          LikertScaleFreeQuestions(
+            groupValue: answers[9],
+            onChanged: (value) {
+              answers[9] = value;
+              setState(() {});
+            },
+            questions: const [
+              '×× まったくわからない',
+              '× わからない',
+              '○ わかる',
+              '○ とてもわかる',
+            ],
+          ),
+        ],
+      ),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          QuestionTitleText(
+            text: questionsText[10],
           ),
           const SizedBox(height: 8),
           AspectRatio(
@@ -346,8 +387,8 @@ class _QuestionPageState extends State<QuestionPage> {
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            Image.asset(
-                              'assets/questions/sound_image.png',
+                            Image.network(
+                              'https://firebasestorage.googleapis.com/v0/b/animal-onomatope.appspot.com/o/soundpageImage.png?alt=media&token=029fc9a0-842b-425e-9334-df22ee7dfef0',
                             ),
                             Align(
                               alignment: const Alignment(0, -.9),
@@ -453,8 +494,8 @@ class _QuestionPageState extends State<QuestionPage> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const QuestionTitleText(
-            text: '11. アプリの改善ポイントや感想をご自由にお書きください。',
+          QuestionTitleText(
+            text: questionsText[11],
           ),
           const SizedBox(height: 8),
           TextFormField(
@@ -462,7 +503,7 @@ class _QuestionPageState extends State<QuestionPage> {
             minLines: 5,
             maxLines: 5,
             onChanged: (value) {
-              answers[10] = value;
+              answers[11] = value;
               setState(() {});
             },
             decoration: const InputDecoration(
@@ -491,10 +532,11 @@ class _QuestionPageState extends State<QuestionPage> {
                 content: const Text('回答中のアンケートは削除されますが前のページに戻りますか？'),
                 actions: [
                   TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(true);
-                      },
-                      child: const Text('アンケートを破棄して戻る'))
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                    child: const Text('アンケートを破棄して戻る'),
+                  )
                 ],
               );
             },
@@ -521,10 +563,11 @@ class _QuestionPageState extends State<QuestionPage> {
                             content: const Text('回答中のアンケートは削除されますが前のページに戻りますか？'),
                             actions: [
                               TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(true);
-                                  },
-                                  child: const Text('アンケートを破棄して戻る'))
+                                onPressed: () {
+                                  Navigator.of(context).pop(true);
+                                },
+                                child: const Text('アンケートを破棄して戻る'),
+                              )
                             ],
                           );
                         },
@@ -573,95 +616,6 @@ class QuestionTitleText extends StatelessWidget {
       style: const TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 16,
-      ),
-    );
-  }
-}
-
-class LikertScaleQuestions extends StatelessWidget {
-  const LikertScaleQuestions({
-    super.key,
-    required this.groupValue,
-    required this.onChanged,
-  });
-
-  final Function(String) onChanged;
-  final String groupValue;
-
-  @override
-  Widget build(BuildContext context) {
-    return LikertScaleFreeQuestions(
-      onChanged: onChanged,
-      groupValue: groupValue,
-      questions: const [
-        '×× 全くそう思わない',
-        '× そう思わない',
-        '○ そう思う',
-        '◎ とてもそう思う',
-      ],
-    );
-  }
-}
-
-class LikertScaleFreeQuestions extends StatelessWidget {
-  const LikertScaleFreeQuestions({
-    super.key,
-    required this.groupValue,
-    required this.onChanged,
-    required this.questions,
-  });
-
-  final Function(String) onChanged;
-  final String groupValue;
-  final List<String> questions;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      children: [
-        for (final question in questions)
-          OptionsTile(
-            value: question,
-            isSelected: groupValue == question,
-            onTap: onChanged,
-          ),
-      ],
-    );
-  }
-}
-
-class OptionsTile extends StatelessWidget {
-  const OptionsTile({
-    super.key,
-    required this.value,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String value;
-  final bool isSelected;
-  final void Function(String) onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        onTap(value);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: !isSelected ? null : Colors.blue[100],
-          border: Border.all(
-            width: !isSelected ? 1 : 2,
-            color: !isSelected ? Colors.black : Colors.blue,
-          ),
-          borderRadius: const BorderRadius.all(
-            Radius.circular(8),
-          ),
-        ),
-        padding: const EdgeInsets.all(8),
-        child: Text(value),
       ),
     );
   }

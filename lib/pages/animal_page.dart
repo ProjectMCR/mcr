@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mcr/main.dart';
 import 'package:mcr/models/animal.dart';
+import 'package:mcr/pages/animal_question_page.dart';
 import 'package:spritewidget/spritewidget.dart';
 import 'package:video_player/video_player.dart';
 
@@ -168,7 +169,6 @@ class _AnimalPageState extends State<AnimalPage> {
                       //動画再生部分
                       ? Stack(alignment: Alignment.bottomCenter, children: [
                           VideoPlayer(_videoController),
-
                           for (var index = 0; index < widget.selectedAnimal.onomatopoeiaList.length; index++)
                             Align(
                               alignment: Alignment(
@@ -207,16 +207,6 @@ class _AnimalPageState extends State<AnimalPage> {
                                 ),
                               ),
                             ),
-                          // SpriteWidget(
-                          //   Scene(
-                          //     Size(
-                          //       200,
-                          //       200 / _videoController.value.aspectRatio,
-                          //     ),
-                          //     false,
-                          //   ),
-                          //   transformMode: SpriteBoxTransformMode.fixedWidth,
-                          // ),
                           Visibility(
                             visible: _onTouch,
                             child: Center(
@@ -290,12 +280,33 @@ class _AnimalPageState extends State<AnimalPage> {
                 ),
               ),
               const SizedBox(height: 15),
-              // Divider(
-              //   color: AnimalOnomatopoeiaColor.blue,
-              //   thickness: 2,
-              //   indent:,
-              //   endIndent: screenWidth / 3,
-              // ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                        return AnimalQuestion(
+                          animal: widget.selectedAnimal,
+                          forChild: false,
+                        );
+                      }));
+                    },
+                    child: const Text('大人用アンケートに答える'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                        return AnimalQuestion(
+                          animal: widget.selectedAnimal,
+                          forChild: true,
+                        );
+                      }));
+                    },
+                    child: const Text('こども用アンケートに答える'),
+                  ),
+                ],
+              ),
               const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),

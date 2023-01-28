@@ -9,12 +9,14 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:location/location.dart';
 import 'package:mcr/main.dart';
 import 'package:mcr/pages/question_page.dart';
+import 'package:mcr/pages/settings_page.dart';
 import 'package:mcr/pages/what_is_onomatopoeia_page.dart';
 import 'package:mcr/repositories/animal_repositories.dart';
 
 import '../colors.dart';
 import '../models/animal.dart';
 import 'animal_page.dart';
+import 'question_for_child_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -77,7 +79,7 @@ class _HomePageState extends State<HomePage> {
       );
       logs.add('${animal.name} distance: $distance');
       setState(() {});
-      if (distance < 20) {
+      if (distance < 15) {
         /// 中に入っている間は出さない
         if (inAnimalPointMap[animal] == false) {
           await showLocalNotification(
@@ -183,68 +185,81 @@ class _HomePageState extends State<HomePage> {
               child: Stack(
                 alignment: Alignment.topRight,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Column(
                     children: [
-                      Column(
+                      const SizedBox(height: 21),
+                      SizedBox(
+                        height: 120,
+                        child: Image.asset(
+                          'assets/images/main_title1.png',
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const WhatIsOnomatopoeiaPage(),
+                          ),
+                        ),
+                        child: const Text(
+                          'オノマトペとは',
+                          style: TextStyle(
+                            color: AnimalOnomatopoeiaColor.gray1,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline,
+                            decorationColor: AnimalOnomatopoeiaColor.blue,
+                            decorationThickness: 1,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 25),
+                      SizedBox(
+                        width: screenWidth * 0.8,
+                        child: GridView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: animals.length,
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 1,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 16,
+                          ),
+                          itemBuilder: (context, index) {
+                            final animal = animals[index];
+                            return _AnimalTile(
+                              imageUrl: animal.imageUrl,
+                              animalName: animal.name,
+                              onTap: animal.onomatopoeiaVideoUrl.isNotEmpty
+                                  ? () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => AnimalPage(selectedAnimal: animal),
+                                        ),
+                                      )
+                                  : null,
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 48,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisSize: MainAxisSize.max,
                         children: [
-                          const SizedBox(height: 21),
-                          SizedBox(
-                            height: 120,
-                            child: Image.asset(
-                              'assets/images/main_title1.png',
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          TextButton(
-                            onPressed: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const WhatIsOnomatopoeiaPage(),
-                              ),
-                            ),
-                            child: const Text(
-                              'オノマトペとは',
-                              style: TextStyle(
-                                color: AnimalOnomatopoeiaColor.gray1,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                decoration: TextDecoration.underline,
-                                decorationColor: AnimalOnomatopoeiaColor.blue,
-                                decorationThickness: 1,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 25),
-                          SizedBox(
-                            width: screenWidth * 0.8,
-                            child: GridView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: animals.length,
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 1,
-                                mainAxisSpacing: 16,
-                                crossAxisSpacing: 16,
-                              ),
-                              itemBuilder: (context, index) {
-                                final animal = animals[index];
-                                return _AnimalTile(
-                                  imageUrl: animal.imageUrl,
-                                  animalName: animal.name,
-                                  onTap: animal.onomatopoeiaVideoUrl.isNotEmpty
-                                      ? () => Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) => AnimalPage(selectedAnimal: animal),
-                                            ),
-                                          )
-                                      : null,
-                                );
-                              },
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 32,
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) {
+                                  return QuestionForChildPage(
+                                    animals: animals,
+                                  );
+                                }),
+                              );
+                            },
+                            child: const Text('こども用アンケートに答える'),
                           ),
                           ElevatedButton(
                             onPressed: () {
@@ -256,28 +271,36 @@ class _HomePageState extends State<HomePage> {
                                 }),
                               );
                             },
-                            child: const Text('アンケートに答える'),
-                          ),
-                          const SizedBox(
-                            height: 32,
+                            child: const Text('大人用アンケートに答える'),
                           ),
                         ],
+                      ),
+                      const SizedBox(
+                        height: 32,
                       ),
                     ],
                   ),
                   IconButton(
                     onPressed: () async {
-                      setState(() {
-                        isLoading = true;
-                      });
-                      try {
-                        await AnimalRepository().saveAnimals(animals);
-                      } catch (_) {
-                      } finally {
-                        setState(() {
-                          isLoading = false;
-                        });
-                      }
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const SettingsPage();
+                          },
+                        ),
+                      );
+
+                      // setState(() {
+                      //   isLoading = true;
+                      // });
+                      // try {
+                      //   await AnimalRepository().saveAnimals(animals);
+                      // } catch (_) {
+                      // } finally {
+                      //   setState(() {
+                      //     isLoading = false;
+                      //   });
+                      // }
                     },
                     icon: const Icon(Icons.settings),
                   ),
