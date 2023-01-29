@@ -387,8 +387,8 @@ class _QuestionForChildPageState extends State<QuestionForChildPage> {
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            Image.network(
-                              'https://firebasestorage.googleapis.com/v0/b/animal-onomatope.appspot.com/o/soundpageImage.png?alt=media&token=029fc9a0-842b-425e-9334-df22ee7dfef0',
+                            Image.asset(
+                              'assets/questions/sound_image.png',
                             ),
                             Align(
                               alignment: const Alignment(0, -.9),

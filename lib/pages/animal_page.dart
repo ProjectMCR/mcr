@@ -167,10 +167,12 @@ class _AnimalPageState extends State<AnimalPage> {
                               ),
                               child: SizedBox(
                                 width: 32,
-                                height: 32,
+                                height: 1,
                                 child: OverflowBox(
                                   minWidth: 100,
                                   maxWidth: 400,
+                                  minHeight: 80,
+                                  maxHeight: 80,
                                   child: Stack(
                                     children: [
                                       Text(
