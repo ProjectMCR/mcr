@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterfire_ui/firestore.dart';
 import 'package:mcr/models/header_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,10 +10,7 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
   const WhatIsOnomatopoeiaPage({Key? key}) : super(key: key);
 
   Query<HeaderImage> get headerImageQuery {
-    return FirebaseFirestore.instance
-        .collection('headerImages')
-        .orderBy('createdAt', descending: true)
-        .withConverter(
+    return FirebaseFirestore.instance.collection('headerImages').orderBy('createdAt', descending: true).withConverter(
           fromFirestore: (snapshot, _) => HeaderImage.fromMap(snapshot.data()!),
           toFirestore: (headerImage, _) => headerImage.toMap(),
         );
@@ -31,18 +27,18 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
             children: [
               Stack(
                 children: [
-                  FirestoreQueryBuilder<HeaderImage>(
-                    pageSize: 7,
-                    query: headerImageQuery,
-                    builder: (context, snapshot, _) {
-                      if (snapshot.isFetching) {
+                  StreamBuilder(
+                    stream: headerImageQuery.snapshots(),
+                    builder: (context, ss) {
+                      final snapshot = ss.data;
+                      if (snapshot == null) {
                         return const Center(child: CircularProgressIndicator());
                       }
+
                       return CarouselSlider.builder(
                         itemCount: snapshot.docs.length,
                         itemBuilder: (context, index, _) {
-                          final _scrollIndicatorDots = List.generate(
-                              snapshot.docs.length, (index) => index);
+                          final _scrollIndicatorDots = List.generate(snapshot.docs.length, (index) => index);
                           final headerImage = snapshot.docs[index].data();
                           return Stack(
                             children: [
@@ -193,9 +189,7 @@ class _ScrollIndicator extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: _scrollIndicatorDots.map(
         (dotIndex) {
-          return dotIndex == index
-              ? const _SelectedDot()
-              : const _UnSelectedDot();
+          return dotIndex == index ? const _SelectedDot() : const _UnSelectedDot();
         },
       ).toList(),
     );
