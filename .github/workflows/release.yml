@@ -2,8 +2,11 @@
 # https://github.com/firebase/firebase-tools
 
 name: 定期実行してテストフライトにあげる
-"on": workflow_dispatch
-
+on:
+  workflow_dispatch:
+  schedule:
+    # 1ヶ月に一回実行
+    - cron: "0 0 1 * *"
 jobs:
   build_and_deploy:
     name: build
