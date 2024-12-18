@@ -20,7 +20,7 @@ dependencies:
   flutter_inappwebview:
   url_launcher: 
   spritewidget: 
-  flutter_local_notifications:
+  flutter_local_notifications: ^18.0.1
   location: 
   collection: 
   intl: 
