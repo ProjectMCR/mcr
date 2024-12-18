@@ -19,7 +19,7 @@ import 'animal_page.dart';
 import 'question_for_child_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage> {
     );
     final enable = await _flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestPermission();
+        ?.requestNotificationsPermission();
     if (enable == false) {
       return;
     }
@@ -318,11 +318,11 @@ class _HomePageState extends State<HomePage> {
 
 class _AnimalTile extends StatelessWidget {
   const _AnimalTile({
-    Key? key,
+    super.key,
     required this.onTap,
     required this.animalName,
     required this.imageUrl,
-  }) : super(key: key);
+  });
 
   final void Function()? onTap;
   final String animalName;
