@@ -14,20 +14,20 @@ import '../models/animal.dart';
 class AnimalRepository {
   FutureOr<List<Animal>> fetchAnimal() async {
     List<Animal> animals;
-    if (isOffline) {
-      animals = animalBox.values.map((e) {
-        return Animal.fromMap(Map.from(e));
-      }).toList();
-    } else {
-      final qs = await FirebaseFirestore.instance.collection('animals').get();
-      animals = await Future.wait(
-        qs.docs.map(
-          (e) => Animal.fromFirestore(
-            e.data(),
-          ),
+    // if (isOffline) {
+    //   animals = animalBox.values.map((e) {
+    //     return Animal.fromMap(Map.from(e));
+    //   }).toList();
+    // } else {
+    final qs = await FirebaseFirestore.instance.collection('animals').get();
+    animals = await Future.wait(
+      qs.docs.map(
+        (e) => Animal.fromFirestore(
+          e.data(),
         ),
-      );
-    }
+      ),
+    );
+    // }
     animals.sort((a, b) => a.index.compareTo(b.index));
     return animals;
   }

@@ -14,7 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 /// オフラインモード
-bool get isOffline => SettingsRepository.instance.getOffline();
+// bool get isOffline => SettingsRepository.instance.getOffline();
 
 Future<String> getId() async {
   final deviceInfo = DeviceInfoPlugin();
@@ -25,34 +25,34 @@ Future<String> getId() async {
 late Directory answerDir;
 late String deviceId;
 
-Future<Directory> getAnswerDir() async {
-  final dir = await getApplicationDocumentsDirectory();
-  final answerDir = Directory('${dir.path}/answer');
-  return answerDir.create(recursive: true);
-}
+// Future<Directory> getAnswerDir() async {
+// final dir = await getApplicationDocumentsDirectory();
+//   final answerDir = Directory('${dir.path}/answer');
+//   return answerDir.create(recursive: true);
+// }
 
 late Box<Map> animalBox;
 
-Future<void> hiveSetup() async {
-  await Hive.initFlutter();
-  animalBox = await Hive.openBox<Map>('animalBox');
-  await SettingsRepository.instance.init();
-}
+// Future<void> hiveSetup() async {
+//   await Hive.initFlutter();
+//   animalBox = await Hive.openBox<Map>('animalBox');
+//   await SettingsRepository.instance.init();
+// }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   deviceId = await getId();
-  answerDir = await getAnswerDir();
+  // answerDir = await getAnswerDir();
   await Firebase.initializeApp();
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
   }
-  await hiveSetup();
+  // await hiveSetup();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +97,7 @@ class _DownloadAndPlayMoviePageState extends State<DownloadAndPlayMoviePage> {
       file = File('${dir.path}/demo.mp4');
       await dio.download(videoURL, "${dir.path}/demo.mp4", onReceiveProgress: (rec, total) {
         log("Rec: $rec , Total: $total");
-        log(((rec / total) * 100).toStringAsFixed(0) + "%");
+        log("${((rec / total) * 100).toStringAsFixed(0)}%");
       });
 
       controller = VideoPlayerController.file(file!);

@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:mcr/main.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/pages/animal_question_page.dart';
 import 'package:video_player/video_player.dart';
@@ -14,9 +11,9 @@ import 'sound_page.dart';
 
 class AnimalPage extends StatefulWidget {
   const AnimalPage({
-    Key? key,
+    super.key,
     required this.selectedAnimal,
-  }) : super(key: key);
+  });
 
   final Animal selectedAnimal;
 
@@ -25,7 +22,6 @@ class AnimalPage extends StatefulWidget {
 }
 
 class _AnimalPageState extends State<AnimalPage> {
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   late VideoPlayerController _videoController;
 
   //動画の再生、停止用
@@ -33,19 +29,20 @@ class _AnimalPageState extends State<AnimalPage> {
   Timer? _timer;
 
   //鳴き声字幕が入るリスト
-  static List onomatopoeiaList = [];
 
   /// video player初期化
   Future<void> initializeVideoPlayer() async {
     // TODO(kenta-wakasa): ビデオダウンロードと再生の仕組みを見直す
     final filePath = widget.selectedAnimal.onomatopoeiaVideoUrl;
-    _videoController = isOffline
-        ? VideoPlayerController.file(
-            File(filePath),
-          )
-        : VideoPlayerController.network(
-            widget.selectedAnimal.onomatopoeiaVideoUrl.toString(),
-          );
+    _videoController =
+        // isOffline
+        //     ? VideoPlayerController.file(
+        //         File(filePath),
+        //       )
+        //     :
+        VideoPlayerController.network(
+      widget.selectedAnimal.onomatopoeiaVideoUrl.toString(),
+    );
 
     await _videoController.initialize();
     //初期化されたら、自動で再生する
@@ -203,11 +200,6 @@ class _AnimalPageState extends State<AnimalPage> {
                             visible: _onTouch,
                             child: Center(
                               child: MaterialButton(
-                                child: Icon(
-                                  _videoController.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                                  color: Colors.white,
-                                  size: 35,
-                                ),
                                 padding: const EdgeInsets.all(15), //パディング
                                 color: Colors.black38, //背景色
                                 textColor: Colors.white, //アイコンの色
@@ -233,6 +225,11 @@ class _AnimalPageState extends State<AnimalPage> {
                                     });
                                   });
                                 },
+                                child: Icon(
+                                  _videoController.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                                  color: Colors.white,
+                                  size: 35,
+                                ),
                               ),
                             ),
                           ),
@@ -272,41 +269,41 @@ class _AnimalPageState extends State<AnimalPage> {
                 ),
               ),
               const SizedBox(height: 15),
-              Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 16,
-                children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      _videoController.pause();
-                      isStop = true;
-                      setState(() {});
+              // Wrap(
+              //   alignment: WrapAlignment.center,
+              //   spacing: 16,
+              //   children: [
+              //     ElevatedButton(
+              //       onPressed: () async {
+              //         _videoController.pause();
+              //         isStop = true;
+              //         setState(() {});
 
-                      await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                        return AnimalQuestion(
-                          animal: widget.selectedAnimal,
-                          forChild: false,
-                        );
-                      }));
-                    },
-                    child: const Text('大人用アンケートに答える'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      _videoController.pause();
-                      isStop = true;
-                      setState(() {});
-                      await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                        return AnimalQuestion(
-                          animal: widget.selectedAnimal,
-                          forChild: true,
-                        );
-                      }));
-                    },
-                    child: const Text('こども用アンケートに答える'),
-                  ),
-                ],
-              ),
+              //         await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              //           return AnimalQuestion(
+              //             animal: widget.selectedAnimal,
+              //             forChild: false,
+              //           );
+              //         }));
+              //       },
+              //       child: const Text('大人用アンケートに答える'),
+              //     ),
+              //     ElevatedButton(
+              //       onPressed: () async {
+              //         _videoController.pause();
+              //         isStop = true;
+              //         setState(() {});
+              //         await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              //           return AnimalQuestion(
+              //             animal: widget.selectedAnimal,
+              //             forChild: true,
+              //           );
+              //         }));
+              //       },
+              //       child: const Text('こども用アンケートに答える'),
+              //     ),
+              //   ],
+              // ),
               const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -329,15 +326,17 @@ class _AnimalPageState extends State<AnimalPage> {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                     child: _AnimalSoundTile(
-                      image: isOffline
-                          ? Image.file(
-                              File(animalSound.imageUrl),
-                              fit: BoxFit.cover,
-                            )
-                          : Image.network(
-                              animalSound.imageUrl,
-                              fit: BoxFit.cover,
-                            ),
+                      image:
+                          // isOffline
+                          //     ? Image.file(
+                          //         File(animalSound.imageUrl),
+                          //         fit: BoxFit.cover,
+                          //       )
+                          //     :
+                          Image.network(
+                        animalSound.imageUrl,
+                        fit: BoxFit.cover,
+                      ),
                       breed: animalSound.breed,
                       title: animalSound.title,
                       subtitle: animalSound.subtitle,
@@ -364,13 +363,12 @@ class _AnimalPageState extends State<AnimalPage> {
 
 class _AnimalSoundTile extends StatelessWidget {
   const _AnimalSoundTile({
-    Key? key,
     required this.image,
     required this.breed,
     required this.title,
     required this.subtitle,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   final Image image;
   final String breed;

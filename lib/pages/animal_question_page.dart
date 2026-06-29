@@ -136,7 +136,9 @@ class _AnimalQuestionState extends State<AnimalQuestion> {
                                             border: Border.all(),
                                           ),
                                           padding: const EdgeInsets.all(8),
-                                          child: isOffline ? Image.file(File(e.imageUrl)) : Image.network(e.imageUrl),
+                                          child:
+                                              // isOffline ? Image.file(File(e.imageUrl)) :
+                                              Image.network(e.imageUrl),
                                         ),
                                         if (answer[index + 1] == e.subtitle)
                                           Container(

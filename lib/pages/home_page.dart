@@ -125,7 +125,7 @@ class _HomePageState extends State<HomePage> {
       return;
     }
     await _flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
+      settings: initializationSettings,
       onDidReceiveNotificationResponse: (response) {
         print(response.payload);
         final animal = animals.firstWhereOrNull((element) => element.name == response.payload);
@@ -146,10 +146,9 @@ class _HomePageState extends State<HomePage> {
     required String payload,
   }) async {
     _flutterLocalNotificationsPlugin.show(
-      0,
-      title,
-      body,
-      null,
+      id: 0,
+      title: title,
+      body: body,
       payload: payload,
     );
   }
@@ -246,36 +245,36 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(
                           height: 48,
                         ),
-                        Wrap(
-                          spacing: 16,
-                          alignment: WrapAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) {
-                                    return QuestionPage(
-                                      animals: animals,
-                                    );
-                                  }),
-                                );
-                              },
-                              child: const Text('大人用アンケートに答える'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) {
-                                    return QuestionForChildPage(
-                                      animals: animals,
-                                    );
-                                  }),
-                                );
-                              },
-                              child: const Text('こども用アンケートに答える'),
-                            ),
-                          ],
-                        ),
+                        // Wrap(
+                        //   spacing: 16,
+                        //   alignment: WrapAlignment.center,
+                        //   children: [
+                        //     ElevatedButton(
+                        //       onPressed: () {
+                        //         Navigator.of(context).push(
+                        //           MaterialPageRoute(builder: (context) {
+                        //             return QuestionPage(
+                        //               animals: animals,
+                        //             );
+                        //           }),
+                        //         );
+                        //       },
+                        //       child: const Text('大人用アンケートに答える'),
+                        //     ),
+                        //     ElevatedButton(
+                        //       onPressed: () {
+                        //         Navigator.of(context).push(
+                        //           MaterialPageRoute(builder: (context) {
+                        //             return QuestionForChildPage(
+                        //               animals: animals,
+                        //             );
+                        //           }),
+                        //         );
+                        //       },
+                        //       child: const Text('こども用アンケートに答える'),
+                        //     ),
+                        //   ],
+                        // ),
                         const SizedBox(
                           height: 32,
                         ),
@@ -318,7 +317,6 @@ class _HomePageState extends State<HomePage> {
 
 class _AnimalTile extends StatelessWidget {
   const _AnimalTile({
-    super.key,
     required this.onTap,
     required this.animalName,
     required this.imageUrl,
@@ -343,16 +341,16 @@ class _AnimalTile extends StatelessWidget {
                       Container(
                         color: AnimalOnomatopoeiaColor.blue,
                       ),
-                      if (isOffline)
-                        Image.file(
-                          File(imageUrl),
-                          fit: BoxFit.cover,
-                        )
-                      else
-                        Image.network(
-                          imageUrl,
-                          fit: BoxFit.cover,
-                        ),
+                      // if (isOffline)
+                      //   Image.file(
+                      //     File(imageUrl),
+                      //     fit: BoxFit.cover,
+                      //   )
+                      // else
+                      Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                      ),
                     ],
                   )
                 : Container(

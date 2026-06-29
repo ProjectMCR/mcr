@@ -31,13 +31,15 @@ class _SoundPageState extends State<SoundPage> {
       return;
     }
 
-    _videoController = isOffline
-        ? VideoPlayerController.file(
-            File(widget.selectedAnimalSound.videoUrl),
-          )
-        : VideoPlayerController.network(
-            widget.selectedAnimalSound.videoUrl,
-          );
+    _videoController =
+        // isOffline
+        //     ? VideoPlayerController.file(
+        //         File(widget.selectedAnimalSound.videoUrl),
+        //       )
+        //     :
+        VideoPlayerController.network(
+      widget.selectedAnimalSound.videoUrl,
+    );
 
     await _videoController?.initialize();
     //初期化されたら、自動で再生する
