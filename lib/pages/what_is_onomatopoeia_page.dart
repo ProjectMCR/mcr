@@ -47,6 +47,8 @@ class WhatIsOnomatopoeiaPage extends StatelessWidget {
                                 fit: BoxFit.cover,
                                 width: MediaQuery.of(context).size.width,
                                 height: screenHeight / 3,
+                                // Web で Storage の CORS 設定がなくても表示できるようにする
+                                webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
                               ),
                               if (snapshot.docs.length > 1)
                                 Column(

@@ -43,7 +43,11 @@ class _SoundPageState extends State<SoundPage> {
 
     await _videoController?.initialize();
     //初期化されたら、自動で再生する
-    await _videoController?.play();
+    try {
+      await _videoController?.play();
+    } catch (_) {
+      // Web ブラウザの自動再生制限などで失敗しても、再生ボタンから操作できる
+    }
     if (mounted) {
       setState(() {});
     }

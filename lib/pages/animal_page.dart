@@ -46,7 +46,11 @@ class _AnimalPageState extends State<AnimalPage> {
 
     await _videoController.initialize();
     //初期化されたら、自動で再生する
-    await _videoController.play();
+    try {
+      await _videoController.play();
+    } catch (_) {
+      // Web ブラウザの自動再生制限などで失敗しても、再生ボタンから操作できる
+    }
     if (mounted) {
       setState(() {});
     }
@@ -336,6 +340,8 @@ class _AnimalPageState extends State<AnimalPage> {
                           Image.network(
                         animalSound.imageUrl,
                         fit: BoxFit.cover,
+                        // Web で Storage の CORS 設定がなくても表示できるようにする
+                        webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
                       ),
                       breed: animalSound.breed,
                       title: animalSound.title,

@@ -138,7 +138,11 @@ class _AnimalQuestionState extends State<AnimalQuestion> {
                                           padding: const EdgeInsets.all(8),
                                           child:
                                               // isOffline ? Image.file(File(e.imageUrl)) :
-                                              Image.network(e.imageUrl),
+                                              Image.network(
+                                                e.imageUrl,
+                                                // Web で Storage の CORS 設定がなくても表示できるようにする
+                                                webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
+                                              ),
                                         ),
                                         if (answer[index + 1] == e.subtitle)
                                           Container(

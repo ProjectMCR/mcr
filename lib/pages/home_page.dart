@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:location/location.dart';
@@ -155,8 +156,11 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> init() async {
     await _fetchAnimals();
-    await _initializeNotification();
-    await _subscribeCurrentLocation();
+    // Web ではローカル通知と位置情報の購読は未対応のためスキップする
+    if (!kIsWeb) {
+      await _initializeNotification();
+      await _subscribeCurrentLocation();
+    }
   }
 
   @override
@@ -280,20 +284,22 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
-                    IconButton(
-                      onPressed: () async {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return SettingsPage(
-                                animals: animals,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.settings),
-                    ),
+                    // 設定画面はローカルファイル前提の機能のため Web では非表示にする
+                    if (!kIsWeb)
+                      IconButton(
+                        onPressed: () async {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return SettingsPage(
+                                  animals: animals,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.settings),
+                      ),
                   ],
                 ),
               ),
@@ -350,6 +356,8 @@ class _AnimalTile extends StatelessWidget {
                       Image.network(
                         imageUrl,
                         fit: BoxFit.cover,
+                        // Web で Storage の CORS 設定がなくても表示できるようにする
+                        webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
                       ),
                     ],
                   )
