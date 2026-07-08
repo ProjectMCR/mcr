@@ -24,12 +24,26 @@ class AnimalRepository {
       qs.docs.map(
         (e) => Animal.fromFirestore(
           e.data(),
+          reference: e.reference,
         ),
       ),
     );
     // }
     animals.sort((a, b) => a.index.compareTo(b.index));
     return animals;
+  }
+
+  /// ユーザーが聞こえた鳴き声（オノマトペ）を追記する。
+  ///
+  /// [FieldValue.arrayUnion] を使うことで、同時に複数の端末から投稿されても
+  /// 競合せずに追記できる。すでに同じ文字列がある場合は追加されない。
+  Future<void> addOnomatopoeia({
+    required DocumentReference<Map<String, dynamic>> reference,
+    required String onomatopoeia,
+  }) async {
+    await reference.update({
+      'onomatopoeiaList': FieldValue.arrayUnion([onomatopoeia]),
+    });
   }
 
   Future<void> saveAnimals({

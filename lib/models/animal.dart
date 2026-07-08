@@ -16,6 +16,7 @@ class Animal {
     required this.onomatopoeiaList,
     required this.geopoint,
     required this.animalSounds,
+    this.reference,
   });
 
   factory Animal.fromMap(Map<String, dynamic> data) {
@@ -45,7 +46,10 @@ class Animal {
     );
   }
 
-  static Future<Animal> fromFirestore(Map<String, dynamic> data) async {
+  static Future<Animal> fromFirestore(
+    Map<String, dynamic> data, {
+    DocumentReference<Map<String, dynamic>>? reference,
+  }) async {
     final animalRef = data['animalRef'] as DocumentReference;
 
     final qs = await animalRef.collection('animalSounds').get();
@@ -53,7 +57,7 @@ class Animal {
     final animalSounds = qs.docs.map((e) => AnimalSound.fromMap(e.data())).toList()
       ..sort((a, b) => a.index.compareTo(b.index));
     data['animalSounds'] = animalSounds.map((e) => e.toMap()).toList();
-    return Animal.fromMap(data);
+    return Animal.fromMap(data)..reference = reference;
   }
 
   DateTime createdAt;
@@ -65,6 +69,11 @@ class Animal {
   List<String> onomatopoeiaList;
   GeoPoint geopoint;
   List<AnimalSound> animalSounds;
+
+  /// このどうぶつの Firestore ドキュメント参照。
+  /// ユーザー投稿のオノマトペを書き込むために使う。
+  /// オフライン（Hive）から復元した場合などは null になる。
+  DocumentReference<Map<String, dynamic>>? reference;
 
   Map<String, dynamic> toMap() => {
         'createdAt': createdAt.toIso8601String(),

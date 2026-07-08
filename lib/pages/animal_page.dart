@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mcr/models/animal.dart';
 import 'package:mcr/pages/animal_question_page.dart';
+import 'package:mcr/repositories/animal_repositories.dart';
 import 'package:video_player/video_player.dart';
 
 import '../colors.dart';
@@ -74,13 +75,142 @@ class _AnimalPageState extends State<AnimalPage> {
 
   void generateRandomValue() async {
     for (var index = 0; index < widget.selectedAnimal.onomatopoeiaList.length; index++) {
-      offsetList.add(
-        Offset(
-          1 + random.nextDouble() * 10,
-          -1 + 2 * random.nextDouble(),
-        ),
-      );
+      offsetList.add(_randomOffset());
     }
+  }
+
+  /// 画面右外から流れ始める位置をランダムに生成する。
+  Offset _randomOffset() {
+    return Offset(
+      1 + random.nextDouble() * 10,
+      -1 + 2 * random.nextDouble(),
+    );
+  }
+
+  var isPosting = false;
+
+  /// 投稿ダイアログを開いて、入力された鳴き声を追記する。
+  Future<void> _showPostDialog() async {
+    final controller = TextEditingController();
+    try {
+      final text = await showDialog<String>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'きこえた鳴き声を\n投稿してみよう',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'あなたには${widget.selectedAnimal.name}の鳴き声が\nどんなふうにきこえたかな？',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AnimalOnomatopoeiaColor.gray1,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: controller,
+                  autofocus: true,
+                  maxLength: 20,
+                  textAlign: TextAlign.center,
+                  textInputAction: TextInputAction.done,
+                  decoration: const InputDecoration(
+                    hintText: 'れい：パオーン',
+                    border: OutlineInputBorder(),
+                  ),
+                  onSubmitted: (value) => Navigator.of(context).pop(value),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('やめる'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AnimalOnomatopoeiaColor.blue,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => Navigator.of(context).pop(controller.text),
+                child: const Text('とうこう'),
+              ),
+            ],
+          );
+        },
+      );
+      if (text != null) {
+        await _addOnomatopoeia(text);
+      }
+    } finally {
+      controller.dispose();
+    }
+  }
+
+  /// 入力された鳴き声を画面と Firestore の両方に追記する。
+  Future<void> _addOnomatopoeia(String rawText) async {
+    final text = rawText.trim();
+    if (text.isEmpty) {
+      return;
+    }
+
+    final reference = widget.selectedAnimal.reference;
+    if (reference == null) {
+      _showSnackBar('いまは投稿できません');
+      return;
+    }
+
+    // Firestore の arrayUnion と挙動を揃えるため、すでにある言葉は重複追加しない。
+    final alreadyExists = widget.selectedAnimal.onomatopoeiaList.contains(text);
+    if (alreadyExists) {
+      _showSnackBar('その鳴き声はすでに投稿されています');
+      return;
+    }
+
+    // 先に画面へ反映して、すぐに流れて見えるようにする。
+    setState(() {
+      isPosting = true;
+      widget.selectedAnimal.onomatopoeiaList.add(text);
+      offsetList.add(_randomOffset());
+    });
+
+    try {
+      await AnimalRepository().addOnomatopoeia(
+        reference: reference,
+        onomatopoeia: text,
+      );
+      _showSnackBar('とうこうしました！');
+    } catch (_) {
+      // 失敗したら画面への追記を取り消す。
+      setState(() {
+        widget.selectedAnimal.onomatopoeiaList.remove(text);
+        if (offsetList.isNotEmpty) {
+          offsetList.removeLast();
+        }
+      });
+      _showSnackBar('とうこうにしっぱいしました');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isPosting = false;
+        });
+      }
+    }
+  }
+
+  void _showSnackBar(String message) {
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   Future<void> loop() async {
@@ -269,6 +399,40 @@ class _AnimalPageState extends State<AnimalPage> {
                     color: AnimalOnomatopoeiaColor.gray1,
                     fontSize: 12,
                     fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: isPosting ? null : _showPostDialog,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AnimalOnomatopoeiaColor.blue,
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: AnimalOnomatopoeiaColor.blue.withOpacity(0.5),
+                      disabledForegroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    icon: isPosting
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.edit),
+                    label: const Text(
+                      'きこえた鳴き声を投稿する',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
                   ),
                 ),
               ),
