@@ -74,7 +74,9 @@ class _AnimalPageState extends State<AnimalPage> {
   final random = Random();
 
   void generateRandomValue() async {
-    for (var index = 0; index < widget.selectedAnimal.onomatopoeiaList.length; index++) {
+    for (var index = 0;
+        index < widget.selectedAnimal.onomatopoeiaList.length;
+        index++) {
       offsetList.add(_randomOffset());
     }
   }
@@ -269,261 +271,301 @@ class _AnimalPageState extends State<AnimalPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  _timer?.cancel();
-                  setState(() {
-                    _onTouch = !_onTouch;
-                  });
-                  //3秒したらボタン消える
-                  _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
-                    setState(() {
-                      _onTouch = false;
-                    });
-                  });
-                },
-                child: AspectRatio(
-                  aspectRatio: 16 / 9.5,
-                  child: _videoController.value.isInitialized
-                      //動画再生部分
-                      ? Stack(alignment: Alignment.bottomCenter, children: [
-                          VideoPlayer(_videoController),
-                          for (var index = 0; index < widget.selectedAnimal.onomatopoeiaList.length; index++)
-                            Align(
-                              alignment: Alignment(
-                                offsetList[index].dx,
-                                offsetList[index].dy,
-                              ),
-                              child: SizedBox(
-                                width: 32,
-                                height: 1,
-                                child: OverflowBox(
-                                  minWidth: 100,
-                                  maxWidth: 400,
-                                  minHeight: 80,
-                                  maxHeight: 80,
-                                  child: Stack(
-                                    children: [
-                                      Text(
-                                        widget.selectedAnimal.onomatopoeiaList[index],
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          foreground: Paint()
-                                            ..style = PaintingStyle.stroke
-                                            ..strokeWidth = 1
-                                            ..color = Colors.black,
-                                        ),
+          // 広い画面ではコンテンツが横に間延びしないよう最大幅を決めて中央寄せする。
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 840),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      _timer?.cancel();
+                      setState(() {
+                        _onTouch = !_onTouch;
+                      });
+                      //3秒したらボタン消える
+                      _timer = Timer.periodic(
+                          const Duration(milliseconds: 2500), (_) {
+                        setState(() {
+                          _onTouch = false;
+                        });
+                      });
+                    },
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9.5,
+                      child: _videoController.value.isInitialized
+                          //動画再生部分
+                          ? Stack(alignment: Alignment.bottomCenter, children: [
+                              VideoPlayer(_videoController),
+                              for (var index = 0;
+                                  index <
+                                      widget.selectedAnimal.onomatopoeiaList
+                                          .length;
+                                  index++)
+                                Align(
+                                  alignment: Alignment(
+                                    offsetList[index].dx,
+                                    offsetList[index].dy,
+                                  ),
+                                  child: SizedBox(
+                                    width: 32,
+                                    height: 1,
+                                    child: OverflowBox(
+                                      minWidth: 100,
+                                      maxWidth: 400,
+                                      minHeight: 80,
+                                      maxHeight: 80,
+                                      child: Stack(
+                                        children: [
+                                          Text(
+                                            widget.selectedAnimal
+                                                .onomatopoeiaList[index],
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                              foreground: Paint()
+                                                ..style = PaintingStyle.stroke
+                                                ..strokeWidth = 1
+                                                ..color = Colors.black,
+                                            ),
+                                          ),
+                                          Text(
+                                            widget.selectedAnimal
+                                                .onomatopoeiaList[index],
+                                            style: const TextStyle(
+                                              fontSize: 24,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        widget.selectedAnimal.onomatopoeiaList[index],
-                                        style: const TextStyle(
-                                          fontSize: 24,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
+                                  ),
+                                ),
+                              Visibility(
+                                visible: _onTouch,
+                                child: Center(
+                                  child: MaterialButton(
+                                    padding: const EdgeInsets.all(15), //パディング
+                                    color: Colors.black38, //背景色
+                                    textColor: Colors.white, //アイコンの色
+                                    shape: const CircleBorder(), //丸
+                                    onPressed: () {
+                                      _timer?.cancel();
+
+                                      // 再生、停止切り替え
+                                      setState(() {
+                                        if (_videoController.value.isPlaying) {
+                                          _videoController.pause();
+                                          isStop = true;
+                                        } else {
+                                          _videoController.play();
+                                          isStop = false;
+                                        }
+                                      });
+
+                                      // 3秒したらボタン消える
+                                      _timer = Timer.periodic(
+                                          const Duration(milliseconds: 2500),
+                                          (_) {
+                                        setState(() {
+                                          _onTouch = false;
+                                        });
+                                      });
+                                    },
+                                    child: Icon(
+                                      _videoController.value.isPlaying
+                                          ? Icons.pause
+                                          : Icons.play_arrow,
+                                      color: Colors.white,
+                                      size: 35,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          Visibility(
-                            visible: _onTouch,
-                            child: Center(
-                              child: MaterialButton(
-                                padding: const EdgeInsets.all(15), //パディング
-                                color: Colors.black38, //背景色
-                                textColor: Colors.white, //アイコンの色
-                                shape: const CircleBorder(), //丸
-                                onPressed: () {
-                                  _timer?.cancel();
-
-                                  // 再生、停止切り替え
-                                  setState(() {
-                                    if (_videoController.value.isPlaying) {
-                                      _videoController.pause();
-                                      isStop = true;
-                                    } else {
-                                      _videoController.play();
-                                      isStop = false;
-                                    }
-                                  });
-
-                                  // 3秒したらボタン消える
-                                  _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
-                                    setState(() {
-                                      _onTouch = false;
-                                    });
-                                  });
-                                },
-                                child: Icon(
-                                  _videoController.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                              VideoProgressIndicator(_videoController,
+                                  allowScrubbing: true),
+                            ])
+                          : const Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'こんなふうにきこえたよ',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const Text(
+                    'この鳴き声オノマトペは聞いた人が\nきこえた感じを自由に言葉にしたものです',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AnimalOnomatopoeiaColor.gray1,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  SizedBox(
+                    width: 245,
+                    child: Text(
+                      '動画：${widget.selectedAnimal.informationOnVideo}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: AnimalOnomatopoeiaColor.gray1,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: isPosting ? null : _showPostDialog,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AnimalOnomatopoeiaColor.blue,
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor:
+                              AnimalOnomatopoeiaColor.blue.withOpacity(0.5),
+                          disabledForegroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        icon: isPosting
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
                                   color: Colors.white,
-                                  size: 35,
+                                ),
+                              )
+                            : const Icon(Icons.edit),
+                        label: const Text(
+                          'きこえた鳴き声を投稿する',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  // Wrap(
+                  //   alignment: WrapAlignment.center,
+                  //   spacing: 16,
+                  //   children: [
+                  //     ElevatedButton(
+                  //       onPressed: () async {
+                  //         _videoController.pause();
+                  //         isStop = true;
+                  //         setState(() {});
+
+                  //         await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                  //           return AnimalQuestion(
+                  //             animal: widget.selectedAnimal,
+                  //             forChild: false,
+                  //           );
+                  //         }));
+                  //       },
+                  //       child: const Text('大人用アンケートに答える'),
+                  //     ),
+                  //     ElevatedButton(
+                  //       onPressed: () async {
+                  //         _videoController.pause();
+                  //         isStop = true;
+                  //         setState(() {});
+                  //         await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                  //           return AnimalQuestion(
+                  //             animal: widget.selectedAnimal,
+                  //             forChild: true,
+                  //           );
+                  //         }));
+                  //       },
+                  //       child: const Text('こども用アンケートに答える'),
+                  //     ),
+                  //   ],
+                  // ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      '${widget.selectedAnimal.name}さんの気持ちわかるかな？',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        // 画面幅に応じて列数を切り替える。
+                        // 狭い端末では1列、広い画面（600px以上）では2列で表示する。
+                        final crossAxisCount =
+                            constraints.maxWidth >= 600 ? 2 : 1;
+                        const spacing = 20.0;
+                        final tileWidth = crossAxisCount == 1
+                            ? constraints.maxWidth
+                            : (constraints.maxWidth -
+                                    spacing * (crossAxisCount - 1)) /
+                                crossAxisCount;
+                        return Wrap(
+                          spacing: spacing,
+                          runSpacing: spacing,
+                          children: [
+                            for (final animalSound
+                                in widget.selectedAnimal.animalSounds)
+                              SizedBox(
+                                width: tileWidth,
+                                child: _AnimalSoundTile(
+                                  image:
+                                      // isOffline
+                                      //     ? Image.file(
+                                      //         File(animalSound.imageUrl),
+                                      //         fit: BoxFit.cover,
+                                      //       )
+                                      //     :
+                                      Image.network(
+                                    animalSound.imageUrl,
+                                    fit: BoxFit.cover,
+                                    // Web で Storage の CORS 設定がなくても表示できるようにする
+                                    webHtmlElementStrategy:
+                                        WebHtmlElementStrategy.fallback,
+                                  ),
+                                  breed: animalSound.breed,
+                                  title: animalSound.title,
+                                  subtitle: animalSound.subtitle,
+                                  onTap: () async {
+                                    _videoController.pause();
+                                    isStop = true;
+                                    await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => SoundPage(
+                                            selectedAnimalSound: animalSound),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
-                            ),
-                          ),
-                          VideoProgressIndicator(_videoController, allowScrubbing: true),
-                        ])
-                      : const Center(child: CircularProgressIndicator()),
-                ),
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                'こんなふうにきこえたよ',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Text(
-                'この鳴き声オノマトペは聞いた人が\nきこえた感じを自由に言葉にしたものです',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AnimalOnomatopoeiaColor.gray1,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-              const SizedBox(height: 15),
-              SizedBox(
-                width: 245,
-                child: Text(
-                  '動画：${widget.selectedAnimal.informationOnVideo}',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: AnimalOnomatopoeiaColor.gray1,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: isPosting ? null : _showPostDialog,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AnimalOnomatopoeiaColor.blue,
-                      foregroundColor: Colors.white,
-                      disabledBackgroundColor: AnimalOnomatopoeiaColor.blue.withOpacity(0.5),
-                      disabledForegroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    icon: isPosting
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(Icons.edit),
-                    label: const Text(
-                      'きこえた鳴き声を投稿する',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              // Wrap(
-              //   alignment: WrapAlignment.center,
-              //   spacing: 16,
-              //   children: [
-              //     ElevatedButton(
-              //       onPressed: () async {
-              //         _videoController.pause();
-              //         isStop = true;
-              //         setState(() {});
-
-              //         await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              //           return AnimalQuestion(
-              //             animal: widget.selectedAnimal,
-              //             forChild: false,
-              //           );
-              //         }));
-              //       },
-              //       child: const Text('大人用アンケートに答える'),
-              //     ),
-              //     ElevatedButton(
-              //       onPressed: () async {
-              //         _videoController.pause();
-              //         isStop = true;
-              //         setState(() {});
-              //         await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              //           return AnimalQuestion(
-              //             animal: widget.selectedAnimal,
-              //             forChild: true,
-              //           );
-              //         }));
-              //       },
-              //       child: const Text('こども用アンケートに答える'),
-              //     ),
-              //   ],
-              // ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  '${widget.selectedAnimal.name}さんの気持ちわかるかな？',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: widget.selectedAnimal.animalSounds.length,
-                itemBuilder: (context, index) {
-                  final animalSound = widget.selectedAnimal.animalSounds[index];
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                    child: _AnimalSoundTile(
-                      image:
-                          // isOffline
-                          //     ? Image.file(
-                          //         File(animalSound.imageUrl),
-                          //         fit: BoxFit.cover,
-                          //       )
-                          //     :
-                          Image.network(
-                        animalSound.imageUrl,
-                        fit: BoxFit.cover,
-                        // Web で Storage の CORS 設定がなくても表示できるようにする
-                        webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
-                      ),
-                      breed: animalSound.breed,
-                      title: animalSound.title,
-                      subtitle: animalSound.subtitle,
-                      onTap: () async {
-                        _videoController.pause();
-                        isStop = true;
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => SoundPage(selectedAnimalSound: animalSound),
-                          ),
+                          ],
                         );
                       },
                     ),
-                  );
-                },
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
