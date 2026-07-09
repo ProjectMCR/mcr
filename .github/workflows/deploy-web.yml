@@ -30,7 +30,9 @@ jobs:
       - name: Deploy to Firebase Hosting (live)
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          # repoToken は PR プレビューでコミットにコメントを付けるためのもの。
+          # main への live デプロイでは不要で、read-only な GITHUB_TOKEN だと
+          # "read-only token in GITHUB_TOKEN cannot be modified" エラーになるため付けない。
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ANIMAL_ONOMATOPE }}
           projectId: animal-onomatope
           channelId: live

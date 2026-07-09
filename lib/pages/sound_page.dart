@@ -1,17 +1,14 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mcr/models/animal_sound.dart';
 import 'package:video_player/video_player.dart';
 
-import '../main.dart';
-
 class SoundPage extends StatefulWidget {
   const SoundPage({
-    Key? key,
+    super.key,
     required this.selectedAnimalSound,
-  }) : super(key: key);
+  });
 
   final AnimalSound selectedAnimalSound;
 
@@ -122,11 +119,6 @@ class _SoundPageState extends State<SoundPage> {
                                   visible: _onTouch,
                                   child: Center(
                                     child: MaterialButton(
-                                      child: Icon(
-                                        _videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                                        color: Colors.white,
-                                        size: 35,
-                                      ),
                                       padding: const EdgeInsets.all(15), //パディング
                                       color: Colors.black38, //背景色
                                       textColor: Colors.white, //アイコンの色
@@ -148,6 +140,11 @@ class _SoundPageState extends State<SoundPage> {
                                           });
                                         });
                                       },
+                                      child: Icon(
+                                        _videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                                        color: Colors.white,
+                                        size: 35,
+                                      ),
                                     ),
                                   ),
                                 ),
