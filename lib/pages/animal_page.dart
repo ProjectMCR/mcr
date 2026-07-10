@@ -242,6 +242,39 @@ class _AnimalPageState extends State<AnimalPage> {
     }
   }
 
+  /// 再生・停止ボタンの表示を切り替える。表示してから2.5秒で自動的に隠す。
+  void _toggleControls() {
+    _timer?.cancel();
+    setState(() {
+      _onTouch = !_onTouch;
+    });
+    _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
+      setState(() {
+        _onTouch = false;
+      });
+    });
+  }
+
+  /// 動画の再生と停止を切り替える。
+  void _togglePlayPause() {
+    _timer?.cancel();
+    setState(() {
+      if (_videoController.value.isPlaying) {
+        _videoController.pause();
+        isStop = true;
+      } else {
+        _videoController.play();
+        isStop = false;
+      }
+    });
+    // 2.5秒したらボタン消える
+    _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
+      setState(() {
+        _onTouch = false;
+      });
+    });
+  }
+
   @override
   void dispose() {
     _videoController.dispose();
@@ -277,116 +310,63 @@ class _AnimalPageState extends State<AnimalPage> {
               constraints: const BoxConstraints(maxWidth: 840),
               child: Column(
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      _timer?.cancel();
-                      setState(() {
-                        _onTouch = !_onTouch;
-                      });
-                      //3秒したらボタン消える
-                      _timer = Timer.periodic(
-                          const Duration(milliseconds: 2500), (_) {
-                        setState(() {
-                          _onTouch = false;
-                        });
-                      });
-                    },
+                  // 動画は画面幅にそのまま追従させず、最大幅を決めて中央に置く。
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 640),
                     child: AspectRatio(
                       aspectRatio: 16 / 9.5,
                       child: _videoController.value.isInitialized
                           //動画再生部分
-                          ? Stack(alignment: Alignment.bottomCenter, children: [
-                              VideoPlayer(_videoController),
-                              for (var index = 0;
-                                  index <
-                                      widget.selectedAnimal.onomatopoeiaList
-                                          .length;
-                                  index++)
-                                Align(
-                                  alignment: Alignment(
-                                    offsetList[index].dx,
-                                    offsetList[index].dy,
+                          ? Stack(
+                              alignment: Alignment.bottomCenter,
+                              children: [
+                                VideoPlayer(_videoController),
+                                // 流れる鳴き声コメント。
+                                // ClipRect はプラットフォームビュー(video)上の
+                                // オーバーレイ描画に効かないことがあるため、
+                                // CustomPaint 内でキャンバスをクリップして
+                                // 動画の外へはみ出さないように描画する。
+                                Positioned.fill(
+                                  child: CustomPaint(
+                                    painter: _FlowingOnomatopoeiaPainter(
+                                      comments: widget
+                                          .selectedAnimal.onomatopoeiaList,
+                                      offsets: offsetList,
+                                    ),
                                   ),
-                                  child: SizedBox(
-                                    width: 32,
-                                    height: 1,
-                                    child: OverflowBox(
-                                      minWidth: 100,
-                                      maxWidth: 400,
-                                      minHeight: 80,
-                                      maxHeight: 80,
-                                      child: Stack(
-                                        children: [
-                                          Text(
-                                            widget.selectedAnimal
-                                                .onomatopoeiaList[index],
-                                            style: TextStyle(
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.bold,
-                                              foreground: Paint()
-                                                ..style = PaintingStyle.stroke
-                                                ..strokeWidth = 1
-                                                ..color = Colors.black,
-                                            ),
-                                          ),
-                                          Text(
-                                            widget.selectedAnimal
-                                                .onomatopoeiaList[index],
-                                            style: const TextStyle(
-                                              fontSize: 24,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
+                                ),
+                                // タップで再生・停止ボタンの表示を切り替える。
+                                // Web では video 要素がタップを吸わないよう
+                                // index.html 側で pointer-events を無効化している。
+                                Positioned.fill(
+                                  child: GestureDetector(
+                                    behavior: HitTestBehavior.opaque,
+                                    onTap: _toggleControls,
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: _onTouch,
+                                  child: Center(
+                                    child: MaterialButton(
+                                      padding: const EdgeInsets.all(15), //パディング
+                                      color: Colors.black38, //背景色
+                                      textColor: Colors.white, //アイコンの色
+                                      shape: const CircleBorder(), //丸
+                                      onPressed: _togglePlayPause,
+                                      child: Icon(
+                                        _videoController.value.isPlaying
+                                            ? Icons.pause
+                                            : Icons.play_arrow,
+                                        color: Colors.white,
+                                        size: 35,
                                       ),
                                     ),
                                   ),
                                 ),
-                              Visibility(
-                                visible: _onTouch,
-                                child: Center(
-                                  child: MaterialButton(
-                                    padding: const EdgeInsets.all(15), //パディング
-                                    color: Colors.black38, //背景色
-                                    textColor: Colors.white, //アイコンの色
-                                    shape: const CircleBorder(), //丸
-                                    onPressed: () {
-                                      _timer?.cancel();
-
-                                      // 再生、停止切り替え
-                                      setState(() {
-                                        if (_videoController.value.isPlaying) {
-                                          _videoController.pause();
-                                          isStop = true;
-                                        } else {
-                                          _videoController.play();
-                                          isStop = false;
-                                        }
-                                      });
-
-                                      // 3秒したらボタン消える
-                                      _timer = Timer.periodic(
-                                          const Duration(milliseconds: 2500),
-                                          (_) {
-                                        setState(() {
-                                          _onTouch = false;
-                                        });
-                                      });
-                                    },
-                                    child: Icon(
-                                      _videoController.value.isPlaying
-                                          ? Icons.pause
-                                          : Icons.play_arrow,
-                                      color: Colors.white,
-                                      size: 35,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              VideoProgressIndicator(_videoController,
-                                  allowScrubbing: true),
-                            ])
+                                VideoProgressIndicator(_videoController,
+                                    allowScrubbing: true),
+                              ],
+                            )
                           : const Center(child: CircularProgressIndicator()),
                     ),
                   ),
@@ -656,4 +636,70 @@ class _AnimalSoundTile extends StatelessWidget {
       ),
     );
   }
+}
+
+/// 動画の上を流れる鳴き声コメントを描画する。
+///
+/// ClipRect はプラットフォームビュー(video)上のオーバーレイ描画に
+/// 効かないことがあるため、キャンバス自体をクリップして
+/// コメントが動画の外へはみ出さないようにする。
+class _FlowingOnomatopoeiaPainter extends CustomPainter {
+  _FlowingOnomatopoeiaPainter({
+    required this.comments,
+    required this.offsets,
+  });
+
+  final List<String> comments;
+  final List<Offset> offsets;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.clipRect(Offset.zero & size);
+    final count = min(comments.length, offsets.length);
+    for (var index = 0; index < count; index++) {
+      final alignment = offsets[index];
+
+      final fillPainter = TextPainter(
+        text: TextSpan(
+          text: comments[index],
+          style: const TextStyle(
+            fontSize: 24,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout(maxWidth: 400);
+      final strokePainter = TextPainter(
+        text: TextSpan(
+          text: comments[index],
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            foreground: Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 1
+              ..color = Colors.black,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout(maxWidth: 400);
+
+      // 以前の Align + OverflowBox と同じ位置になるように座標を計算する。
+      final anchor = Offset(
+        (size.width - 32) * (alignment.dx + 1) / 2,
+        (size.height - 1) * (alignment.dy + 1) / 2,
+      );
+      final boxWidth = max(100.0, fillPainter.width);
+      final topLeft = Offset(
+        anchor.dx + 16 - boxWidth / 2,
+        anchor.dy + 0.5 - 40,
+      );
+      strokePainter.paint(canvas, topLeft);
+      fillPainter.paint(canvas, topLeft);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FlowingOnomatopoeiaPainter oldDelegate) => true;
 }
