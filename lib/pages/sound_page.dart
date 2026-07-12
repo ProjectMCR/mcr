@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mcr/models/animal_sound.dart';
@@ -58,6 +59,35 @@ class _SoundPageState extends State<SoundPage> {
     initializeVideoPlayer();
   }
 
+  /// 再生・停止ボタンの表示を切り替える。表示してから2.5秒で自動的に隠す。
+  void _toggleControls() {
+    _timer?.cancel();
+    setState(() {
+      _onTouch = !_onTouch;
+    });
+    _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
+      setState(() {
+        _onTouch = false;
+      });
+    });
+  }
+
+  /// 動画の再生と停止を切り替える。
+  void _togglePlayPause() {
+    _timer?.cancel();
+    setState(() {
+      _videoController!.value.isPlaying
+          ? _videoController?.pause()
+          : _videoController?.play();
+    });
+    // 2.5秒したらボタン消える
+    _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
+      setState(() {
+        _onTouch = false;
+      });
+    });
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -68,6 +98,8 @@ class _SoundPageState extends State<SoundPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    // 動画は画面幅にそのまま追従させず、最大幅を決めて中央に置く。
+    final videoSize = min(screenWidth, 640.0);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -92,29 +124,27 @@ class _SoundPageState extends State<SoundPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (widget.selectedAnimalSound.videoUrl.isNotEmpty)
-                GestureDetector(
-                  onTap: () {
-                    _timer?.cancel();
-                    setState(() {
-                      _onTouch = !_onTouch;
-                    });
-                    //3秒したらボタン消える
-                    _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
-                      setState(() {
-                        _onTouch = false;
-                      });
-                    });
-                  },
+                Center(
                   child: SizedBox(
-                      height: screenWidth,
+                      width: videoSize,
+                      height: videoSize,
                       child: _videoController?.value.isInitialized == true
                           ? Stack(
                               alignment: Alignment.bottomCenter,
                               children: [
                                 VideoPlayer(_videoController!),
+                                // タップで再生・停止ボタンの表示を切り替える。
+                                // Web では video 要素がタップを吸わないよう
+                                // index.html 側で pointer-events を無効化している。
+                                Positioned.fill(
+                                  child: GestureDetector(
+                                    behavior: HitTestBehavior.opaque,
+                                    onTap: _toggleControls,
+                                  ),
+                                ),
                                 Visibility(
                                   visible: _onTouch,
                                   child: Center(
@@ -123,32 +153,19 @@ class _SoundPageState extends State<SoundPage> {
                                       color: Colors.black38, //背景色
                                       textColor: Colors.white, //アイコンの色
                                       shape: const CircleBorder(), //丸
-                                      onPressed: () {
-                                        _timer?.cancel();
-
-                                        // 再生、停止切り替え
-                                        setState(() {
-                                          _videoController!.value.isPlaying
-                                              ? _videoController?.pause()
-                                              : _videoController?.play();
-                                        });
-
-                                        // 3秒したらボタン消える
-                                        _timer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
-                                          setState(() {
-                                            _onTouch = false;
-                                          });
-                                        });
-                                      },
+                                      onPressed: _togglePlayPause,
                                       child: Icon(
-                                        _videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                                        _videoController!.value.isPlaying
+                                            ? Icons.pause
+                                            : Icons.play_arrow,
                                         color: Colors.white,
                                         size: 35,
                                       ),
                                     ),
                                   ),
                                 ),
-                                VideoProgressIndicator(_videoController!, allowScrubbing: true),
+                                VideoProgressIndicator(_videoController!,
+                                    allowScrubbing: true),
                               ],
                             )
                           : const Center(

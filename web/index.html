@@ -31,6 +31,18 @@
 
   <title>mcr</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    /*
+      video_player / Image.network が生成する <video> <img> 要素が
+      タップやクリックを吸ってしまい Flutter 側の GestureDetector に
+      届かなくなるため、ポインターイベントを素通しさせる。
+    */
+    flt-platform-view video,
+    flt-platform-view img {
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
   <!--

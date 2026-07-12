@@ -113,14 +113,17 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _initializeNotification() async {
     const initializationSettingsIOS = DarwinInitializationSettings();
-    const initializationSettingsAndroid = AndroidInitializationSettings('ic_notification');
+    const initializationSettingsAndroid =
+        AndroidInitializationSettings('ic_notification');
 
-    const InitializationSettings initializationSettings = InitializationSettings(
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
     final enable = await _flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
     if (enable == false) {
       return;
@@ -129,7 +132,8 @@ class _HomePageState extends State<HomePage> {
       settings: initializationSettings,
       onDidReceiveNotificationResponse: (response) {
         print(response.payload);
-        final animal = animals.firstWhereOrNull((element) => element.name == response.payload);
+        final animal = animals
+            .firstWhereOrNull((element) => element.name == response.payload);
         if (animal == null) {
           return;
         }
@@ -202,7 +206,8 @@ class _HomePageState extends State<HomePage> {
                         TextButton(
                           onPressed: () => Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const WhatIsOnomatopoeiaPage(),
+                              builder: (context) =>
+                                  const WhatIsOnomatopoeiaPage(),
                             ),
                           ),
                           child: const Text(
@@ -224,8 +229,11 @@ class _HomePageState extends State<HomePage> {
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: animals.length,
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
+                            // 1タイルの最大幅を決めておき、画面が広くなるほど
+                            // 2列→3列→4列…と列数が自動で増えるようにする。
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 200,
                               childAspectRatio: 1,
                               mainAxisSpacing: 16,
                               crossAxisSpacing: 16,
@@ -238,7 +246,8 @@ class _HomePageState extends State<HomePage> {
                                 onTap: animal.onomatopoeiaVideoUrl.isNotEmpty
                                     ? () => Navigator.of(context).push(
                                           MaterialPageRoute(
-                                            builder: (context) => AnimalPage(selectedAnimal: animal),
+                                            builder: (context) => AnimalPage(
+                                                selectedAnimal: animal),
                                           ),
                                         )
                                     : null,
